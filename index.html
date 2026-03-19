@@ -481,33 +481,65 @@
 
   // ===== APPROVE PAGE =====
   async function initApprovePage() {
-    document.getElementById('approvePage').classList.add('show');
+  document.getElementById('approvePage').classList.add('show');
 
-    const today = new Date();
-    currentDate = today.toISOString().split('T')[0];
+  const today = new Date();
+  currentDate = today.toISOString().split('T')[0];
 
-    try {
-      const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`);
-      const data = await res.json();
+  try {
+    const res = await fetch(
+      `${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`,
+      { redirect: 'follow' }
+    );
+    const data = await res.json();
 
-      if (!data.success) throw new Error(data.message);
+    if (!data.success) throw new Error(data.message);
 
-      students = data.students;
-      currentClassroom = data.classroom;
+    students = data.students;
+    currentClassroom = data.classroom;
 
-      const thaiDate = formatThaiDate(currentDate);
-      document.getElementById('approveHeaderInfo').textContent = `ห้อง ${data.classroom} | ${thaiDate}`;
+    const thaiDate = formatThaiDate(currentDate);
+    document.getElementById('approveHeaderInfo').textContent =
+      `ห้อง ${data.classroom} | ${thaiDate}`;
 
+    // ถ้าเช็คชื่อแล้ว — แสดงข้อความแจ้งเตือน ไม่ให้แก้ไข
+    if (data.approvedBy) {
       renderStudents();
       updateSummary();
 
-      document.getElementById('approveBtn').disabled = false;
-      document.getElementById('approveBtnLabel').textContent = `บันทึกเช็คชื่อ (${students.length} คน)`;
+      // ล็อคปุ่มและแสดงว่าใครเช็คแล้ว
+      const btn = document.getElementById('approveBtn');
+      btn.disabled = true;
+      btn.style.background = '#27AE60';
+      document.getElementById('approveBtnLabel').textContent =
+        `✅ เช็คชื่อแล้วโดย ${data.approvedBy}`;
 
-    } catch (err) {
-      document.getElementById('approveHeaderInfo').textContent = '❌ ' + err.message;
+      // ล็อคปุ่มสถานะทุกปุ่ม
+      setTimeout(() => {
+        document.querySelectorAll('.btn-status').forEach(b => {
+          b.disabled = true;
+          b.style.opacity = '0.6';
+          b.style.cursor = 'not-allowed';
+        });
+        document.querySelectorAll('.note-input').forEach(n => {
+          n.disabled = true;
+        });
+      }, 100);
+
+      return;
     }
+
+    renderStudents();
+    updateSummary();
+
+    document.getElementById('approveBtn').disabled = false;
+    document.getElementById('approveBtnLabel').textContent =
+      `บันทึกเช็คชื่อ (${students.length} คน)`;
+
+  } catch (err) {
+    document.getElementById('approveHeaderInfo').textContent = '❌ ' + err.message;
   }
+}
 
   function renderStudents() {
     const list = document.getElementById('studentList');

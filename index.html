@@ -342,12 +342,19 @@
 
   // ===== DETECT PAGE =====
   function getPage() {
-    const path = window.location.pathname;
-    if (path.includes('/approve')) return 'approve';
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('page') === 'approve') return 'approve';
-    return 'leave';
-  }
+  // เช็ค query string ก่อน
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('page') === 'approve') return 'approve';
+  
+  // เช็ค hash
+  if (window.location.hash === '#approve') return 'approve';
+  
+  // เช็ค liff.state (LIFF ส่ง query string มาใน liff.state)
+  const liffState = params.get('liff.state');
+  if (liffState && liffState.includes('page=approve')) return 'approve';
+  
+  return 'leave';
+}
 
   // ===== INIT =====
   async function init() {

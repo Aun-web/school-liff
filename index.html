@@ -1,121 +1,612 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>แจ้งลาหยุด</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --red: #C0392B;
+      --red-light: #E74C3C;
+      --red-pale: #FDEDEC;
+      --yellow: #F39C12;
+      --yellow-light: #F8C471;
+      --yellow-pale: #FEF9E7;
+      --dark: #1A1A1A;
+      --gray: #6B6B6B;
+      --gray-light: #F5F5F5;
+      --border: #E8E8E8;
+      --white: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'Sarabun', sans-serif;
-      background: linear-gradient(135deg, #06c755, #00a94f);
-      margin: 0;
-      padding: 20px;
+      background: var(--gray-light);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .card {
-      max-width: 420px;
-      margin: auto;
-      background: #fff;
-      border-radius: 18px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+    /* Header */
+    .header {
+      background: var(--red);
+      padding: 28px 24px 20px;
+      position: relative;
+      overflow: hidden;
     }
-    h2 { text-align: center; margin-bottom: 4px; color: #0f2044; }
-    .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
-    .warning {
-      background: #fff8e1;
-      border: 1px solid #f0a500;
-      border-radius: 10px;
-      padding: 10px 14px;
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: 40px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(243,156,18,0.25);
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 10px;
+      backdrop-filter: blur(4px);
+    }
+
+    .header h1 {
+      color: var(--white);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.75);
       font-size: 13px;
-      color: #b8860b;
-      margin-bottom: 16px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
     }
-    label { font-weight: 600; margin-top: 10px; display: block; color: #333; }
-    input, select, textarea {
+
+    /* Deadline Warning */
+    .deadline-bar {
+      background: var(--yellow);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .deadline-bar .icon { font-size: 16px; }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 20px 16px 32px;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Section */
+    .section {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+
+    /* Leave Type */
+    .leave-types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .leave-type-btn {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 12px;
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .leave-type-btn .type-icon { font-size: 26px; }
+    .leave-type-btn .type-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      font-family: 'Sarabun', sans-serif;
+    }
+    .leave-type-btn .type-desc {
+      font-size: 11px;
+      color: var(--gray);
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    .leave-type-btn.active {
+      border-color: var(--red);
+      background: var(--red-pale);
+    }
+    .leave-type-btn.active .type-label { color: var(--red); }
+
+    /* Date Range */
+    .date-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .date-field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .date-field input[type="date"] {
       width: 100%;
       padding: 12px;
-      margin-top: 6px;
-      margin-bottom: 15px;
+      border: 2px solid var(--border);
       border-radius: 10px;
-      border: 1px solid #ddd;
       font-size: 15px;
       font-family: 'Sarabun', sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
     }
-    textarea { resize: none; }
-    button {
+
+    .date-field input[type="date"]:focus {
+      border-color: var(--red);
+    }
+
+    .date-arrow {
+      font-size: 18px;
+      color: var(--gray);
+      margin-top: 20px;
+    }
+
+    .days-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--yellow-pale);
+      border: 1px solid var(--yellow-light);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--yellow);
+      margin-top: 12px;
+    }
+
+    /* Reason */
+    textarea {
       width: 100%;
       padding: 14px;
-      border: none;
+      border: 2px solid var(--border);
       border-radius: 12px;
-      background: #06c755;
-      color: white;
+      font-size: 15px;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--dark);
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+
+    textarea:focus { border-color: var(--red); }
+    textarea::placeholder { color: #BDBDBD; }
+
+    /* Status indicator */
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    .status-indicator.loading { background: #F5F5F5; color: var(--gray); }
+    .status-indicator.success { background: #EAFAF1; color: #1E8449; }
+    .status-indicator.error { background: var(--red-pale); color: var(--red); }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .loading .status-dot { background: var(--gray); animation: pulse 1.2s infinite; }
+    .success .status-dot { background: #1E8449; }
+    .error .status-dot { background: var(--red); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Submit Button */
+    .submit-wrap {
+      padding: 0 16px 24px;
+      max-width: 480px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 16px;
+      background: var(--red);
+      color: var(--white);
       font-size: 17px;
-      font-weight: bold;
+      font-weight: 700;
       font-family: 'Sarabun', sans-serif;
       cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 15px rgba(192,57,43,0.35);
     }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    .status { text-align: center; margin-top: 12px; font-size: 14px; font-weight: 500; }
-    .loading { color: #888; }
-    .success { color: green; }
-    .error { color: red; }
+
+    .submit-btn:hover:not(:disabled) {
+      background: var(--red-light);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(192,57,43,0.4);
+    }
+
+    .submit-btn:disabled {
+      background: #BDBDBD;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Connecting overlay */
+    .connecting {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 100;
+    }
+
+    .connecting.hidden { display: none; }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--red-pale);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .connecting p {
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    /* Success screen */
+    .success-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 40px;
+      text-align: center;
+      z-index: 100;
+    }
+
+    .success-screen.hidden { display: none; }
+
+    .success-icon {
+      width: 72px; height: 72px;
+      background: #EAFAF1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .success-screen h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .success-screen p {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .success-detail {
+      background: var(--gray-light);
+      border-radius: 12px;
+      padding: 16px 20px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .success-detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    .success-detail-row span:first-child { color: var(--gray); }
+    .success-detail-row span:last-child { font-weight: 600; color: var(--dark); }
   </style>
 </head>
 <body>
-<div class="card">
-  <h2>📝 แจ้งลาหยุด</h2>
-  <p class="subtitle">กรุณาแจ้งก่อน 08:30 น. ของวันที่ลา</p>
-  <div class="warning">⚠️ หากแจ้งลาหลัง 08:30 น. กรุณาติดต่อครูประจำชั้นโดยตรงครับ</div>
 
-  <form id="leaveForm">
-    <label>วันที่ลา</label>
-    <input type="date" id="date" required>
+<!-- Connecting overlay -->
+<div class="connecting" id="connectingScreen">
+  <div class="spinner"></div>
+  <p id="connectingMsg">กำลังเชื่อมต่อ LINE...</p>
+</div>
 
-    <label>ประเภทการลา</label>
-    <select id="leaveType">
-      <option value="leave_sick">🤒 ลาป่วย</option>
-      <option value="leave_personal">📝 ลากิจ</option>
-    </select>
+<!-- Success screen -->
+<div class="success-screen hidden" id="successScreen">
+  <div class="success-icon">✅</div>
+  <h2>แจ้งลาสำเร็จแล้ว</h2>
+  <p>ระบบได้รับคำขอลาของท่านแล้วครับ<br>ครูประจำชั้นจะรับทราบในวันที่ลา</p>
+  <div class="success-detail" id="successDetail"></div>
+</div>
 
-    <label>เหตุผล</label>
-    <textarea id="reason" rows="3" placeholder="ระบุเหตุผล..." required></textarea>
+<!-- Header -->
+<div class="header">
+  <div class="header-badge">
+    <span>🏫</span>
+    <span>MYPL School</span>
+  </div>
+  <h1>แจ้งลาหยุดนักเรียน</h1>
+  <p>กรุณากรอกข้อมูลให้ครบถ้วน</p>
+</div>
 
-    <button type="submit" id="submitBtn" disabled>กำลังเชื่อมต่อ...</button>
-  </form>
-  <div id="status" class="status loading"></div>
+<!-- Deadline bar -->
+<div class="deadline-bar">
+  <span class="icon">⏰</span>
+  <span>ต้องแจ้งลาก่อน 08:30 น. ของวันที่ลา</span>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- Leave Type -->
+  <div class="section">
+    <div class="section-title">ประเภทการลา</div>
+    <div class="leave-types">
+      <button class="leave-type-btn active" id="btn-sick" onclick="selectType('leave_sick')">
+        <span class="type-icon">🤒</span>
+        <span class="type-label">ลาป่วย</span>
+        <span class="type-desc">ไม่สบาย / เจ็บป่วย</span>
+      </button>
+      <button class="leave-type-btn" id="btn-personal" onclick="selectType('leave_personal')">
+        <span class="type-icon">📋</span>
+        <span class="type-label">ลากิจ</span>
+        <span class="type-desc">ธุระส่วนตัว</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Date Range -->
+  <div class="section">
+    <div class="section-title">วันที่ลา</div>
+    <div class="date-row">
+      <div class="date-field">
+        <label>วันแรก</label>
+        <input type="date" id="startDate" onchange="calcDays()">
+      </div>
+      <div class="date-arrow">→</div>
+      <div class="date-field">
+        <label>วันสุดท้าย</label>
+        <input type="date" id="endDate" onchange="calcDays()">
+      </div>
+    </div>
+    <div class="days-badge" id="daysBadge">
+      📅 1 วัน
+    </div>
+  </div>
+
+  <!-- Reason -->
+  <div class="section">
+    <div class="section-title">เหตุผลการลา</div>
+    <textarea id="reason" rows="3" placeholder="ระบุเหตุผลการลา เช่น ไข้หวัด ธุระครอบครัว..."></textarea>
+  </div>
+
+</div>
+
+<!-- Submit -->
+<div class="submit-wrap">
+  <button class="submit-btn" id="submitBtn" disabled onclick="submitForm()">
+    <span>📨</span>
+    <span id="submitLabel">กำลังเชื่อมต่อ...</span>
+  </button>
 </div>
 
 <script>
   const LIFF_ID = "2009508828-loxfKDgb";
   const GAS_URL = "https://script.google.com/macros/s/AKfycbwknJdSNKx02Gq9y8_ALiP7MHPwoZNJBcvQGCumFvJKgLFVFsFTZVTCUZXOBXDxR0J_Rg/exec";
-  let userId = null;
 
-  function setDefaultDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const yyyy = tomorrow.getFullYear();
-    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-    const dd = String(tomorrow.getDate()).padStart(2, '0');
-    document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
-    const today = new Date().toISOString().split('T')[0];
-    const max = new Date();
-    max.setDate(max.getDate() + 30);
-    document.getElementById('date').min = today;
-    document.getElementById('date').max = max.toISOString().split('T')[0];
+  let userId = null;
+  let selectedType = 'leave_sick';
+
+  function selectType(type) {
+    selectedType = type;
+    document.getElementById('btn-sick').classList.toggle('active', type === 'leave_sick');
+    document.getElementById('btn-personal').classList.toggle('active', type === 'leave_personal');
+  }
+
+  function setDefaultDates() {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const fmt = d => d.toISOString().split('T')[0];
+    const max = new Date(today);
+    max.setDate(today.getDate() + 30);
+
+    document.getElementById('startDate').value = fmt(tomorrow);
+    document.getElementById('endDate').value = fmt(tomorrow);
+    document.getElementById('startDate').min = fmt(today);
+    document.getElementById('startDate').max = fmt(max);
+    document.getElementById('endDate').min = fmt(today);
+    document.getElementById('endDate').max = fmt(max);
+    calcDays();
+  }
+
+  function calcDays() {
+    const start = new Date(document.getElementById('startDate').value);
+    const end = new Date(document.getElementById('endDate').value);
+
+    // ถ้า end < start ให้ปรับ end = start
+    if (end < start) {
+      document.getElementById('endDate').value = document.getElementById('startDate').value;
+    }
+
+    const diff = Math.round((new Date(document.getElementById('endDate').value) - start) / 86400000) + 1;
+    document.getElementById('daysBadge').innerHTML = `📅 ${diff} วัน`;
+  }
+
+  function formatThaiDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+  }
+
+  async function submitForm() {
+    const btn = document.getElementById('submitBtn');
+    const label = document.getElementById('submitLabel');
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const reason = document.getElementById('reason').value.trim();
+
+    if (!reason) {
+      alert('กรุณาระบุเหตุผลการลาครับ');
+      return;
+    }
+
+    btn.disabled = true;
+    label.textContent = 'กำลังบันทึก...';
+
+    try {
+      // สร้าง array วันที่ทั้งหมด
+      const dates = [];
+      const cur = new Date(startDate + 'T00:00:00');
+      const end = new Date(endDate + 'T00:00:00');
+      while (cur <= end) {
+        dates.push(cur.toISOString().split('T')[0]);
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      const res = await fetch(GAS_URL + "?action=submitLeave", {
+        method: "POST",
+        body: JSON.stringify({
+          userId,
+          dates,
+          leaveType: selectedType,
+          reason
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // แสดง success screen
+        const typeLabel = selectedType === 'leave_sick' ? '🤒 ลาป่วย' : '📋 ลากิจ';
+        const daysCount = dates.length;
+        document.getElementById('successDetail').innerHTML = `
+          <div class="success-detail-row"><span>ประเภท</span><span>${typeLabel}</span></div>
+          <div class="success-detail-row"><span>วันแรก</span><span>${formatThaiDate(startDate)}</span></div>
+          <div class="success-detail-row"><span>วันสุดท้าย</span><span>${formatThaiDate(endDate)}</span></div>
+          <div class="success-detail-row"><span>จำนวน</span><span>${daysCount} วัน</span></div>
+          <div class="success-detail-row"><span>เหตุผล</span><span>${reason}</span></div>
+        `;
+        document.getElementById('successScreen').classList.remove('hidden');
+        setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 3000);
+      } else {
+        throw new Error(data.message);
+      }
+
+    } catch (err) {
+      alert('❌ ' + err.message);
+      btn.disabled = false;
+      label.textContent = 'ส่งคำขอลา';
+    }
   }
 
   async function init() {
-    const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('status');
-    setDefaultDate();
-
+    setDefaultDates();
     try {
-      status.innerHTML = "กำลังเชื่อมต่อ LINE...";
-      await liff.init({ liffId: LIFF_ID });
+      document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
+
+      const initPromise = liff.init({ liffId: LIFF_ID });
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
+      );
+      await Promise.race([initPromise, timeout]);
 
       if (!liff.isLoggedIn()) {
         liff.login();
@@ -125,55 +616,14 @@
       const profile = await liff.getProfile();
       userId = profile.userId;
 
-      btn.disabled = false;
-      btn.innerText = "ส่งคำขอลา";
-      status.innerHTML = "";
+      document.getElementById('connectingScreen').classList.add('hidden');
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('submitLabel').textContent = 'ส่งคำขอลา';
 
     } catch (err) {
-      status.innerHTML = "❌ " + err.message;
-      status.className = "status error";
-      btn.innerText = "ใช้งานไม่ได้";
+      document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
     }
   }
-
-  document.getElementById('leaveForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('status');
-
-    const formData = {
-      date: document.getElementById('date').value,
-      leaveType: document.getElementById('leaveType').value,
-      reason: document.getElementById('reason').value
-    };
-
-    btn.disabled = true;
-    btn.innerText = "กำลังบันทึก...";
-    status.innerHTML = "กำลังส่งข้อมูล...";
-    status.className = "status loading";
-
-    try {
-      const res = await fetch(GAS_URL + "?action=submitLeave", {
-        method: "POST",
-        body: JSON.stringify({ userId, ...formData })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        status.innerHTML = "✅ " + data.message;
-        status.className = "status success";
-        btn.innerText = "บันทึกแล้ว ✅";
-        setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 1500);
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (err) {
-      status.innerHTML = "❌ " + err.message;
-      status.className = "status error";
-      btn.disabled = false;
-      btn.innerText = "ลองใหม่อีกครั้ง";
-    }
-  };
 
   init();
 </script>

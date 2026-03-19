@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>แจ้งลาหยุด</title>
+  <title>ระบบโรงเรียน</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
@@ -14,318 +14,25 @@
       --yellow: #F39C12;
       --yellow-light: #F8C471;
       --yellow-pale: #FEF9E7;
+      --navy: #0F2044;
       --dark: #1A1A1A;
       --gray: #6B6B6B;
       --gray-light: #F5F5F5;
       --border: #E8E8E8;
       --white: #FFFFFF;
+      --green: #1E8449;
+      --green-pale: #EAFAF1;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background: var(--gray-light); min-height: 100vh; }
 
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background: var(--gray-light);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Header */
-    .header {
-      background: var(--red);
-      padding: 28px 24px 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -30px; right: -30px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-    }
-
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: -20px; left: 40px;
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: rgba(243,156,18,0.25);
-    }
-
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 10px;
-      backdrop-filter: blur(4px);
-    }
-
-    .header h1 {
-      color: var(--white);
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .header p {
-      color: rgba(255,255,255,0.75);
-      font-size: 13px;
-      margin-top: 4px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Deadline Warning */
-    .deadline-bar {
-      background: var(--yellow);
-      padding: 10px 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dark);
-    }
-
-    .deadline-bar .icon { font-size: 16px; }
-
-    /* Content */
-    .content {
-      flex: 1;
-      padding: 20px 16px 32px;
-      max-width: 480px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* Section */
-    .section {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--gray);
-      margin-bottom: 14px;
-    }
-
-    /* Leave Type */
-    .leave-types {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .leave-type-btn {
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 12px;
-      background: var(--white);
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .leave-type-btn .type-icon { font-size: 26px; }
-    .leave-type-btn .type-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--dark);
-      font-family: 'Sarabun', sans-serif;
-    }
-    .leave-type-btn .type-desc {
-      font-size: 11px;
-      color: var(--gray);
-      font-family: 'Sarabun', sans-serif;
-    }
-
-    .leave-type-btn.active {
-      border-color: var(--red);
-      background: var(--red-pale);
-    }
-    .leave-type-btn.active .type-label { color: var(--red); }
-
-    /* Date Range */
-    .date-row {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .date-field label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--gray);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .date-field input[type="date"] {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 15px;
-      font-family: 'Sarabun', sans-serif;
-      color: var(--dark);
-      background: var(--white);
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-    }
-
-    .date-field input[type="date"]:focus {
-      border-color: var(--red);
-    }
-
-    .date-arrow {
-      font-size: 18px;
-      color: var(--gray);
-      margin-top: 20px;
-    }
-
-    .days-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--yellow-pale);
-      border: 1px solid var(--yellow-light);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--yellow);
-      margin-top: 12px;
-    }
-
-    /* Reason */
-    textarea {
-      width: 100%;
-      padding: 14px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 15px;
-      font-family: 'Sarabun', sans-serif;
-      color: var(--dark);
-      resize: none;
-      outline: none;
-      transition: border-color 0.2s;
-      line-height: 1.6;
-    }
-
-    textarea:focus { border-color: var(--red); }
-    textarea::placeholder { color: #BDBDBD; }
-
-    /* Status indicator */
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-    .status-indicator.loading { background: #F5F5F5; color: var(--gray); }
-    .status-indicator.success { background: #EAFAF1; color: #1E8449; }
-    .status-indicator.error { background: var(--red-pale); color: var(--red); }
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .loading .status-dot { background: var(--gray); animation: pulse 1.2s infinite; }
-    .success .status-dot { background: #1E8449; }
-    .error .status-dot { background: var(--red); }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Submit Button */
-    .submit-wrap {
-      padding: 0 16px 24px;
-      max-width: 480px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 18px;
-      border: none;
-      border-radius: 16px;
-      background: var(--red);
-      color: var(--white);
-      font-size: 17px;
-      font-weight: 700;
-      font-family: 'Sarabun', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      letter-spacing: 0.3px;
-      box-shadow: 0 4px 15px rgba(192,57,43,0.35);
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      background: var(--red-light);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(192,57,43,0.4);
-    }
-
-    .submit-btn:disabled {
-      background: #BDBDBD;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Connecting overlay */
+    /* Connecting */
     .connecting {
-      position: fixed;
-      inset: 0;
-      background: var(--white);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      z-index: 100;
+      position: fixed; inset: 0; background: var(--white);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px; z-index: 100;
     }
-
     .connecting.hidden { display: none; }
-
     .spinner {
       width: 40px; height: 40px;
       border: 3px solid var(--red-pale);
@@ -333,81 +40,207 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
+    .connecting p { color: var(--gray); font-size: 14px; }
 
-    .connecting p {
-      color: var(--gray);
-      font-size: 14px;
+    /* ========== LEAVE FORM ========== */
+    #leavePage { display: none; flex-direction: column; min-height: 100vh; }
+    #leavePage.show { display: flex; }
+
+    .header {
+      background: var(--red); padding: 28px 24px 20px;
+      position: relative; overflow: hidden;
     }
+    .header::before {
+      content: ''; position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%; background: rgba(255,255,255,0.08);
+    }
+    .header-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15); border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; color: rgba(255,255,255,0.9);
+      margin-bottom: 10px;
+    }
+    .header h1 { color: var(--white); font-size: 24px; font-weight: 700; position: relative; z-index: 1; }
+    .header p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; position: relative; z-index: 1; }
+    .deadline-bar {
+      background: var(--yellow); padding: 10px 24px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--dark);
+    }
+    .content { flex: 1; padding: 20px 16px 32px; max-width: 480px; width: 100%; margin: 0 auto; }
+    .section {
+      background: var(--white); border-radius: 16px;
+      padding: 20px; margin-bottom: 12px; border: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--gray); margin-bottom: 14px;
+    }
+    .leave-types { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .leave-type-btn {
+      border: 2px solid var(--border); border-radius: 12px;
+      padding: 14px 12px; background: var(--white); cursor: pointer;
+      text-align: center; display: flex; flex-direction: column;
+      align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .leave-type-btn .type-icon { font-size: 26px; }
+    .leave-type-btn .type-label { font-size: 14px; font-weight: 600; color: var(--dark); font-family: 'Sarabun', sans-serif; }
+    .leave-type-btn .type-desc { font-size: 11px; color: var(--gray); font-family: 'Sarabun', sans-serif; }
+    .leave-type-btn.active { border-color: var(--red); background: var(--red-pale); }
+    .leave-type-btn.active .type-label { color: var(--red); }
+    .date-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+    .date-field label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+    .date-field input[type="date"] {
+      width: 100%; padding: 12px; border: 2px solid var(--border);
+      border-radius: 10px; font-size: 15px; font-family: 'Sarabun', sans-serif;
+      color: var(--dark); background: var(--white); outline: none;
+      -webkit-appearance: none;
+    }
+    .date-field input[type="date"]:focus { border-color: var(--red); }
+    .date-arrow { font-size: 18px; color: var(--gray); margin-top: 20px; }
+    .days-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--yellow-pale); border: 1px solid var(--yellow-light);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 13px; font-weight: 600; color: var(--yellow); margin-top: 12px;
+    }
+    textarea {
+      width: 100%; padding: 14px; border: 2px solid var(--border);
+      border-radius: 12px; font-size: 15px; font-family: 'Sarabun', sans-serif;
+      color: var(--dark); resize: none; outline: none;
+    }
+    textarea:focus { border-color: var(--red); }
+    textarea::placeholder { color: #BDBDBD; }
+    .submit-wrap { padding: 0 16px 24px; max-width: 480px; width: 100%; margin: 0 auto; }
+    .submit-btn {
+      width: 100%; padding: 18px; border: none; border-radius: 16px;
+      background: var(--red); color: var(--white); font-size: 17px;
+      font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(192,57,43,0.35); transition: all 0.2s;
+    }
+    .submit-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
 
-    /* Success screen */
+    /* Success */
     .success-screen {
-      position: fixed;
-      inset: 0;
-      background: var(--white);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 40px;
-      text-align: center;
-      z-index: 100;
+      position: fixed; inset: 0; background: var(--white);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; padding: 40px; text-align: center; z-index: 100;
     }
-
     .success-screen.hidden { display: none; }
-
-    .success-icon {
-      width: 72px; height: 72px;
-      background: #EAFAF1;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-    }
-
-    .success-screen h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--dark);
-    }
-
-    .success-screen p {
-      font-size: 14px;
-      color: var(--gray);
-      line-height: 1.6;
-    }
-
-    .success-detail {
-      background: var(--gray-light);
-      border-radius: 12px;
-      padding: 16px 20px;
-      width: 100%;
-      text-align: left;
-    }
-
-    .success-detail-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      padding: 4px 0;
-    }
-
+    .success-icon { width: 72px; height: 72px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .success-screen h2 { font-size: 22px; font-weight: 700; color: var(--dark); }
+    .success-screen p { font-size: 14px; color: var(--gray); line-height: 1.6; }
+    .success-detail { background: var(--gray-light); border-radius: 12px; padding: 16px 20px; width: 100%; text-align: left; }
+    .success-detail-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
     .success-detail-row span:first-child { color: var(--gray); }
     .success-detail-row span:last-child { font-weight: 600; color: var(--dark); }
+
+    /* ========== APPROVE PAGE ========== */
+    #approvePage { display: none; flex-direction: column; min-height: 100vh; }
+    #approvePage.show { display: flex; }
+
+    .approve-header {
+      background: var(--navy); padding: 24px 20px 18px;
+      position: relative; overflow: hidden;
+    }
+    .approve-header::before {
+      content: ''; position: absolute;
+      top: -20px; right: -20px; width: 100px; height: 100px;
+      border-radius: 50%; background: rgba(243,156,18,0.15);
+    }
+    .approve-header h1 { color: var(--white); font-size: 22px; font-weight: 700; }
+    .approve-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; }
+
+    .summary-bar {
+      background: var(--white); padding: 14px 20px;
+      display: flex; gap: 0; border-bottom: 1px solid var(--border);
+    }
+    .summary-item {
+      flex: 1; text-align: center; padding: 0 8px;
+      border-right: 1px solid var(--border);
+    }
+    .summary-item:last-child { border-right: none; }
+    .summary-num { font-size: 22px; font-weight: 700; }
+    .summary-label { font-size: 11px; color: var(--gray); margin-top: 2px; }
+    .num-present { color: var(--green); }
+    .num-leave { color: var(--yellow); }
+    .num-absent { color: var(--red); }
+
+    .approve-content { flex: 1; padding: 12px 16px 100px; }
+
+    .student-card {
+      background: var(--white); border-radius: 14px;
+      padding: 14px 16px; margin-bottom: 10px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .student-card.status-absent { border-color: var(--red); background: var(--red-pale); }
+    .student-card.status-leave { border-color: var(--yellow); background: var(--yellow-pale); }
+
+    .student-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .student-no {
+      background: var(--gray-light); color: var(--navy);
+      border-radius: 8px; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .student-name { font-weight: 600; font-size: 15px; flex: 1; }
+    .status-tag {
+      font-size: 11px; font-weight: 600; padding: 3px 8px;
+      border-radius: 10px; flex-shrink: 0;
+    }
+    .tag-leave { background: var(--yellow-pale); color: #b8860b; }
+    .tag-absent { background: var(--red-pale); color: var(--red); }
+
+    .btn-group { display: flex; gap: 6px; }
+    .btn-status {
+      flex: 1; padding: 9px 6px; border: 2px solid var(--border);
+      border-radius: 10px; background: var(--white); cursor: pointer;
+      font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-status.active-present { background: var(--green-pale); border-color: var(--green); color: var(--green); font-weight: 700; }
+    .btn-status.active-leave { background: var(--yellow-pale); border-color: var(--yellow); color: #b8860b; font-weight: 700; }
+    .btn-status.active-absent { background: var(--red-pale); border-color: var(--red); color: var(--red); font-weight: 700; }
+
+    .note-input {
+      width: 100%; margin-top: 8px; padding: 10px 12px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'Sarabun', sans-serif; font-size: 13px;
+      display: none; outline: none;
+    }
+    .note-input.show { display: block; }
+
+    .approve-footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--white); padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    }
+    .approve-btn {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      background: var(--navy); color: var(--white); font-size: 17px;
+      font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(15,32,68,0.3); transition: all 0.2s;
+    }
+    .approve-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
-<!-- Connecting overlay -->
+<!-- Connecting -->
 <div class="connecting" id="connectingScreen">
   <div class="spinner"></div>
   <p id="connectingMsg">กำลังเชื่อมต่อ LINE...</p>
 </div>
 
-<!-- Success screen -->
+<!-- Success Leave -->
 <div class="success-screen hidden" id="successScreen">
   <div class="success-icon">✅</div>
   <h2>แจ้งลาสำเร็จแล้ว</h2>
@@ -415,75 +248,86 @@
   <div class="success-detail" id="successDetail"></div>
 </div>
 
-<!-- Header -->
-<div class="header">
-  <div class="header-badge">
-    <span>🏫</span>
-    <span>MYPL School</span>
+<!-- ===== LEAVE PAGE ===== -->
+<div id="leavePage">
+  <div class="header">
+    <div class="header-badge"><span>🏫</span><span>MYPL School</span></div>
+    <h1>แจ้งลาหยุดนักเรียน</h1>
+    <p>กรุณากรอกข้อมูลให้ครบถ้วน</p>
   </div>
-  <h1>แจ้งลาหยุดนักเรียน</h1>
-  <p>กรุณากรอกข้อมูลให้ครบถ้วน</p>
-</div>
-
-<!-- Deadline bar -->
-<div class="deadline-bar">
-  <span class="icon">⏰</span>
-  <span>ต้องแจ้งลาก่อน 08:30 น. ของวันที่ลา</span>
-</div>
-
-<!-- Content -->
-<div class="content">
-
-  <!-- Leave Type -->
-  <div class="section">
-    <div class="section-title">ประเภทการลา</div>
-    <div class="leave-types">
-      <button class="leave-type-btn active" id="btn-sick" onclick="selectType('leave_sick')">
-        <span class="type-icon">🤒</span>
-        <span class="type-label">ลาป่วย</span>
-        <span class="type-desc">ไม่สบาย / เจ็บป่วย</span>
-      </button>
-      <button class="leave-type-btn" id="btn-personal" onclick="selectType('leave_personal')">
-        <span class="type-icon">📋</span>
-        <span class="type-label">ลากิจ</span>
-        <span class="type-desc">ธุระส่วนตัว</span>
-      </button>
-    </div>
+  <div class="deadline-bar">
+    <span>⏰</span>
+    <span>ต้องแจ้งลาก่อน 08:30 น. ของวันที่ลา</span>
   </div>
-
-  <!-- Date Range -->
-  <div class="section">
-    <div class="section-title">วันที่ลา</div>
-    <div class="date-row">
-      <div class="date-field">
-        <label>วันแรก</label>
-        <input type="date" id="startDate" onchange="calcDays()">
-      </div>
-      <div class="date-arrow">→</div>
-      <div class="date-field">
-        <label>วันสุดท้าย</label>
-        <input type="date" id="endDate" onchange="calcDays()">
+  <div class="content">
+    <div class="section">
+      <div class="section-title">ประเภทการลา</div>
+      <div class="leave-types">
+        <button class="leave-type-btn active" id="btn-sick" onclick="selectType('leave_sick')">
+          <span class="type-icon">🤒</span>
+          <span class="type-label">ลาป่วย</span>
+          <span class="type-desc">ไม่สบาย / เจ็บป่วย</span>
+        </button>
+        <button class="leave-type-btn" id="btn-personal" onclick="selectType('leave_personal')">
+          <span class="type-icon">📋</span>
+          <span class="type-label">ลากิจ</span>
+          <span class="type-desc">ธุระส่วนตัว</span>
+        </button>
       </div>
     </div>
-    <div class="days-badge" id="daysBadge">
-      📅 1 วัน
+    <div class="section">
+      <div class="section-title">วันที่ลา</div>
+      <div class="date-row">
+        <div class="date-field">
+          <label>วันแรก</label>
+          <input type="date" id="startDate" onchange="calcDays()">
+        </div>
+        <div class="date-arrow">→</div>
+        <div class="date-field">
+          <label>วันสุดท้าย</label>
+          <input type="date" id="endDate" onchange="calcDays()">
+        </div>
+      </div>
+      <div class="days-badge" id="daysBadge">📅 1 วัน</div>
+    </div>
+    <div class="section">
+      <div class="section-title">เหตุผลการลา</div>
+      <textarea id="reason" rows="3" placeholder="ระบุเหตุผลการลา เช่น ไข้หวัด ธุระครอบครัว..."></textarea>
     </div>
   </div>
-
-  <!-- Reason -->
-  <div class="section">
-    <div class="section-title">เหตุผลการลา</div>
-    <textarea id="reason" rows="3" placeholder="ระบุเหตุผลการลา เช่น ไข้หวัด ธุระครอบครัว..."></textarea>
+  <div class="submit-wrap">
+    <button class="submit-btn" id="submitLeaveBtn" disabled onclick="submitLeave()">
+      <span>📨</span><span id="submitLeaveLabel">กำลังเชื่อมต่อ...</span>
+    </button>
   </div>
-
 </div>
 
-<!-- Submit -->
-<div class="submit-wrap">
-  <button class="submit-btn" id="submitBtn" disabled onclick="submitForm()">
-    <span>📨</span>
-    <span id="submitLabel">กำลังเชื่อมต่อ...</span>
-  </button>
+<!-- ===== APPROVE PAGE ===== -->
+<div id="approvePage">
+  <div class="approve-header">
+    <h1>✅ เช็คชื่อนักเรียน</h1>
+    <p id="approveHeaderInfo">กำลังโหลด...</p>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="summary-num num-present" id="countPresent">0</div>
+      <div class="summary-label">มาเรียน</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-num num-leave" id="countLeave">0</div>
+      <div class="summary-label">ลา</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-num num-absent" id="countAbsent">0</div>
+      <div class="summary-label">ขาด</div>
+    </div>
+  </div>
+  <div class="approve-content" id="studentList"></div>
+  <div class="approve-footer">
+    <button class="approve-btn" id="approveBtn" disabled onclick="submitApprove()">
+      <span>💾</span><span id="approveBtnLabel">กำลังโหลด...</span>
+    </button>
+  </div>
 </div>
 
 <script>
@@ -492,6 +336,56 @@
 
   let userId = null;
   let selectedType = 'leave_sick';
+  let students = [];
+  let currentClassroom = '';
+  let currentDate = '';
+
+  // ===== DETECT PAGE =====
+  function getPage() {
+    const path = window.location.pathname;
+    if (path.includes('/approve')) return 'approve';
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('page') === 'approve') return 'approve';
+    return 'leave';
+  }
+
+  // ===== INIT =====
+  async function init() {
+    try {
+      document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
+
+      const initPromise = liff.init({ liffId: LIFF_ID });
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
+      );
+      await Promise.race([initPromise, timeout]);
+
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+
+      const profile = await liff.getProfile();
+      userId = profile.userId;
+
+      document.getElementById('connectingScreen').classList.add('hidden');
+
+      const page = getPage();
+      if (page === 'approve') {
+        initApprovePage();
+      } else {
+        initLeavePage();
+      }
+
+    } catch (err) {
+      document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
+    }
+  }
+
+  // ===== LEAVE PAGE =====
+  function initLeavePage() {
+    document.getElementById('leavePage').classList.add('show');
+    setDefaultDates();
+    document.getElementById('submitLeaveBtn').disabled = false;
+    document.getElementById('submitLeaveLabel').textContent = 'ส่งคำขอลา';
+  }
 
   function selectType(type) {
     selectedType = type;
@@ -503,11 +397,9 @@
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-
     const fmt = d => d.toISOString().split('T')[0];
     const max = new Date(today);
     max.setDate(today.getDate() + 30);
-
     document.getElementById('startDate').value = fmt(tomorrow);
     document.getElementById('endDate').value = fmt(tomorrow);
     document.getElementById('startDate').min = fmt(today);
@@ -518,15 +410,10 @@
   }
 
   function calcDays() {
-    const start = new Date(document.getElementById('startDate').value);
-    const end = new Date(document.getElementById('endDate').value);
-
-    // ถ้า end < start ให้ปรับ end = start
-    if (end < start) {
-      document.getElementById('endDate').value = document.getElementById('startDate').value;
-    }
-
-    const diff = Math.round((new Date(document.getElementById('endDate').value) - start) / 86400000) + 1;
+    const start = new Date(document.getElementById('startDate').value + 'T00:00:00');
+    const end = new Date(document.getElementById('endDate').value + 'T00:00:00');
+    if (end < start) document.getElementById('endDate').value = document.getElementById('startDate').value;
+    const diff = Math.round((new Date(document.getElementById('endDate').value + 'T00:00:00') - start) / 86400000) + 1;
     document.getElementById('daysBadge').innerHTML = `📅 ${diff} วัน`;
   }
 
@@ -536,60 +423,48 @@
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
   }
 
-  async function submitForm() {
-    const btn = document.getElementById('submitBtn');
-    const label = document.getElementById('submitLabel');
+  async function submitLeave() {
+    const btn = document.getElementById('submitLeaveBtn');
+    const label = document.getElementById('submitLeaveLabel');
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     const reason = document.getElementById('reason').value.trim();
 
-    if (!reason) {
-      alert('กรุณาระบุเหตุผลการลาครับ');
-      return;
-    }
+    if (!reason) { alert('กรุณาระบุเหตุผลการลาครับ'); return; }
 
     btn.disabled = true;
     label.textContent = 'กำลังบันทึก...';
 
-    try {
-      // สร้าง array วันที่ทั้งหมด
-      const dates = [];
-      const cur = new Date(startDate + 'T00:00:00');
-      const end = new Date(endDate + 'T00:00:00');
-      while (cur <= end) {
-        dates.push(cur.toISOString().split('T')[0]);
-        cur.setDate(cur.getDate() + 1);
-      }
+    const dates = [];
+    const cur = new Date(startDate + 'T00:00:00');
+    const end = new Date(endDate + 'T00:00:00');
+    while (cur <= end) {
+      dates.push(cur.toISOString().split('T')[0]);
+      cur.setDate(cur.getDate() + 1);
+    }
 
+    try {
       const res = await fetch(GAS_URL + "?action=submitLeave", {
         method: "POST",
-        body: JSON.stringify({
-          userId,
-          dates,
-          leaveType: selectedType,
-          reason
-        })
+        body: JSON.stringify({ userId, dates, leaveType: selectedType, reason })
       });
-
       const data = await res.json();
 
       if (data.success) {
-        // แสดง success screen
         const typeLabel = selectedType === 'leave_sick' ? '🤒 ลาป่วย' : '📋 ลากิจ';
-        const daysCount = dates.length;
         document.getElementById('successDetail').innerHTML = `
           <div class="success-detail-row"><span>ประเภท</span><span>${typeLabel}</span></div>
           <div class="success-detail-row"><span>วันแรก</span><span>${formatThaiDate(startDate)}</span></div>
           <div class="success-detail-row"><span>วันสุดท้าย</span><span>${formatThaiDate(endDate)}</span></div>
-          <div class="success-detail-row"><span>จำนวน</span><span>${daysCount} วัน</span></div>
+          <div class="success-detail-row"><span>จำนวน</span><span>${dates.length} วัน</span></div>
           <div class="success-detail-row"><span>เหตุผล</span><span>${reason}</span></div>
         `;
+        document.getElementById('leavePage').classList.remove('show');
         document.getElementById('successScreen').classList.remove('hidden');
         setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 3000);
       } else {
         throw new Error(data.message);
       }
-
     } catch (err) {
       alert('❌ ' + err.message);
       btn.disabled = false;
@@ -597,31 +472,120 @@
     }
   }
 
-  async function init() {
-    setDefaultDates();
+  // ===== APPROVE PAGE =====
+  async function initApprovePage() {
+    document.getElementById('approvePage').classList.add('show');
+
+    const today = new Date();
+    currentDate = today.toISOString().split('T')[0];
+
     try {
-      document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
+      const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`);
+      const data = await res.json();
 
-      const initPromise = liff.init({ liffId: LIFF_ID });
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
-      );
-      await Promise.race([initPromise, timeout]);
+      if (!data.success) throw new Error(data.message);
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
-      }
+      students = data.students;
+      currentClassroom = data.classroom;
 
-      const profile = await liff.getProfile();
-      userId = profile.userId;
+      const thaiDate = formatThaiDate(currentDate);
+      document.getElementById('approveHeaderInfo').textContent = `ห้อง ${data.classroom} | ${thaiDate}`;
 
-      document.getElementById('connectingScreen').classList.add('hidden');
-      document.getElementById('submitBtn').disabled = false;
-      document.getElementById('submitLabel').textContent = 'ส่งคำขอลา';
+      renderStudents();
+      updateSummary();
+
+      document.getElementById('approveBtn').disabled = false;
+      document.getElementById('approveBtnLabel').textContent = `บันทึกเช็คชื่อ (${students.length} คน)`;
 
     } catch (err) {
-      document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
+      document.getElementById('approveHeaderInfo').textContent = '❌ ' + err.message;
+    }
+  }
+
+  function renderStudents() {
+    const list = document.getElementById('studentList');
+    list.innerHTML = students.map((s, idx) => {
+      const isLeave = s.status === 'leave_sick' || s.status === 'leave_personal';
+      const isAbsent = s.status === 'absent';
+      const cardClass = isAbsent ? 'status-absent' : isLeave ? 'status-leave' : '';
+      const tagHtml = isLeave
+        ? `<span class="status-tag tag-leave">📝 ลา</span>`
+        : isAbsent ? `<span class="status-tag tag-absent">❌ ขาด</span>` : '';
+
+      return `
+        <div class="student-card ${cardClass}" id="card-${idx}">
+          <div class="student-top">
+            <div class="student-no">${idx + 1}</div>
+            <div class="student-name">${s.name}</div>
+            ${tagHtml}
+          </div>
+          <div class="btn-group">
+            <button class="btn-status ${s.status === 'present' ? 'active-present' : ''}"
+              onclick="setStatus(${idx}, 'present')">✅ มา</button>
+            <button class="btn-status ${isLeave ? 'active-leave' : ''}"
+              onclick="setStatus(${idx}, 'leave_sick')">📝 ลา</button>
+            <button class="btn-status ${isAbsent ? 'active-absent' : ''}"
+              onclick="setStatus(${idx}, 'absent')">❌ ขาด</button>
+          </div>
+          <input class="note-input ${!s.status || s.status === 'present' ? '' : 'show'}"
+            id="note-${idx}" placeholder="หมายเหตุ..."
+            value="${s.note || ''}"
+            oninput="students[${idx}].note = this.value">
+        </div>`;
+    }).join('');
+  }
+
+  function setStatus(idx, status) {
+    students[idx].status = status;
+    const card = document.getElementById('card-' + idx);
+    card.className = 'student-card' + (status === 'absent' ? ' status-absent' : status !== 'present' ? ' status-leave' : '');
+
+    const btns = card.querySelectorAll('.btn-status');
+    btns.forEach(b => b.className = 'btn-status');
+    if (status === 'present') btns[0].className = 'btn-status active-present';
+    else if (status === 'leave_sick') btns[1].className = 'btn-status active-leave';
+    else if (status === 'absent') btns[2].className = 'btn-status active-absent';
+
+    const note = document.getElementById('note-' + idx);
+    note.className = status !== 'present' ? 'note-input show' : 'note-input';
+    updateSummary();
+  }
+
+  function updateSummary() {
+    document.getElementById('countPresent').textContent = students.filter(s => s.status === 'present').length;
+    document.getElementById('countLeave').textContent = students.filter(s => s.status === 'leave_sick' || s.status === 'leave_personal').length;
+    document.getElementById('countAbsent').textContent = students.filter(s => s.status === 'absent').length;
+  }
+
+  async function submitApprove() {
+    const btn = document.getElementById('approveBtn');
+    const label = document.getElementById('approveBtnLabel');
+
+    students.forEach((s, idx) => {
+      const noteEl = document.getElementById('note-' + idx);
+      if (noteEl) s.note = noteEl.value;
+    });
+
+    btn.disabled = true;
+    label.textContent = 'กำลังบันทึก...';
+
+    try {
+      const res = await fetch(`${GAS_URL}?action=saveAttendance`, {
+        method: 'POST',
+        body: JSON.stringify({ userId, classroom: currentClassroom, date: currentDate, students })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        alert('✅ ' + data.message);
+        if (liff.isInClient()) liff.closeWindow();
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      alert('❌ ' + err.message);
+      btn.disabled = false;
+      label.textContent = `บันทึกเช็คชื่อ (${students.length} คน)`;
     }
   }
 

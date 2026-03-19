@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แจ้งลาหยุด</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(135deg, #06c755, #00a94f);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 420px;
+      margin: auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    h2 { text-align: center; margin-bottom: 4px; color: #0f2044; }
+    .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
+    .warning {
+      background: #fff8e1;
+      border: 1px solid #f0a500;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #b8860b;
+      margin-bottom: 16px;
+    }
+    label { font-weight: 600; margin-top: 10px; display: block; color: #333; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+      font-family: 'Sarabun', sans-serif;
+    }
+    textarea { resize: none; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #06c755;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+    }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .status { text-align: center; margin-top: 12px; font-size: 14px; font-weight: 500; }
+    .loading { color: #888; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>📝 แจ้งลาหยุด</h2>
+  <p class="subtitle">กรุณาแจ้งก่อน 08:30 น. ของวันที่ลา</p>
+  <div class="warning">⚠️ หากแจ้งลาหลัง 08:30 น. กรุณาติดต่อครูประจำชั้นโดยตรงครับ</div>
+
+  <form id="leaveForm">
+    <label>วันที่ลา</label>
+    <input type="date" id="date" required>
+
+    <label>ประเภทการลา</label>
+    <select id="leaveType">
+      <option value="leave_sick">🤒 ลาป่วย</option>
+      <option value="leave_personal">📝 ลากิจ</option>
+    </select>
+
+    <label>เหตุผล</label>
+    <textarea id="reason" rows="3" placeholder="ระบุเหตุผล..." required></textarea>
+
+    <button type="submit" id="submitBtn" disabled>กำลังเชื่อมต่อ...</button>
+  </form>
+  <div id="status" class="status loading"></div>
+</div>
+
+<script>
+  const LIFF_ID = "2009508828-loxfKDgb";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwknJdSNKx02Gq9y8_ALiP7MHPwoZNJBcvQGCumFvJKgLFVFsFTZVTCUZXOBXDxR0J_Rg/exec";
+  let userId = null;
+
+  function setDefaultDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd = String(tomorrow.getDate()).padStart(2, '0');
+    document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+    const today = new Date().toISOString().split('T')[0];
+    const max = new Date();
+    max.setDate(max.getDate() + 30);
+    document.getElementById('date').min = today;
+    document.getElementById('date').max = max.toISOString().split('T')[0];
+  }
+
+  async function init() {
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+    setDefaultDate();
+
+    try {
+      status.innerHTML = "กำลังเชื่อมต่อ LINE...";
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      userId = profile.userId;
+
+      btn.disabled = false;
+      btn.innerText = "ส่งคำขอลา";
+      status.innerHTML = "";
+
+    } catch (err) {
+      status.innerHTML = "❌ " + err.message;
+      status.className = "status error";
+      btn.innerText = "ใช้งานไม่ได้";
+    }
+  }
+
+  document.getElementById('leaveForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+
+    const formData = {
+      date: document.getElementById('date').value,
+      leaveType: document.getElementById('leaveType').value,
+      reason: document.getElementById('reason').value
+    };
+
+    btn.disabled = true;
+    btn.innerText = "กำลังบันทึก...";
+    status.innerHTML = "กำลังส่งข้อมูล...";
+    status.className = "status loading";
+
+    try {
+      const res = await fetch(GAS_URL + "?action=submitLeave", {
+        method: "POST",
+        body: JSON.stringify({ userId, ...formData })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        status.innerHTML = "✅ " + data.message;
+        status.className = "status success";
+        btn.innerText = "บันทึกแล้ว ✅";
+        setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 1500);
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      status.innerHTML = "❌ " + err.message;
+      status.className = "status error";
+      btn.disabled = false;
+      btn.innerText = "ลองใหม่อีกครั้ง";
+    }
+  };
+
+  init();
+</script>
+</body>
+</html>

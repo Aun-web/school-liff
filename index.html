@@ -25,23 +25,34 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Sarabun', sans-serif; background: var(--gray-light); min-height: 100vh; }
-    .connecting {
-      position: fixed; inset: 0; background: var(--white);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 16px; z-index: 100;
-    }
+    .connecting { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; }
     .connecting.hidden { display: none; }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--red-pale);
-      border-top-color: var(--red);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--red-pale); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .connecting p { color: var(--gray); font-size: 14px; }
-    #leavePage { display: none; flex-direction: column; min-height: 100vh; }
-    #leavePage.show { display: flex; }
+    /* PAGES */
+    #leavePage, #approvePage, #announcePage, #homeworkPage { display: none; flex-direction: column; min-height: 100vh; }
+    #leavePage.show, #approvePage.show, #announcePage.show, #homeworkPage.show { display: flex; }
+    /* COMMON */
+    .section { background: var(--white); border-radius: 16px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--border); }
+    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 14px; }
+    textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-family: 'Sarabun', sans-serif; color: var(--dark); resize: none; outline: none; }
+    textarea:focus { border-color: var(--red); }
+    textarea::placeholder { color: #BDBDBD; }
+    .form-input { width: 100%; padding: 13px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-family: 'Sarabun', sans-serif; color: var(--dark); outline: none; background: var(--white); }
+    .form-input:focus { border-color: var(--navy); }
+    .form-input::placeholder { color: #BDBDBD; }
+    /* SUCCESS */
+    .success-screen { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px; text-align: center; z-index: 100; }
+    .success-screen.hidden { display: none; }
+    .success-icon { width: 72px; height: 72px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .success-screen h2 { font-size: 22px; font-weight: 700; color: var(--dark); }
+    .success-screen p { font-size: 14px; color: var(--gray); line-height: 1.6; }
+    .success-detail { background: var(--gray-light); border-radius: 12px; padding: 16px 20px; width: 100%; text-align: left; }
+    .success-detail-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+    .success-detail-row span:first-child { color: var(--gray); }
+    .success-detail-row span:last-child { font-weight: 600; color: var(--dark); }
+    /* LEAVE */
     .header { background: var(--red); padding: 28px 24px 20px; position: relative; overflow: hidden; }
     .header::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.08); }
     .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: rgba(255,255,255,0.9); margin-bottom: 10px; }
@@ -49,8 +60,6 @@
     .header p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; position: relative; z-index: 1; }
     .deadline-bar { background: var(--yellow); padding: 10px 24px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--dark); }
     .content { flex: 1; padding: 20px 16px 32px; max-width: 480px; width: 100%; margin: 0 auto; }
-    .section { background: var(--white); border-radius: 16px; padding: 20px; margin-bottom: 12px; border: 1px solid var(--border); }
-    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 14px; }
     .leave-types { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .leave-type-btn { border: 2px solid var(--border); border-radius: 12px; padding: 14px 12px; background: var(--white); cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; }
     .leave-type-btn .type-icon { font-size: 26px; }
@@ -64,28 +73,15 @@
     .date-field input[type="date"]:focus { border-color: var(--red); }
     .date-arrow { font-size: 18px; color: var(--gray); margin-top: 20px; }
     .days-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--yellow-pale); border: 1px solid var(--yellow-light); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--yellow); margin-top: 12px; }
-    textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-family: 'Sarabun', sans-serif; color: var(--dark); resize: none; outline: none; }
-    textarea:focus { border-color: var(--red); }
-    textarea::placeholder { color: #BDBDBD; }
     .submit-wrap { padding: 0 16px 24px; max-width: 480px; width: 100%; margin: 0 auto; }
     .submit-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--red); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(192,57,43,0.35); transition: all 0.2s; }
     .submit-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
-    .success-screen { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 40px; text-align: center; z-index: 100; }
-    .success-screen.hidden { display: none; }
-    .success-icon { width: 72px; height: 72px; background: var(--green-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-    .success-screen h2 { font-size: 22px; font-weight: 700; color: var(--dark); }
-    .success-screen p { font-size: 14px; color: var(--gray); line-height: 1.6; }
-    .success-detail { background: var(--gray-light); border-radius: 12px; padding: 16px 20px; width: 100%; text-align: left; }
-    .success-detail-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
-    .success-detail-row span:first-child { color: var(--gray); }
-    .success-detail-row span:last-child { font-weight: 600; color: var(--dark); }
-    #approvePage { display: none; flex-direction: column; min-height: 100vh; }
-    #approvePage.show { display: flex; }
+    /* APPROVE */
     .approve-header { background: var(--navy); padding: 24px 20px 18px; position: relative; overflow: hidden; }
     .approve-header::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(243,156,18,0.15); }
     .approve-header h1 { color: var(--white); font-size: 22px; font-weight: 700; }
     .approve-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; }
-    .summary-bar { background: var(--white); padding: 14px 20px; display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+    .summary-bar { background: var(--white); padding: 14px 20px; display: flex; border-bottom: 1px solid var(--border); }
     .summary-item { flex: 1; text-align: center; padding: 0 8px; border-right: 1px solid var(--border); }
     .summary-item:last-child { border-right: none; }
     .summary-num { font-size: 22px; font-weight: 700; }
@@ -94,7 +90,7 @@
     .num-leave { color: var(--yellow); }
     .num-absent { color: var(--red); }
     .approve-content { flex: 1; padding: 12px 16px 100px; }
-    .student-card { background: var(--white); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--border); transition: border-color 0.2s; }
+    .student-card { background: var(--white); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--border); }
     .student-card.status-absent { border-color: var(--red); background: var(--red-pale); }
     .student-card.status-leave { border-color: var(--yellow); background: var(--yellow-pale); }
     .student-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
@@ -104,33 +100,36 @@
     .tag-leave { background: var(--yellow-pale); color: #b8860b; }
     .tag-absent { background: var(--red-pale); color: var(--red); }
     .btn-group { display: flex; gap: 6px; }
-    .btn-status { flex: 1; padding: 9px 6px; border: 2px solid var(--border); border-radius: 10px; background: var(--white); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+    .btn-status { flex: 1; padding: 9px 6px; border: 2px solid var(--border); border-radius: 10px; background: var(--white); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 500; }
     .btn-status.active-present { background: var(--green-pale); border-color: var(--green); color: var(--green); font-weight: 700; }
     .btn-status.active-leave { background: var(--yellow-pale); border-color: var(--yellow); color: #b8860b; font-weight: 700; }
     .btn-status.active-absent { background: var(--red-pale); border-color: var(--red); color: var(--red); font-weight: 700; }
     .note-input { width: 100%; margin-top: 8px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 13px; display: none; outline: none; }
     .note-input.show { display: block; }
     .approve-footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 16px 20px; border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
-    .approve-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: var(--navy); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(15,32,68,0.3); transition: all 0.2s; }
+    .approve-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: var(--navy); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(15,32,68,0.3); }
     .approve-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
     /* ANNOUNCE */
-    #announcePage { display: none; flex-direction: column; min-height: 100vh; }
-    #announcePage.show { display: flex; }
     .announce-header { background: var(--navy); padding: 24px 20px 18px; position: relative; overflow: hidden; }
     .announce-header::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(243,156,18,0.2); }
     .announce-header h1 { color: var(--white); font-size: 22px; font-weight: 700; position: relative; z-index: 1; }
     .announce-header p { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; position: relative; z-index: 1; }
     .announce-content { flex: 1; padding: 16px 16px 32px; max-width: 480px; width: 100%; margin: 0 auto; }
-    .announce-input { width: 100%; padding: 13px 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-family: 'Sarabun', sans-serif; color: var(--dark); outline: none; transition: border-color 0.2s; }
-    .announce-input:focus { border-color: var(--navy); }
-    .announce-input::placeholder { color: #BDBDBD; }
     .classroom-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { padding: 8px 16px; border: 2px solid var(--border); border-radius: 20px; background: var(--white); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 500; color: var(--dark); transition: all 0.15s; }
+    .chip { padding: 8px 16px; border: 2px solid var(--border); border-radius: 20px; background: var(--white); cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 500; color: var(--dark); }
     .chip.active-all { background: var(--navy); border-color: var(--navy); color: var(--white); font-weight: 700; }
     .chip.active-class { background: var(--red); border-color: var(--red); color: var(--white); font-weight: 700; }
-    .announce-submit-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--navy); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(15,32,68,0.3); margin-top: 8px; }
-    .announce-submit-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
-    .announce-status { text-align: center; margin-top: 12px; font-size: 14px; font-weight: 500; min-height: 20px; }
+    .navy-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--navy); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(15,32,68,0.3); margin-top: 8px; }
+    .navy-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
+    .page-status { text-align: center; margin-top: 12px; font-size: 14px; font-weight: 500; min-height: 20px; }
+    /* HOMEWORK */
+    .hw-header { background: var(--red); padding: 24px 20px 18px; position: relative; overflow: hidden; }
+    .hw-header::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+    .hw-header h1 { color: var(--white); font-size: 22px; font-weight: 700; position: relative; z-index: 1; }
+    .hw-header p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; position: relative; z-index: 1; }
+    .hw-content { flex: 1; padding: 16px 16px 32px; max-width: 480px; width: 100%; margin: 0 auto; }
+    .red-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--red); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(192,57,43,0.35); margin-top: 8px; }
+    .red-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -220,8 +219,7 @@
   <div class="announce-content">
     <div class="section">
       <div class="section-title">หัวข้อประกาศ</div>
-      <input type="text" id="announceTitle" class="announce-input"
-        placeholder="เช่น แจ้งกำหนดการสอบ, นัดประชุมผู้ปกครอง...">
+      <input type="text" id="announceTitle" class="form-input" placeholder="เช่น แจ้งกำหนดการสอบ...">
     </div>
     <div class="section">
       <div class="section-title">รายละเอียด</div>
@@ -229,23 +227,52 @@
     </div>
     <div class="section">
       <div class="section-title">ส่งถึงห้อง</div>
-      <div class="classroom-chips" id="classroomChips">
-        <div style="color:#888;font-size:13px;">กำลังโหลด...</div>
-      </div>
+      <div class="classroom-chips" id="classroomChips"><div style="color:#888;font-size:13px;">กำลังโหลด...</div></div>
     </div>
-<div class="section">
-  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-    <input type="checkbox" id="includeEvents" checked
-      style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy);">
-    <span style="font-size:14px;font-weight:500;color:var(--dark);">
-      📅 แนบกิจกรรมสัปดาห์นี้ (ถ้ามี)
-    </span>
-  </label>
-</div>
-    <button class="announce-submit-btn" id="sendAnnounceBtn" disabled onclick="submitAnnouncement()">
+    <div class="section">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="includeEvents" checked style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy);">
+        <span style="font-size:14px;font-weight:500;color:var(--dark);">📅 แนบกิจกรรมสัปดาห์นี้ (ถ้ามี)</span>
+      </label>
+    </div>
+    <button class="navy-btn" id="sendAnnounceBtn" disabled onclick="submitAnnouncement()">
       <span>📢</span><span id="sendAnnounceLabel">กำลังโหลด...</span>
     </button>
-    <div class="announce-status" id="announceStatus"></div>
+    <div class="page-status" id="announceStatus"></div>
+  </div>
+</div>
+
+<!-- HOMEWORK -->
+<div id="homeworkPage">
+  <div class="hw-header">
+    <h1>📚 เพิ่มการบ้าน</h1>
+    <p id="homeworkHeaderInfo">กำลังโหลด...</p>
+  </div>
+  <div class="hw-content">
+    <div class="section">
+      <div class="section-title">วิชา</div>
+      <select id="homeworkSubject" class="form-input">
+        <option value="">-- เลือกวิชา --</option>
+      </select>
+    </div>
+    <div class="section">
+      <div class="section-title">ห้อง/ชั้น</div>
+      <select id="homeworkClassroom" class="form-input">
+        <option value="">-- เลือกห้อง --</option>
+      </select>
+    </div>
+    <div class="section">
+      <div class="section-title">วันที่ส่งการบ้าน</div>
+      <input type="date" id="homeworkDueDate" class="form-input">
+    </div>
+    <div class="section">
+      <div class="section-title">รายละเอียดการบ้าน</div>
+      <textarea id="homeworkDetail" rows="4" placeholder="เช่น ทำแบบฝึกหัดหน้า 25-26 ข้อ 1-10..."></textarea>
+    </div>
+    <button class="red-btn" id="saveHomeworkBtn" disabled onclick="submitHomework()">
+      <span>💾</span><span id="saveHomeworkLabel">กำลังโหลด...</span>
+    </button>
+    <div class="page-status" id="homeworkStatus"></div>
   </div>
 </div>
 
@@ -264,38 +291,38 @@
     const params = new URLSearchParams(window.location.search);
     if (params.get('page') === 'approve') return 'approve';
     if (params.get('page') === 'announce') return 'announce';
+    if (params.get('page') === 'homework') return 'homework';
     if (window.location.hash === '#approve') return 'approve';
     if (window.location.hash === '#announce') return 'announce';
+    if (window.location.hash === '#homework') return 'homework';
     const liffState = params.get('liff.state');
     if (liffState && liffState.includes('page=approve')) return 'approve';
     if (liffState && liffState.includes('page=announce')) return 'announce';
+    if (liffState && liffState.includes('page=homework')) return 'homework';
     return 'leave';
   }
 
   async function init() {
-  try {
-    document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
-    const initPromise = liff.init({ liffId: LIFF_ID });
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
-    );
-    await Promise.race([initPromise, timeout]);
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-    const profile = await liff.getProfile();
-    userId = profile.userId;
-
-    document.getElementById('connectingScreen').classList.add('hidden');
-    const page = getPage();
-    if (page === 'approve') initApprovePage();
-    else if (page === 'announce') initAnnouncePage();
-    else initLeavePage();
-
-  } catch (err) {
-    document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
+    try {
+      document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
+      const initPromise = liff.init({ liffId: LIFF_ID });
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000));
+      await Promise.race([initPromise, timeout]);
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+      const profile = await liff.getProfile();
+      userId = profile.userId;
+      document.getElementById('connectingScreen').classList.add('hidden');
+      const page = getPage();
+      if (page === 'approve') initApprovePage();
+      else if (page === 'announce') initAnnouncePage();
+      else if (page === 'homework') initHomeworkPage();
+      else initLeavePage();
+    } catch (err) {
+      document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
+    }
   }
-}
 
-  // LEAVE
+  // ===== LEAVE =====
   function initLeavePage() {
     document.getElementById('leavePage').classList.add('show');
     setDefaultDates();
@@ -314,8 +341,7 @@
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     const fmt = d => d.toISOString().split('T')[0];
-    const max = new Date(today);
-    max.setDate(today.getDate() + 30);
+    const max = new Date(today); max.setDate(today.getDate() + 30);
     document.getElementById('startDate').value = fmt(tomorrow);
     document.getElementById('endDate').value = fmt(tomorrow);
     document.getElementById('startDate').min = fmt(today);
@@ -327,8 +353,8 @@
 
   function calcDays() {
     const start = new Date(document.getElementById('startDate').value + 'T00:00:00');
-    const end = new Date(document.getElementById('endDate').value + 'T00:00:00');
-    if (end < start) document.getElementById('endDate').value = document.getElementById('startDate').value;
+    const endVal = document.getElementById('endDate').value;
+    if (new Date(endVal + 'T00:00:00') < start) document.getElementById('endDate').value = document.getElementById('startDate').value;
     const diff = Math.round((new Date(document.getElementById('endDate').value + 'T00:00:00') - start) / 86400000) + 1;
     document.getElementById('daysBadge').innerHTML = `📅 ${diff} วัน`;
   }
@@ -346,8 +372,7 @@
     const endDate = document.getElementById('endDate').value;
     const reason = document.getElementById('reason').value.trim();
     if (!reason) { alert('กรุณาระบุเหตุผลการลาครับ'); return; }
-    btn.disabled = true;
-    label.textContent = 'กำลังบันทึก...';
+    btn.disabled = true; label.textContent = 'กำลังบันทึก...';
     const dates = [];
     const cur = new Date(startDate + 'T00:00:00');
     const end = new Date(endDate + 'T00:00:00');
@@ -369,12 +394,11 @@
       } else { throw new Error(data.message); }
     } catch (err) {
       alert('❌ ' + err.message);
-      btn.disabled = false;
-      label.textContent = 'ส่งคำขอลา';
+      btn.disabled = false; label.textContent = 'ส่งคำขอลา';
     }
   }
 
-  // APPROVE
+  // ===== APPROVE =====
   async function initApprovePage() {
     document.getElementById('approvePage').classList.add('show');
     const today = new Date();
@@ -383,8 +407,7 @@
       const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`, { redirect: 'follow' });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      students = data.students;
-      currentClassroom = data.classroom;
+      students = data.students; currentClassroom = data.classroom;
       document.getElementById('approveHeaderInfo').textContent = `ห้อง ${data.classroom} | ${formatThaiDate(currentDate)}`;
       if (data.approvedBy) {
         renderStudents(); updateSummary();
@@ -406,146 +429,194 @@
   }
 
   function renderStudents() {
-    const list = document.getElementById('studentList');
-    list.innerHTML = students.map((s, idx) => {
+    document.getElementById('studentList').innerHTML = students.map((s, idx) => {
       const isLeave = s.status === 'leave_sick' || s.status === 'leave_personal';
       const isAbsent = s.status === 'absent';
       const cardClass = isAbsent ? 'status-absent' : isLeave ? 'status-leave' : '';
       const tagHtml = isLeave ? `<span class="status-tag tag-leave">📝 ลา</span>` : isAbsent ? `<span class="status-tag tag-absent">❌ ขาด</span>` : '';
       return `<div class="student-card ${cardClass}" id="card-${idx}">
-        <div class="student-top"><div class="student-no">${idx + 1}</div><div class="student-name">${s.name}</div>${tagHtml}</div>
+        <div class="student-top"><div class="student-no">${idx+1}</div><div class="student-name">${s.name}</div>${tagHtml}</div>
         <div class="btn-group">
-          <button class="btn-status ${s.status === 'present' ? 'active-present' : ''}" onclick="setStatus(${idx}, 'present')">✅ มา</button>
-          <button class="btn-status ${isLeave ? 'active-leave' : ''}" onclick="setStatus(${idx}, 'leave_sick')">📝 ลา</button>
-          <button class="btn-status ${isAbsent ? 'active-absent' : ''}" onclick="setStatus(${idx}, 'absent')">❌ ขาด</button>
+          <button class="btn-status ${s.status==='present'?'active-present':''}" onclick="setStatus(${idx},'present')">✅ มา</button>
+          <button class="btn-status ${isLeave?'active-leave':''}" onclick="setStatus(${idx},'leave_sick')">📝 ลา</button>
+          <button class="btn-status ${isAbsent?'active-absent':''}" onclick="setStatus(${idx},'absent')">❌ ขาด</button>
         </div>
-        <input class="note-input ${!s.status || s.status === 'present' ? '' : 'show'}" id="note-${idx}" placeholder="หมายเหตุ..." value="${s.note || ''}" oninput="students[${idx}].note = this.value">
+        <input class="note-input ${!s.status||s.status==='present'?'':'show'}" id="note-${idx}" placeholder="หมายเหตุ..." value="${s.note||''}" oninput="students[${idx}].note=this.value">
       </div>`;
     }).join('');
   }
 
   function setStatus(idx, status) {
     students[idx].status = status;
-    const card = document.getElementById('card-' + idx);
-    card.className = 'student-card' + (status === 'absent' ? ' status-absent' : status !== 'present' ? ' status-leave' : '');
+    const card = document.getElementById('card-'+idx);
+    card.className = 'student-card'+(status==='absent'?' status-absent':status!=='present'?' status-leave':'');
     const btns = card.querySelectorAll('.btn-status');
     btns.forEach(b => b.className = 'btn-status');
-    if (status === 'present') btns[0].className = 'btn-status active-present';
-    else if (status === 'leave_sick') btns[1].className = 'btn-status active-leave';
-    else if (status === 'absent') btns[2].className = 'btn-status active-absent';
-    document.getElementById('note-' + idx).className = status !== 'present' ? 'note-input show' : 'note-input';
+    if (status==='present') btns[0].className='btn-status active-present';
+    else if (status==='leave_sick') btns[1].className='btn-status active-leave';
+    else if (status==='absent') btns[2].className='btn-status active-absent';
+    document.getElementById('note-'+idx).className = status!=='present'?'note-input show':'note-input';
     updateSummary();
   }
 
   function updateSummary() {
-    document.getElementById('countPresent').textContent = students.filter(s => s.status === 'present').length;
-    document.getElementById('countLeave').textContent = students.filter(s => s.status === 'leave_sick' || s.status === 'leave_personal').length;
-    document.getElementById('countAbsent').textContent = students.filter(s => s.status === 'absent').length;
+    document.getElementById('countPresent').textContent = students.filter(s=>s.status==='present').length;
+    document.getElementById('countLeave').textContent = students.filter(s=>s.status==='leave_sick'||s.status==='leave_personal').length;
+    document.getElementById('countAbsent').textContent = students.filter(s=>s.status==='absent').length;
   }
 
   async function submitApprove() {
     const btn = document.getElementById('approveBtn');
     const label = document.getElementById('approveBtnLabel');
-    students.forEach((s, idx) => { const n = document.getElementById('note-' + idx); if (n) s.note = n.value; });
-    btn.disabled = true; label.textContent = 'กำลังบันทึก...';
+    students.forEach((s,idx)=>{const n=document.getElementById('note-'+idx);if(n)s.note=n.value;});
+    btn.disabled=true; label.textContent='กำลังบันทึก...';
     try {
-      const res = await fetch(`${GAS_URL}?action=saveAttendance`, { method: 'POST', redirect: 'follow', body: JSON.stringify({ userId, classroom: currentClassroom, date: currentDate, students }) });
+      const res = await fetch(`${GAS_URL}?action=saveAttendance`,{method:'POST',redirect:'follow',body:JSON.stringify({userId,classroom:currentClassroom,date:currentDate,students})});
       const data = await res.json();
-      if (data.success) { alert('✅ ' + data.message); if (liff.isInClient()) liff.closeWindow(); }
-      else { throw new Error(data.message); }
-    } catch (err) {
-      alert('❌ ' + err.message);
-      btn.disabled = false;
-      label.textContent = `บันทึกเช็คชื่อ (${students.length} คน)`;
+      if (data.success){alert('✅ '+data.message);if(liff.isInClient())liff.closeWindow();}
+      else{throw new Error(data.message);}
+    } catch(err){
+      alert('❌ '+err.message);
+      btn.disabled=false; label.textContent=`บันทึกเช็คชื่อ (${students.length} คน)`;
     }
   }
 
-  // ANNOUNCE
+  // ===== ANNOUNCE =====
   async function initAnnouncePage() {
     document.getElementById('announcePage').classList.add('show');
     try {
-      const res = await fetch(`${GAS_URL}?action=getClassrooms`, { redirect: 'follow' });
+      const res = await fetch(`${GAS_URL}?action=getClassrooms`,{redirect:'follow'});
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       renderClassroomChips(data.classrooms);
-      document.getElementById('sendAnnounceBtn').disabled = false;
-      document.getElementById('sendAnnounceLabel').textContent = 'ส่งประกาศ';
-    } catch (err) {
-      document.getElementById('announceHeaderInfo').textContent = '❌ ' + err.message;
+      document.getElementById('sendAnnounceBtn').disabled=false;
+      document.getElementById('sendAnnounceLabel').textContent='ส่งประกาศ';
+    } catch(err){
+      document.getElementById('announceHeaderInfo').textContent='❌ '+err.message;
     }
   }
 
   function renderClassroomChips(classrooms) {
     const container = document.getElementById('classroomChips');
-    container.innerHTML = '';
+    container.innerHTML='';
     const allChip = document.createElement('button');
-    allChip.className = 'chip';
-    allChip.textContent = '🏫 ทุกห้อง';
-    allChip.onclick = () => toggleChip('ทุกห้อง', allChip, true);
+    allChip.className='chip'; allChip.textContent='🏫 ทุกห้อง';
+    allChip.onclick=()=>toggleChip('ทุกห้อง',allChip,true);
     container.appendChild(allChip);
-    classrooms.forEach(cls => {
-      const chip = document.createElement('button');
-      chip.className = 'chip';
-      chip.textContent = cls;
-      chip.onclick = () => toggleChip(cls, chip, false);
+    classrooms.forEach(cls=>{
+      const chip=document.createElement('button');
+      chip.className='chip'; chip.textContent=cls;
+      chip.onclick=()=>toggleChip(cls,chip,false);
       container.appendChild(chip);
     });
   }
 
-  function toggleChip(name, btn, isAll) {
+  function toggleChip(name,btn,isAll) {
     if (isAll) {
-      selectedClassrooms = ['ทุกห้อง'];
-      document.querySelectorAll('#classroomChips .chip').forEach(c => c.className = 'chip');
-      btn.className = 'chip active-all';
-      return;
+      selectedClassrooms=['ทุกห้อง'];
+      document.querySelectorAll('#classroomChips .chip').forEach(c=>c.className='chip');
+      btn.className='chip active-all'; return;
     }
     if (selectedClassrooms.includes('ทุกห้อง')) {
-      selectedClassrooms = [];
-      const allChip = document.querySelector('#classroomChips .chip:first-child');
-      if (allChip) allChip.className = 'chip';
+      selectedClassrooms=[];
+      const a=document.querySelector('#classroomChips .chip:first-child');
+      if(a)a.className='chip';
     }
-    const idx = selectedClassrooms.indexOf(name);
-    if (idx === -1) { selectedClassrooms.push(name); btn.className = 'chip active-class'; }
-    else { selectedClassrooms.splice(idx, 1); btn.className = 'chip'; }
+    const idx=selectedClassrooms.indexOf(name);
+    if(idx===-1){selectedClassrooms.push(name);btn.className='chip active-class';}
+    else{selectedClassrooms.splice(idx,1);btn.className='chip';}
   }
 
   async function submitAnnouncement() {
-  const btn = document.getElementById('sendAnnounceBtn');
-  const label = document.getElementById('sendAnnounceLabel');
-  const status = document.getElementById('announceStatus');
-  const title = document.getElementById('announceTitle').value.trim();
-  const message = document.getElementById('announceMessage').value.trim();
-  const includeEvents = document.getElementById('includeEvents').checked;
-
-  if (!title) { alert('กรุณากรอกหัวข้อประกาศครับ'); return; }
-  if (!message) { alert('กรุณากรอกรายละเอียดครับ'); return; }
-  if (selectedClassrooms.length === 0) { alert('กรุณาเลือกห้องที่ต้องการส่งครับ'); return; }
-
-  btn.disabled = true;
-  label.textContent = 'กำลังส่ง...';
-  status.textContent = '';
-
-  try {
-    const res = await fetch(`${GAS_URL}?action=sendAnnouncement`, {
-      method: 'POST',
-      redirect: 'follow',
-      body: JSON.stringify({ userId, title, message, targetClassrooms: selectedClassrooms, includeEvents })
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      status.innerHTML = `<span style="color:var(--green);">✅ ${data.message}</span>`;
-      label.textContent = 'ส่งแล้ว ✅';
-      setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
-    } else {
-      throw new Error(data.message);
+    const btn=document.getElementById('sendAnnounceBtn');
+    const label=document.getElementById('sendAnnounceLabel');
+    const status=document.getElementById('announceStatus');
+    const title=document.getElementById('announceTitle').value.trim();
+    const message=document.getElementById('announceMessage').value.trim();
+    const includeEvents=document.getElementById('includeEvents').checked;
+    if(!title){alert('กรุณากรอกหัวข้อประกาศครับ');return;}
+    if(!message){alert('กรุณากรอกรายละเอียดครับ');return;}
+    if(selectedClassrooms.length===0){alert('กรุณาเลือกห้องที่ต้องการส่งครับ');return;}
+    btn.disabled=true; label.textContent='กำลังส่ง...'; status.textContent='';
+    try {
+      const res=await fetch(`${GAS_URL}?action=sendAnnouncement`,{method:'POST',redirect:'follow',body:JSON.stringify({userId,title,message,targetClassrooms:selectedClassrooms,includeEvents})});
+      const data=await res.json();
+      if(data.success){
+        status.innerHTML=`<span style="color:var(--green);">✅ ${data.message}</span>`;
+        label.textContent='ส่งแล้ว ✅';
+        setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},2500);
+      }else{throw new Error(data.message);}
+    }catch(err){
+      status.innerHTML=`<span style="color:var(--red);">❌ ${err.message}</span>`;
+      btn.disabled=false; label.textContent='ส่งประกาศ';
     }
-  } catch (err) {
-    status.innerHTML = `<span style="color:var(--red);">❌ ${err.message}</span>`;
-    btn.disabled = false;
-    label.textContent = 'ส่งประกาศ';
   }
-}
+
+  // ===== HOMEWORK =====
+  async function initHomeworkPage() {
+    document.getElementById('homeworkPage').classList.add('show');
+    try {
+      const res=await fetch(`${GAS_URL}?action=getTeacherSubjects&userId=${userId}`,{redirect:'follow'});
+      const data=await res.json();
+      if(!data.success)throw new Error(data.message);
+
+      document.getElementById('homeworkHeaderInfo').textContent=`ครู ${data.teacher.fullName}`;
+
+      const subjectSelect=document.getElementById('homeworkSubject');
+      subjectSelect.innerHTML='<option value="">-- เลือกวิชา --</option>';
+      data.subjects.forEach(s=>{
+        const opt=document.createElement('option');
+        opt.value=s.code; opt.textContent=s.name; opt.dataset.name=s.name;
+        subjectSelect.appendChild(opt);
+      });
+
+      const classSelect=document.getElementById('homeworkClassroom');
+      classSelect.innerHTML='<option value="">-- เลือกห้อง --</option>';
+      data.classrooms.forEach(c=>{
+        const opt=document.createElement('option');
+        opt.value=c; opt.textContent=c;
+        classSelect.appendChild(opt);
+      });
+
+      const tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+      document.getElementById('homeworkDueDate').value=tomorrow.toISOString().split('T')[0];
+      document.getElementById('homeworkDueDate').min=new Date().toISOString().split('T')[0];
+
+      document.getElementById('saveHomeworkBtn').disabled=false;
+      document.getElementById('saveHomeworkLabel').textContent='บันทึกการบ้าน';
+    }catch(err){
+      document.getElementById('homeworkHeaderInfo').textContent='❌ '+err.message;
+    }
+  }
+
+  async function submitHomework() {
+    const btn=document.getElementById('saveHomeworkBtn');
+    const label=document.getElementById('saveHomeworkLabel');
+    const status=document.getElementById('homeworkStatus');
+    const subjectSelect=document.getElementById('homeworkSubject');
+    const subjectCode=subjectSelect.value;
+    const subjectName=subjectSelect.options[subjectSelect.selectedIndex]?.dataset?.name||subjectSelect.options[subjectSelect.selectedIndex]?.text||'';
+    const classroom=document.getElementById('homeworkClassroom').value;
+    const dueDate=document.getElementById('homeworkDueDate').value;
+    const detail=document.getElementById('homeworkDetail').value.trim();
+    if(!subjectCode){alert('กรุณาเลือกวิชาครับ');return;}
+    if(!classroom){alert('กรุณาเลือกห้องครับ');return;}
+    if(!detail){alert('กรุณากรอกรายละเอียดการบ้านครับ');return;}
+    if(!dueDate){alert('กรุณาระบุวันที่ส่งครับ');return;}
+    btn.disabled=true; label.textContent='กำลังบันทึก...'; status.textContent='';
+    try {
+      const res=await fetch(`${GAS_URL}?action=saveHomework`,{method:'POST',redirect:'follow',body:JSON.stringify({userId,subjectCode,subjectName,classroom,detail,dueDate})});
+      const data=await res.json();
+      if(data.success){
+        status.innerHTML=`<span style="color:var(--green);">✅ ${data.message}</span>`;
+        label.textContent='บันทึกแล้ว ✅';
+        setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},2000);
+      }else{throw new Error(data.message);}
+    }catch(err){
+      status.innerHTML=`<span style="color:var(--red);">❌ ${err.message}</span>`;
+      btn.disabled=false; label.textContent='บันทึกการบ้าน';
+    }
+  }
 
   init();
 </script>

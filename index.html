@@ -284,13 +284,6 @@
     const profile = await liff.getProfile();
     userId = profile.userId;
 
-    // DEBUG — ดู URL จริงๆ ที่ LIFF ส่งมา
-    const params = new URLSearchParams(window.location.search);
-    const debugMsg = `path: ${window.location.pathname}\nsearch: ${window.location.search}\nhash: ${window.location.hash}\nliff.state: ${params.get('liff.state')}`;
-    document.getElementById('connectingMsg').textContent = debugMsg;
-    // หยุดไว้ 5 วิ ให้ดูก่อน
-    await new Promise(r => setTimeout(r, 5000));
-
     document.getElementById('connectingScreen').classList.add('hidden');
     const page = getPage();
     if (page === 'approve') initApprovePage();

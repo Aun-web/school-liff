@@ -264,25 +264,34 @@
   }
 
   async function init() {
-    try {
-      document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
-      const initPromise = liff.init({ liffId: LIFF_ID });
-      const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
-      );
-      await Promise.race([initPromise, timeout]);
-      if (!liff.isLoggedIn()) { liff.login(); return; }
-      const profile = await liff.getProfile();
-      userId = profile.userId;
-      document.getElementById('connectingScreen').classList.add('hidden');
-      const page = getPage();
-      if (page === 'approve') initApprovePage();
-      else if (page === 'announce') initAnnouncePage();
-      else initLeavePage();
-    } catch (err) {
-      document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
-    }
+  try {
+    document.getElementById('connectingMsg').textContent = 'กำลังเชื่อมต่อ LINE...';
+    const initPromise = liff.init({ liffId: LIFF_ID });
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('กรุณาเปิดผ่าน LINE ครับ')), 10000)
+    );
+    await Promise.race([initPromise, timeout]);
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+
+    // DEBUG — ดู URL จริงๆ ที่ LIFF ส่งมา
+    const params = new URLSearchParams(window.location.search);
+    const debugMsg = `path: ${window.location.pathname}\nsearch: ${window.location.search}\nhash: ${window.location.hash}\nliff.state: ${params.get('liff.state')}`;
+    document.getElementById('connectingMsg').textContent = debugMsg;
+    // หยุดไว้ 5 วิ ให้ดูก่อน
+    await new Promise(r => setTimeout(r, 5000));
+
+    document.getElementById('connectingScreen').classList.add('hidden');
+    const page = getPage();
+    if (page === 'approve') initApprovePage();
+    else if (page === 'announce') initAnnouncePage();
+    else initLeavePage();
+
+  } catch (err) {
+    document.getElementById('connectingMsg').textContent = '❌ ' + err.message;
   }
+}
 
   // LEAVE
   function initLeavePage() {

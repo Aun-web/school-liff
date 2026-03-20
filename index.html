@@ -233,6 +233,15 @@
         <div style="color:#888;font-size:13px;">กำลังโหลด...</div>
       </div>
     </div>
+<div class="section">
+  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+    <input type="checkbox" id="includeEvents" checked
+      style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy);">
+    <span style="font-size:14px;font-weight:500;color:var(--dark);">
+      📅 แนบกิจกรรมสัปดาห์นี้ (ถ้ามี)
+    </span>
+  </label>
+</div>
     <button class="announce-submit-btn" id="sendAnnounceBtn" disabled onclick="submitAnnouncement()">
       <span>📢</span><span id="sendAnnounceLabel">กำลังโหลด...</span>
     </button>
@@ -508,29 +517,42 @@
   }
 
   async function submitAnnouncement() {
-    const btn = document.getElementById('sendAnnounceBtn');
-    const label = document.getElementById('sendAnnounceLabel');
-    const status = document.getElementById('announceStatus');
-    const title = document.getElementById('announceTitle').value.trim();
-    const message = document.getElementById('announceMessage').value.trim();
-    if (!title) { alert('กรุณากรอกหัวข้อประกาศครับ'); return; }
-    if (!message) { alert('กรุณากรอกรายละเอียดครับ'); return; }
-    if (selectedClassrooms.length === 0) { alert('กรุณาเลือกห้องที่ต้องการส่งครับ'); return; }
-    btn.disabled = true; label.textContent = 'กำลังส่ง...'; status.textContent = '';
-    try {
-      const res = await fetch(`${GAS_URL}?action=sendAnnouncement`, { method: 'POST', redirect: 'follow', body: JSON.stringify({ userId, title, message, targetClassrooms: selectedClassrooms }) });
-      const data = await res.json();
-      if (data.success) {
-        status.innerHTML = `<span style="color:var(--green);">✅ ${data.message}</span>`;
-        label.textContent = 'ส่งแล้ว ✅';
-        setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
-      } else { throw new Error(data.message); }
-    } catch (err) {
-      status.innerHTML = `<span style="color:var(--red);">❌ ${err.message}</span>`;
-      btn.disabled = false;
-      label.textContent = 'ส่งประกาศ';
+  const btn = document.getElementById('sendAnnounceBtn');
+  const label = document.getElementById('sendAnnounceLabel');
+  const status = document.getElementById('announceStatus');
+  const title = document.getElementById('announceTitle').value.trim();
+  const message = document.getElementById('announceMessage').value.trim();
+  const includeEvents = document.getElementById('includeEvents').checked;
+
+  if (!title) { alert('กรุณากรอกหัวข้อประกาศครับ'); return; }
+  if (!message) { alert('กรุณากรอกรายละเอียดครับ'); return; }
+  if (selectedClassrooms.length === 0) { alert('กรุณาเลือกห้องที่ต้องการส่งครับ'); return; }
+
+  btn.disabled = true;
+  label.textContent = 'กำลังส่ง...';
+  status.textContent = '';
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=sendAnnouncement`, {
+      method: 'POST',
+      redirect: 'follow',
+      body: JSON.stringify({ userId, title, message, targetClassrooms: selectedClassrooms, includeEvents })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      status.innerHTML = `<span style="color:var(--green);">✅ ${data.message}</span>`;
+      label.textContent = 'ส่งแล้ว ✅';
+      setTimeout(() => { if (liff.isInClient()) liff.closeWindow(); }, 2500);
+    } else {
+      throw new Error(data.message);
     }
+  } catch (err) {
+    status.innerHTML = `<span style="color:var(--red);">❌ ${err.message}</span>`;
+    btn.disabled = false;
+    label.textContent = 'ส่งประกาศ';
   }
+}
 
   init();
 </script>

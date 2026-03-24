@@ -287,6 +287,14 @@
   let currentDate = '';
   let selectedClassrooms = [];
 
+  // ✅ helper: คืน 'yyyy-MM-dd' ตาม local time (ไม่ใช้ UTC)
+  function localDateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
   function getPage() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('page') === 'approve') return 'approve';
@@ -340,14 +348,15 @@
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    const fmt = d => d.toISOString().split('T')[0];
-    const max = new Date(today); max.setDate(today.getDate() + 30);
-    document.getElementById('startDate').value = fmt(tomorrow);
-    document.getElementById('endDate').value = fmt(tomorrow);
-    document.getElementById('startDate').min = fmt(today);
-    document.getElementById('startDate').max = fmt(max);
-    document.getElementById('endDate').min = fmt(today);
-    document.getElementById('endDate').max = fmt(max);
+    const max = new Date(today);
+    max.setDate(today.getDate() + 30);
+    // ✅ ใช้ localDateStr แทน toISOString เพื่อป้องกัน timezone shift
+    document.getElementById('startDate').value = localDateStr(tomorrow);
+    document.getElementById('endDate').value = localDateStr(tomorrow);
+    document.getElementById('startDate').min = localDateStr(today);
+    document.getElementById('startDate').max = localDateStr(max);
+    document.getElementById('endDate').min = localDateStr(today);
+    document.getElementById('endDate').max = localDateStr(max);
     calcDays();
   }
 
@@ -373,10 +382,11 @@
     const reason = document.getElementById('reason').value.trim();
     if (!reason) { alert('กรุณาระบุเหตุผลการลาครับ'); return; }
     btn.disabled = true; label.textContent = 'กำลังบันทึก...';
+    // ✅ ใช้ localDateStr แทน toISOString เพื่อป้องกัน timezone shift
     const dates = [];
     const cur = new Date(startDate + 'T00:00:00');
     const end = new Date(endDate + 'T00:00:00');
-    while (cur <= end) { dates.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate() + 1); }
+    while (cur <= end) { dates.push(localDateStr(cur)); cur.setDate(cur.getDate() + 1); }
     try {
       const res = await fetch(GAS_URL + "?action=submitLeave", { method: "POST", redirect: "follow", body: JSON.stringify({ userId, dates, leaveType: selectedType, reason }) });
       const data = await res.json();
@@ -402,7 +412,8 @@
   async function initApprovePage() {
     document.getElementById('approvePage').classList.add('show');
     const today = new Date();
-    currentDate = today.toISOString().split('T')[0];
+    // ✅ ใช้ localDateStr แทน toISOString เพื่อป้องกัน timezone shift
+    currentDate = localDateStr(today);
     try {
       const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`, { redirect: 'follow' });
       const data = await res.json();
@@ -578,9 +589,11 @@
         classSelect.appendChild(opt);
       });
 
-      const tomorrow=new Date(); tomorrow.setDate(tomorrow.getDate()+1);
-      document.getElementById('homeworkDueDate').value=tomorrow.toISOString().split('T')[0];
-      document.getElementById('homeworkDueDate').min=new Date().toISOString().split('T')[0];
+      const tomorrow=new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      // ✅ ใช้ localDateStr แทน toISOString เพื่อป้องกัน timezone shift
+      document.getElementById('homeworkDueDate').value=localDateStr(tomorrow);
+      document.getElementById('homeworkDueDate').min=localDateStr(new Date());
 
       document.getElementById('saveHomeworkBtn').disabled=false;
       document.getElementById('saveHomeworkLabel').textContent='บันทึกการบ้าน';

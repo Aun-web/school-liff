@@ -450,15 +450,6 @@
         `ห้อง ${data.classroom} | ${formatThaiDate(date)}` +
         (isToday ? '' : ' <span class="badge-edit">ย้อนหลัง</span>');
       renderStudents(); updateSummary();
-      if (data.approvedBy && isToday) {
-        btn.disabled = true; btn.style.background = '#27AE60';
-        label.textContent = `✅ เช็คชื่อแล้วโดย ${data.approvedBy}`;
-        setTimeout(() => {
-          document.querySelectorAll('.btn-status').forEach(b => { b.disabled = true; b.style.opacity = '0.6'; b.style.cursor = 'not-allowed'; });
-          document.querySelectorAll('.note-input').forEach(n => { n.disabled = true; });
-        }, 100);
-        return;
-      }
       btn.disabled = false; btn.style.background = '';
       label.textContent = data.approvedBy
         ? `💾 แก้ไข (เช็คแล้วโดย ${data.approvedBy})`

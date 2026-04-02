@@ -77,6 +77,10 @@
     .submit-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: var(--red); color: var(--white); font-size: 17px; font-weight: 700; font-family: 'Sarabun', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(192,57,43,0.35); transition: all 0.2s; }
     .submit-btn:disabled { background: #BDBDBD; box-shadow: none; cursor: not-allowed; }
     /* APPROVE */
+    .date-row { background: var(--white); padding: 10px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+    .date-row label { font-size: 14px; font-weight: 600; color: var(--navy); white-space: nowrap; }
+    #approveDatePicker { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 14px; }
+    .badge-edit { background: #fff3cd; color: #856404; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; margin-left: 4px; }
     .approve-header { background: var(--navy); padding: 24px 20px 18px; position: relative; overflow: hidden; }
     .approve-header::before { content: ''; position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(243,156,18,0.15); }
     .approve-header h1 { color: var(--white); font-size: 22px; font-weight: 700; }
@@ -194,8 +198,12 @@
 <!-- APPROVE -->
 <div id="approvePage">
   <div class="approve-header">
-    <h1>✅ เช็คชื่อนักเรียน</h1>
+    <h1 id="approveTitle">✅ เช็คชื่อนักเรียน</h1>
     <p id="approveHeaderInfo">กำลังโหลด...</p>
+  </div>
+  <div class="date-row">
+    <label for="approveDatePicker">📅 วันที่</label>
+    <input type="date" id="approveDatePicker" onchange="onApproveDateChange()">
   </div>
   <div class="summary-bar">
     <div class="summary-item"><div class="summary-num num-present" id="countPresent">0</div><div class="summary-label">มาเรียน</div></div>
@@ -411,29 +419,50 @@
   // ===== APPROVE =====
   async function initApprovePage() {
     document.getElementById('approvePage').classList.add('show');
-    const today = new Date();
-    // ✅ ใช้ localDateStr แทน toISOString เพื่อป้องกัน timezone shift
-    currentDate = localDateStr(today);
+    const todayStr = localDateStr(new Date());
+    const minDate = new Date(); minDate.setDate(minDate.getDate() - 30);
+    const picker = document.getElementById('approveDatePicker');
+    picker.max = todayStr;
+    picker.min = localDateStr(minDate);
+    picker.value = todayStr;
+    currentDate = todayStr;
+    await loadAttendanceForDate(currentDate);
+  }
+
+  async function onApproveDateChange() {
+    currentDate = document.getElementById('approveDatePicker').value;
+    if (currentDate) await loadAttendanceForDate(currentDate);
+  }
+
+  async function loadAttendanceForDate(date) {
+    const isToday = date === localDateStr(new Date());
+    document.getElementById('approveTitle').textContent = isToday ? '✅ เช็คชื่อนักเรียน' : '✏️ แก้ไขเช็คชื่อย้อนหลัง';
+    document.getElementById('studentList').innerHTML = '';
+    const btn = document.getElementById('approveBtn');
+    const label = document.getElementById('approveBtnLabel');
+    btn.disabled = true; btn.style.background = ''; label.textContent = 'กำลังโหลด...';
     try {
-      const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${currentDate}`, { redirect: 'follow' });
+      const res = await fetch(`${GAS_URL}?action=getAttendance&userId=${userId}&date=${date}`, { redirect: 'follow' });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       students = data.students; currentClassroom = data.classroom;
-      document.getElementById('approveHeaderInfo').textContent = `ห้อง ${data.classroom} | ${formatThaiDate(currentDate)}`;
-      if (data.approvedBy) {
-        renderStudents(); updateSummary();
-        const btn = document.getElementById('approveBtn');
+      document.getElementById('approveHeaderInfo').innerHTML =
+        `ห้อง ${data.classroom} | ${formatThaiDate(date)}` +
+        (isToday ? '' : ' <span class="badge-edit">ย้อนหลัง</span>');
+      renderStudents(); updateSummary();
+      if (data.approvedBy && isToday) {
         btn.disabled = true; btn.style.background = '#27AE60';
-        document.getElementById('approveBtnLabel').textContent = `✅ เช็คชื่อแล้วโดย ${data.approvedBy}`;
+        label.textContent = `✅ เช็คชื่อแล้วโดย ${data.approvedBy}`;
         setTimeout(() => {
           document.querySelectorAll('.btn-status').forEach(b => { b.disabled = true; b.style.opacity = '0.6'; b.style.cursor = 'not-allowed'; });
           document.querySelectorAll('.note-input').forEach(n => { n.disabled = true; });
         }, 100);
         return;
       }
-      renderStudents(); updateSummary();
-      document.getElementById('approveBtn').disabled = false;
-      document.getElementById('approveBtnLabel').textContent = `บันทึกเช็คชื่อ (${students.length} คน)`;
+      btn.disabled = false; btn.style.background = '';
+      label.textContent = data.approvedBy
+        ? `💾 แก้ไข (เช็คแล้วโดย ${data.approvedBy})`
+        : isToday ? `บันทึกเช็คชื่อ (${students.length} คน)` : `💾 บันทึกการแก้ไข`;
     } catch (err) {
       document.getElementById('approveHeaderInfo').textContent = '❌ ' + err.message;
     }

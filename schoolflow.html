@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schoolflow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root {
+      --red:#C0392B; --red-pale:#FDEDEC; --yellow:#F39C12; --yellow-pale:#FEF9E7;
+      --navy:#0F2044; --dark:#1A1A1A; --gray:#6B6B6B; --gray-light:#F5F5F5;
+      --border:#E8E8E8; --white:#FFFFFF; --green:#1E8449; --green-pale:#EAFAF1;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Sarabun',sans-serif;background:var(--gray-light);min-height:100vh;}
+    .connecting{position:fixed;inset:0;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:100;}
+    .connecting.hidden{display:none;}
+    .spinner{width:40px;height:40px;border:3px solid var(--red-pale);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .connecting p{color:var(--gray);font-size:14px;}
+    .page{display:none;flex-direction:column;min-height:100vh;}
+    .page.show{display:flex;}
+    .header{background:var(--red);padding:28px 24px 20px;position:relative;overflow:hidden;}
+    .header.navy{background:var(--navy);}
+    .header::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.08);}
+    .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,0.9);margin-bottom:10px;}
+    .header h1{color:var(--white);font-size:23px;font-weight:700;position:relative;z-index:1;}
+    .header p{color:rgba(255,255,255,0.75);font-size:13px;margin-top:4px;position:relative;z-index:1;}
+    .deadline-bar{background:var(--yellow);padding:10px 24px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--dark);}
+    .content{flex:1;padding:20px 16px 32px;max-width:480px;width:100%;margin:0 auto;}
+    .section{background:var(--white);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid var(--border);}
+    .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:12px;}
+    .form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:'Sarabun',sans-serif;color:var(--dark);outline:none;background:var(--white);}
+    .form-input:focus{border-color:var(--navy);}
+    textarea.form-input{resize:none;}
+    .leave-types{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .leave-type-btn{border:2px solid var(--border);border-radius:12px;padding:14px 12px;background:var(--white);cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;}
+    .leave-type-btn .type-icon{font-size:26px;}
+    .leave-type-btn .type-label{font-size:14px;font-weight:600;color:var(--dark);}
+    .leave-type-btn .type-desc{font-size:11px;color:var(--gray);}
+    .leave-type-btn.active{border-color:var(--red);background:var(--red-pale);}
+    .leave-type-btn.active .type-label{color:var(--red);}
+    .date-row2{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;}
+    .date-field label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;display:block;margin-bottom:6px;}
+    .date-field input{width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:15px;font-family:'Sarabun',sans-serif;color:var(--dark);background:var(--white);outline:none;-webkit-appearance:none;}
+    .date-arrow{font-size:18px;color:var(--gray);margin-top:20px;}
+    .days-badge{display:inline-flex;align-items:center;gap:6px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--yellow);margin-top:12px;}
+    .child-chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--border);border-radius:12px;padding:10px 14px;margin:0 8px 8px 0;cursor:pointer;font-size:14px;font-weight:500;background:var(--white);}
+    .child-chip.active{border-color:var(--red);background:var(--red-pale);color:var(--red);font-weight:700;}
+    .child-chip.pending{opacity:.6;cursor:not-allowed;}
+    .status-pill{font-size:11px;padding:2px 8px;border-radius:10px;}
+    .pill-approved{background:var(--green-pale);color:var(--green);}
+    .pill-pending{background:var(--yellow-pale);color:#b8860b;}
+    .submit-btn{width:100%;padding:17px;border:none;border-radius:16px;background:var(--red);color:var(--white);font-size:17px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .submit-btn.navy{background:var(--navy);}
+    .submit-btn:disabled{background:#BDBDBD;cursor:not-allowed;}
+    .page-status{text-align:center;margin-top:10px;font-size:14px;font-weight:500;min-height:20px;}
+    .success-screen{position:fixed;inset:0;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center;z-index:100;}
+    .success-screen.hidden{display:none;}
+    .success-icon{width:72px;height:72px;background:var(--green-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;}
+    .success-screen h2{font-size:22px;font-weight:700;color:var(--dark);}
+    .success-screen p{font-size:14px;color:var(--gray);line-height:1.6;}
+    /* approve */
+    .summary-bar{background:var(--white);padding:14px 20px;display:flex;border-bottom:1px solid var(--border);}
+    .summary-item{flex:1;text-align:center;border-right:1px solid var(--border);}
+    .summary-item:last-child{border-right:none;}
+    .summary-num{font-size:22px;font-weight:700;}
+    .num-present{color:var(--green);} .num-leave{color:var(--yellow);} .num-absent{color:var(--red);}
+    .summary-label{font-size:11px;color:var(--gray);margin-top:2px;}
+    .approve-content{flex:1;padding:12px 16px 100px;}
+    .student-card{background:var(--white);border-radius:14px;padding:13px 15px;margin-bottom:10px;border:1px solid var(--border);}
+    .student-card.s-absent{border-color:var(--red);background:var(--red-pale);}
+    .student-card.s-leave{border-color:var(--yellow);background:var(--yellow-pale);}
+    .student-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .student-no{background:var(--gray-light);color:var(--navy);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+    .student-name{font-weight:600;font-size:15px;flex:1;}
+    .btn-group{display:flex;gap:6px;}
+    .btn-status{flex:1;padding:9px 6px;border:2px solid var(--border);border-radius:10px;background:var(--white);cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:500;}
+    .btn-status.on-present{background:var(--green-pale);border-color:var(--green);color:var(--green);font-weight:700;}
+    .btn-status.on-leave{background:var(--yellow-pale);border-color:var(--yellow);color:#b8860b;font-weight:700;}
+    .btn-status.on-absent{background:var(--red-pale);border-color:var(--red);color:var(--red);font-weight:700;}
+    .approve-footer{position:fixed;bottom:0;left:0;right:0;background:var(--white);padding:14px 18px;border-top:1px solid var(--border);}
+    .chip{padding:8px 16px;border:2px solid var(--border);border-radius:20px;background:var(--white);cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;margin:0 8px 8px 0;}
+    .chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+  </style>
+</head>
+<body>
+
+<div class="connecting" id="connecting"><div class="spinner"></div><p id="connMsg">กำลังเชื่อมต่อ LINE...</p></div>
+
+<div class="success-screen hidden" id="success">
+  <div class="success-icon">✅</div>
+  <h2 id="successTitle">สำเร็จ</h2>
+  <p id="successMsg"></p>
+</div>
+
+<!-- ===== PARENT ===== -->
+<div class="page" id="parentPage">
+  <div class="header">
+    <div class="header-badge"><span>🏫</span><span id="brand">MLPY School</span></div>
+    <h1>แจ้งลานักเรียน</h1>
+    <p>ผู้ปกครอง</p>
+  </div>
+  <div class="deadline-bar"><span>⏰</span><span>แจ้งลาก่อน 08:30 น. ของวันที่ลา</span></div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">นักเรียนของคุณ</div>
+      <div id="childList"><p style="color:var(--gray);font-size:13px;">กำลังโหลด...</p></div>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <input class="form-input" id="regCode" placeholder="เลขประจำตัวนักเรียน" style="flex:1;">
+        <button class="submit-btn" style="width:auto;padding:0 18px;font-size:14px;" onclick="registerChild()">เพิ่ม</button>
+      </div>
+      <div class="page-status" id="regStatus"></div>
+    </div>
+    <div class="section" id="leaveForm" style="display:none;">
+      <div class="section-title">ประเภทการลา</div>
+      <div class="leave-types">
+        <button class="leave-type-btn active" id="t-sick" onclick="selType('sick')"><span class="type-icon">🤒</span><span class="type-label">ลาป่วย</span><span class="type-desc">ไม่สบาย</span></button>
+        <button class="leave-type-btn" id="t-personal" onclick="selType('personal')"><span class="type-icon">📋</span><span class="type-label">ลากิจ</span><span class="type-desc">ธุระส่วนตัว</span></button>
+      </div>
+      <div class="section-title" style="margin-top:16px;">วันที่ลา</div>
+      <div class="date-row2">
+        <div class="date-field"><label>วันแรก</label><input type="date" id="startDate" onchange="calcDays()"></div>
+        <div class="date-arrow">→</div>
+        <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="endDate" onchange="calcDays()"></div>
+      </div>
+      <div class="days-badge" id="daysBadge">📅 1 วัน</div>
+      <div class="section-title" style="margin-top:16px;">เหตุผล</div>
+      <textarea class="form-input" id="reason" rows="3" placeholder="เช่น ไข้หวัด ธุระครอบครัว..."></textarea>
+    </div>
+  </div>
+  <div class="content" style="padding-top:0;display:none;" id="leaveSubmitWrap">
+    <button class="submit-btn" id="submitLeaveBtn" disabled onclick="submitLeave()"><span>📨</span><span id="submitLeaveLabel">เลือกนักเรียน</span></button>
+  </div>
+</div>
+
+<!-- ===== TEACHER BIND ===== -->
+<div class="page" id="bindPage">
+  <div class="header navy">
+    <div class="header-badge"><span>👩‍🏫</span><span>MLPY School</span></div>
+    <h1>ยืนยันตัวตนครู</h1>
+    <p>ผูกบัญชี LINE กับระบบครั้งแรก</p>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">อีเมลที่ใช้ใน Schoolflow</div>
+      <input class="form-input" id="bindEmail" type="email" placeholder="teacher@example.com">
+      <button class="submit-btn navy" style="margin-top:12px;" onclick="bindTeacher()"><span>🔗</span><span id="bindLabel">ผูกบัญชี</span></button>
+      <div class="page-status" id="bindStatus"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEACHER APPROVE ===== -->
+<div class="page" id="approvePage">
+  <div class="header navy">
+    <div class="header-badge"><span>✅</span><span id="approveTeacher">เช็คชื่อ</span></div>
+    <h1 id="approveTitle">เช็คชื่อนักเรียน</h1>
+    <p id="approveInfo">กำลังโหลด...</p>
+  </div>
+  <div id="classPicker" class="content" style="padding-bottom:0;"></div>
+  <div class="summary-bar">
+    <div class="summary-item"><div class="summary-num num-present" id="cPresent">0</div><div class="summary-label">มาเรียน</div></div>
+    <div class="summary-item"><div class="summary-num num-leave" id="cLeave">0</div><div class="summary-label">ลา</div></div>
+    <div class="summary-item"><div class="summary-num num-absent" id="cAbsent">0</div><div class="summary-label">ขาด</div></div>
+  </div>
+  <div class="approve-content" id="studentList"></div>
+  <div class="approve-footer">
+    <button class="submit-btn navy" id="approveBtn" disabled onclick="submitApprove()"><span>💾</span><span id="approveLabel">กำลังโหลด...</span></button>
+  </div>
+</div>
+
+<script>
+  const params  = new URLSearchParams(location.search);
+  const SCHOOL  = params.get('school');
+  const LIFF_ID = params.get('liff');
+  // ⚠️ วาง Web App URL ของ schoolflow-line (Deploy → Web app) หลัง deploy
+  const GAS_URL = "PASTE_SCHOOLFLOW_LINE_DEPLOY_URL";
+
+  let TOKEN = null, leaveType = 'sick', children = [], selectedChild = null;
+  let teacher = null, curClass = null, students = [], curDate = '';
+
+  function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function thaiDate(s){const d=new Date(s+'T00:00:00');const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];return d.getDate()+' '+m[d.getMonth()]+' '+(d.getFullYear()+543);}
+  function show(id){document.getElementById(id).classList.add('show');}
+
+  async function api(action, payload){
+    const body = Object.assign({action, access_token: TOKEN}, payload||{});
+    const res = await fetch(GAS_URL+'?school='+encodeURIComponent(SCHOOL)+'&mode=liff',{method:'POST',redirect:'follow',body:JSON.stringify(body)});
+    return res.json();
+  }
+
+  async function init(){
+    try{
+      if(!SCHOOL||!LIFF_ID) throw new Error('ลิงก์ไม่สมบูรณ์ (school/liff)');
+      await Promise.race([liff.init({liffId:LIFF_ID}), new Promise((_,r)=>setTimeout(()=>r(new Error('กรุณาเปิดผ่าน LINE')),10000))]);
+      if(!liff.isLoggedIn()){liff.login();return;}
+      TOKEN = liff.getAccessToken();
+      document.getElementById('connecting').classList.add('hidden');
+      const page = params.get('page')==='approve' ? 'approve' : 'parent';
+      if(page==='approve') initTeacher(); else initParent();
+    }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
+  }
+
+  /* ===== PARENT ===== */
+  async function initParent(){
+    show('parentPage');
+    setDefaultDates();
+    await loadChildren();
+  }
+  async function loadChildren(){
+    const r = await api('getChildren');
+    children = (r.children||[]);
+    const approved = children.filter(c=>c.status==='approved');
+    document.getElementById('childList').innerHTML = children.length ? children.map(c=>{
+      const ok = c.status==='approved';
+      return `<span class="child-chip ${ok?'':'pending'} ${selectedChild===c.student_id?'active':''}" ${ok?`onclick="pickChild('${c.student_id}')"`:''}>
+        ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รออนุมัติ'}</span></span>`;
+    }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
+    document.getElementById('leaveForm').style.display = approved.length?'block':'none';
+    document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
+    if(approved.length && !selectedChild){pickChild(approved[0].student_id);}
+    updateLeaveBtn();
+  }
+  function pickChild(id){selectedChild=id;loadChildren();}
+  async function registerChild(){
+    const code=document.getElementById('regCode').value.trim();
+    const st=document.getElementById('regStatus');
+    if(!code){st.textContent='กรอกเลขประจำตัว';return;}
+    st.textContent='กำลังส่ง...';
+    const r=await api('register',{student_code:code});
+    st.innerHTML = r.ok?`<span style="color:var(--green)">✅ ${r.message} (${r.student_name||''})</span>`:`<span style="color:var(--red)">❌ ${r.error}</span>`;
+    if(r.ok){document.getElementById('regCode').value='';await loadChildren();}
+  }
+  function selType(t){leaveType=t;document.getElementById('t-sick').classList.toggle('active',t==='sick');document.getElementById('t-personal').classList.toggle('active',t==='personal');}
+  function setDefaultDates(){
+    const today=new Date(),tmr=new Date();tmr.setDate(today.getDate()+1);const mx=new Date();mx.setDate(today.getDate()+30);
+    ['startDate','endDate'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(tmr);el.min=localDateStr(today);el.max=localDateStr(mx);});
+    calcDays();
+  }
+  function calcDays(){
+    const s=new Date(document.getElementById('startDate').value+'T00:00:00');
+    if(new Date(document.getElementById('endDate').value+'T00:00:00')<s)document.getElementById('endDate').value=document.getElementById('startDate').value;
+    const diff=Math.round((new Date(document.getElementById('endDate').value+'T00:00:00')-s)/86400000)+1;
+    document.getElementById('daysBadge').innerHTML='📅 '+diff+' วัน';
+  }
+  function updateLeaveBtn(){
+    const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
+    if(selectedChild){btn.disabled=false;lb.textContent='ส่งคำขอลา';}else{btn.disabled=true;lb.textContent='เลือกนักเรียน';}
+  }
+  async function submitLeave(){
+    const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
+    const reason=document.getElementById('reason').value.trim();
+    if(!selectedChild){alert('เลือกนักเรียน');return;}
+    const dates=[];const cur=new Date(document.getElementById('startDate').value+'T00:00:00');const end=new Date(document.getElementById('endDate').value+'T00:00:00');
+    while(cur<=end){dates.push(localDateStr(cur));cur.setDate(cur.getDate()+1);}
+    btn.disabled=true;lb.textContent='กำลังบันทึก...';
+    const r=await api('submitLeave',{student_id:selectedChild,dates,leave_type:leaveType,reason});
+    if(r.ok){
+      document.getElementById('successTitle').textContent='แจ้งลาสำเร็จ';
+      document.getElementById('successMsg').innerHTML=`${r.student_name||''}<br>${r.accepted.length} วัน — ครูประจำชั้นจะรับทราบ`;
+      document.getElementById('parentPage').classList.remove('show');
+      document.getElementById('success').classList.remove('hidden');
+      setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3000);
+    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='ส่งคำขอลา';}
+  }
+
+  /* ===== TEACHER ===== */
+  async function initTeacher(){
+    const r=await api('getTeacherClasses');
+    if(!r.bound){show('bindPage');return;}
+    teacher=r;
+    show('approvePage');
+    document.getElementById('approveTeacher').textContent=r.teacher_name||'ครู';
+    const classes=r.homeroom_classes||[];
+    if(!classes.length){document.getElementById('approveInfo').textContent='ยังไม่ได้ตั้งห้องประจำชั้น (ให้แอดมินตั้งในเว็บ)';return;}
+    const pick=document.getElementById('classPicker');
+    if(classes.length>1){pick.innerHTML='<div style="display:flex;flex-wrap:wrap;">'+classes.map((c,i)=>`<span class="chip ${i===0?'active':''}" onclick="pickClass(${i})">${c.grade}/${c.classroom}</span>`).join('')+'</div>';}
+    curDate=localDateStr(new Date());
+    pickClass(0);
+  }
+  async function bindTeacher(){
+    const email=document.getElementById('bindEmail').value.trim();
+    const st=document.getElementById('bindStatus');
+    if(!email){st.textContent='กรอกอีเมล';return;}
+    document.getElementById('bindLabel').textContent='กำลังผูก...';
+    const r=await api('bindTeacher',{email});
+    if(r.ok){document.getElementById('bindPage').classList.remove('show');initTeacher();}
+    else{st.innerHTML=`<span style="color:var(--red)">❌ ${r.error}</span>`;document.getElementById('bindLabel').textContent='ผูกบัญชี';}
+  }
+  function pickClass(i){
+    const c=(teacher.homeroom_classes||[])[i];curClass=c;
+    document.querySelectorAll('#classPicker .chip').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+    loadRoster();
+  }
+  async function loadRoster(){
+    document.getElementById('studentList').innerHTML='';
+    const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
+    btn.disabled=true;lb.textContent='กำลังโหลด...';
+    const r=await api('getRoster',{grade:curClass.grade,classroom:curClass.classroom,date:curDate});
+    if(!r.ok){document.getElementById('approveInfo').textContent='❌ '+r.error;return;}
+    students=r.students;
+    document.getElementById('approveInfo').textContent='ห้อง '+r.classLabel+' | '+thaiDate(curDate);
+    renderStudents();updateSummary();
+    btn.disabled=false;lb.textContent=r.approvedBy?('💾 แก้ไข (เช็คโดย '+r.approvedBy+')'):('บันทึกเช็คชื่อ ('+students.length+' คน)');
+  }
+  function renderStudents(){
+    document.getElementById('studentList').innerHTML=students.map((s,i)=>{
+      const leave=s.status==='leave_sick'||s.status==='leave_personal',absent=s.status==='absent';
+      return `<div class="student-card ${absent?'s-absent':leave?'s-leave':''}" id="sc-${i}">
+        <div class="student-top"><div class="student-no">${i+1}</div><div class="student-name">${s.name}</div></div>
+        <div class="btn-group">
+          <button class="btn-status ${s.status==='present'?'on-present':''}" onclick="setSt(${i},'present')">✅ มา</button>
+          <button class="btn-status ${leave?'on-leave':''}" onclick="setSt(${i},'leave_sick')">📝 ลา</button>
+          <button class="btn-status ${absent?'on-absent':''}" onclick="setSt(${i},'absent')">❌ ขาด</button>
+        </div></div>`;
+    }).join('');
+  }
+  function setSt(i,st){
+    students[i].status=st;
+    const c=document.getElementById('sc-'+i);
+    c.className='student-card'+(st==='absent'?' s-absent':st!=='present'?' s-leave':'');
+    const b=c.querySelectorAll('.btn-status');b.forEach(x=>x.className='btn-status');
+    if(st==='present')b[0].className='btn-status on-present';else if(st==='absent')b[2].className='btn-status on-absent';else b[1].className='btn-status on-leave';
+    updateSummary();
+  }
+  function updateSummary(){
+    document.getElementById('cPresent').textContent=students.filter(s=>s.status==='present').length;
+    document.getElementById('cLeave').textContent=students.filter(s=>s.status==='leave_sick'||s.status==='leave_personal').length;
+    document.getElementById('cAbsent').textContent=students.filter(s=>s.status==='absent').length;
+  }
+  async function submitApprove(){
+    const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
+    btn.disabled=true;lb.textContent='กำลังบันทึก...';
+    const r=await api('saveAttendance',{grade:curClass.grade,classroom:curClass.classroom,date:curDate,students});
+    if(r.ok){alert('✅ '+r.message);if(liff.isInClient())liff.closeWindow();}
+    else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกเช็คชื่อ ('+students.length+' คน)';}
+  }
+
+  init();
+</script>
+</body>
+</html>

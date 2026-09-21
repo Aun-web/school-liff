@@ -112,6 +112,7 @@
         <button class="submit-btn" style="width:auto;padding:0 18px;font-size:14px;" onclick="registerChild()">เพิ่ม</button>
       </div>
       <div class="page-status" id="regStatus"></div>
+      <div id="childHint" style="display:none;margin-top:12px;padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.55;color:#8a6d00;"></div>
     </div>
     <div class="section" id="leaveForm" style="display:none;">
       <div class="section-title">ประเภทการลา</div>
@@ -220,6 +221,14 @@
     }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
+    const pending=children.filter(c=>c.status==='pending');
+    const hint=document.getElementById('childHint');
+    if(!approved.length && pending.length){
+      hint.style.display='block';
+      hint.innerHTML='⏳ ส่งคำขอผูกบัญชีแล้ว — รอ<b>ครูประจำชั้นอนุมัติ</b>ก่อน จึงจะแจ้งลาได้<br><span style="opacity:.75">เมื่ออนุมัติแล้ว เปิดหน้านี้อีกครั้ง จะมีฟอร์มแจ้งลาให้กรอก</span>';
+    }else{
+      hint.style.display='none';
+    }
     if(approved.length && !selectedChild){pickChild(approved[0].student_id);}
     updateLeaveBtn();
   }

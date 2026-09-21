@@ -102,7 +102,7 @@
     <h1>แจ้งลานักเรียน</h1>
     <p>ผู้ปกครอง</p>
   </div>
-  <div class="deadline-bar"><span>⏰</span><span>แจ้งลาก่อน 08:30 น. ของวันที่ลา</span></div>
+  <div class="deadline-bar"><span>⏰</span><span id="deadlineText">แจ้งลาก่อน 08:30 น. ของวันที่ลา</span></div>
   <div class="content">
     <div class="section">
       <div class="section-title">นักเรียนของคุณ</div>
@@ -126,8 +126,8 @@
         <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="endDate" onchange="calcDays()"></div>
       </div>
       <div class="days-badge" id="daysBadge">📅 1 วัน</div>
-      <div class="section-title" style="margin-top:16px;">เหตุผล</div>
-      <textarea class="form-input" id="reason" rows="3" placeholder="เช่น ไข้หวัด ธุระครอบครัว..."></textarea>
+      <div class="section-title" id="reasonLabel" style="margin-top:16px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
+      <textarea class="form-input" id="reason" rows="3" placeholder="เช่น ไข้หวัด ธุระครอบครัว..." oninput="updateLeaveBtn()"></textarea>
     </div>
   </div>
   <div class="content" style="padding-top:0;display:none;" id="leaveSubmitWrap">
@@ -233,10 +233,27 @@
     st.innerHTML = r.ok?`<span style="color:var(--green)">✅ ${r.message} (${r.student_name||''})</span>`:`<span style="color:var(--red)">❌ ${r.error}</span>`;
     if(r.ok){document.getElementById('regCode').value='';await loadChildren();}
   }
-  function selType(t){leaveType=t;document.getElementById('t-sick').classList.toggle('active',t==='sick');document.getElementById('t-personal').classList.toggle('active',t==='personal');}
+  function selType(t){
+    leaveType=t;
+    document.getElementById('t-sick').classList.toggle('active',t==='sick');
+    document.getElementById('t-personal').classList.toggle('active',t==='personal');
+    const rl=document.getElementById('reasonLabel');
+    if(rl)rl.innerHTML=t==='personal'
+      ? 'เหตุผล <span style="color:var(--red)">* จำเป็น</span>'
+      : 'เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span>';
+    updateLeaveBtn();
+  }
   function setDefaultDates(){
-    const today=new Date(),tmr=new Date();tmr.setDate(today.getDate()+1);const mx=new Date();mx.setDate(today.getDate()+30);
-    ['startDate','endDate'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(tmr);el.min=localDateStr(today);el.max=localDateStr(mx);});
+    // ก่อน 08:30 → เลือก/ตั้งค่าเริ่มต้น = วันนี้ (เคสจริง: เช้านี้ลูกป่วย ลาวันนี้)
+    // หลัง 08:30 → เริ่มต้น = พรุ่งนี้ + กันเลือกวันนี้ (backend reject อยู่แล้ว)
+    const now=new Date();
+    const deadline=new Date();deadline.setHours(8,30,0,0);
+    const beforeDeadline=now<deadline;
+    const minD=new Date();if(!beforeDeadline)minD.setDate(minD.getDate()+1);
+    const maxD=new Date();maxD.setDate(maxD.getDate()+30);
+    ['startDate','endDate'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);});
+    const dt=document.getElementById('deadlineText');
+    if(dt)dt.textContent=beforeDeadline?'ลาวันนี้ได้ถึง 08:30 น. — เลือกวันแล้วกดส่งได้เลย':'เลย 08:30 แล้ว — แจ้งลาได้ตั้งแต่พรุ่งนี้';
     calcDays();
   }
   function calcDays(){
@@ -247,12 +264,16 @@
   }
   function updateLeaveBtn(){
     const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
-    if(selectedChild){btn.disabled=false;lb.textContent='ส่งคำขอลา';}else{btn.disabled=true;lb.textContent='เลือกนักเรียน';}
+    const reason=document.getElementById('reason').value.trim();
+    if(!selectedChild){btn.disabled=true;lb.textContent='เลือกนักเรียน';}
+    else if(leaveType==='personal'&&!reason){btn.disabled=true;lb.textContent='กรอกเหตุผลการลากิจ';}
+    else{btn.disabled=false;lb.textContent='ส่งคำขอลา';}
   }
   async function submitLeave(){
     const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
     const reason=document.getElementById('reason').value.trim();
     if(!selectedChild){alert('เลือกนักเรียน');return;}
+    if(leaveType==='personal'&&!reason){alert('กรุณากรอกเหตุผลการลากิจ');return;}
     const dates=[];const cur=new Date(document.getElementById('startDate').value+'T00:00:00');const end=new Date(document.getElementById('endDate').value+'T00:00:00');
     while(cur<=end){dates.push(localDateStr(cur));cur.setDate(cur.getDate()+1);}
     btn.disabled=true;lb.textContent='กำลังบันทึก...';

@@ -217,7 +217,7 @@
     document.getElementById('childList').innerHTML = children.length ? children.map(c=>{
       const ok = c.status==='approved';
       return `<span class="child-chip ${ok?'':'pending'} ${selectedChild===c.student_id?'active':''}" ${ok?`onclick="pickChild('${c.student_id}')"`:''}>
-        ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รออนุมัติ'}</span></span>`;
+        ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รอยืนยัน'}</span></span>`;
     }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
@@ -225,7 +225,7 @@
     const hint=document.getElementById('childHint');
     if(!approved.length && pending.length){
       hint.style.display='block';
-      hint.innerHTML='⏳ ส่งคำขอผูกบัญชีแล้ว — รอ<b>ครูประจำชั้นอนุมัติ</b>ก่อน จึงจะแจ้งลาได้<br><span style="opacity:.75">เมื่ออนุมัติแล้ว เปิดหน้านี้อีกครั้ง จะมีฟอร์มแจ้งลาให้กรอก</span>';
+      hint.innerHTML='⏳ รอ<b>ครูยืนยันว่าคุณเป็นผู้ปกครอง</b>ของเด็กคนนี้ — <b>ยืนยันครั้งเดียว</b><br><span style="opacity:.75">ยืนยันแล้ว คุณแจ้งลาได้เองทุกครั้ง ไม่ต้องรออนุมัติรายครั้ง (เปิดหน้านี้อีกทีจะมีฟอร์มแจ้งลา)</span>';
     }else{
       hint.style.display='none';
     }

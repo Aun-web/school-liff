@@ -172,6 +172,42 @@
   </div>
 </div>
 
+<!-- ===== STAFF LEAVE (ครูแจ้งลา) ===== -->
+<div class="page" id="staffLeavePage">
+  <div class="header navy">
+    <div class="header-badge"><span>🧑‍🏫</span><span id="staffName">ครู</span></div>
+    <h1>แจ้งลา (บุคลากร)</h1>
+    <p>ส่งใบลา → ผู้อำนวยการอนุมัติ</p>
+  </div>
+  <div class="content">
+    <div id="staffNotBound" class="section" style="display:none;">
+      <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
+        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดหน้า <b>เช็คชื่อ (ครู)</b> เพื่อผูกบัญชีด้วยอีเมลก่อน แล้วกลับมาแจ้งลาได้
+      </div>
+    </div>
+    <div id="staffForm" style="display:none;">
+      <div class="section">
+        <div class="section-title">ประเภทการลา</div>
+        <div class="leave-types" id="staffKinds"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">วันที่ลา</div>
+        <div class="date-row2">
+          <div class="date-field"><label>วันแรก</label><input type="date" id="staffStart" onchange="staffCalcDays()"></div>
+          <div class="date-arrow">→</div>
+          <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="staffEnd" onchange="staffCalcDays()"></div>
+        </div>
+        <div class="days-badge" id="staffDaysBadge">📅 1 วัน</div>
+        <div class="section-title" id="staffReasonLabel" style="margin-top:16px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
+        <textarea class="form-input" id="staffReason" rows="3" placeholder="เช่น ธุระครอบครัว ไปราชการ..." oninput="staffUpdateBtn()"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="content" id="staffSubmitWrap" style="padding-top:0;display:none;">
+    <button class="submit-btn navy" id="staffSubmitBtn" onclick="submitStaffLeave()"><span>📨</span><span id="staffSubmitLabel">ส่งใบลา</span></button>
+  </div>
+</div>
+
 <script>
   const params  = new URLSearchParams(location.search);
   const SCHOOL  = params.get('school');
@@ -199,8 +235,10 @@
       if(!liff.isLoggedIn()){liff.login();return;}
       TOKEN = liff.getAccessToken();
       document.getElementById('connecting').classList.add('hidden');
-      const page = params.get('page')==='approve' ? 'approve' : 'parent';
-      if(page==='approve') initTeacher(); else initParent();
+      const page = params.get('page');
+      if(page==='approve') initTeacher();
+      else if(page==='staffleave') initStaffLeave();
+      else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
   }
 
@@ -366,6 +404,65 @@
     const r=await api('saveAttendance',{grade:curClass.grade,classroom:curClass.classroom,date:curDate,students});
     if(r.ok){alert('✅ '+r.message);if(liff.isInClient())liff.closeWindow();}
     else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกเช็คชื่อ ('+students.length+' คน)';}
+  }
+
+  /* ===== STAFF LEAVE (S2) ===== */
+  let staffKind='ลาป่วย';
+  const STAFF_KINDS=[['ลาป่วย','🤒'],['ลากิจ','📋'],['ไปราชการ','🚌'],['อื่นๆ','📌']];
+  async function initStaffLeave(){
+    show('staffLeavePage');
+    const r=await api('getStaffLeaveInit');
+    if(!r||!r.bound){document.getElementById('staffNotBound').style.display='block';return;}
+    document.getElementById('staffName').textContent=r.staff_name||'ครู';
+    document.getElementById('staffForm').style.display='block';
+    document.getElementById('staffSubmitWrap').style.display='block';
+    renderStaffKinds();
+    staffSetDefaultDates();
+    staffUpdateBtn();
+  }
+  function renderStaffKinds(){
+    document.getElementById('staffKinds').innerHTML=STAFF_KINDS.map(k=>
+      `<button class="leave-type-btn ${k[0]===staffKind?'active':''}" onclick="selStaffKind('${k[0]}')"><span class="type-icon">${k[1]}</span><span class="type-label">${k[0]}</span></button>`).join('');
+  }
+  function selStaffKind(k){
+    staffKind=k;renderStaffKinds();
+    document.getElementById('staffReasonLabel').innerHTML=k==='ลากิจ'
+      ? 'เหตุผล <span style="color:var(--red)">* จำเป็น</span>'
+      : 'เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span>';
+    staffUpdateBtn();
+  }
+  function staffSetDefaultDates(){
+    const minD=new Date();const maxD=new Date();maxD.setDate(maxD.getDate()+60);
+    ['staffStart','staffEnd'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);});
+    staffCalcDays();
+  }
+  function staffCalcDays(){
+    const s=new Date(document.getElementById('staffStart').value+'T00:00:00');
+    if(new Date(document.getElementById('staffEnd').value+'T00:00:00')<s)document.getElementById('staffEnd').value=document.getElementById('staffStart').value;
+    const diff=Math.round((new Date(document.getElementById('staffEnd').value+'T00:00:00')-s)/86400000)+1;
+    document.getElementById('staffDaysBadge').innerHTML='📅 '+diff+' วัน';
+  }
+  function staffUpdateBtn(){
+    const btn=document.getElementById('staffSubmitBtn'),lb=document.getElementById('staffSubmitLabel');
+    const reason=document.getElementById('staffReason').value.trim();
+    if(staffKind==='ลากิจ'&&!reason){btn.disabled=true;lb.textContent='กรอกเหตุผลการลากิจ';}
+    else{btn.disabled=false;lb.textContent='ส่งใบลา';}
+  }
+  async function submitStaffLeave(){
+    const btn=document.getElementById('staffSubmitBtn'),lb=document.getElementById('staffSubmitLabel');
+    const reason=document.getElementById('staffReason').value.trim();
+    if(staffKind==='ลากิจ'&&!reason){alert('กรุณากรอกเหตุผลการลากิจ');return;}
+    const dates=[];const cur=new Date(document.getElementById('staffStart').value+'T00:00:00');const end=new Date(document.getElementById('staffEnd').value+'T00:00:00');
+    while(cur<=end){dates.push(localDateStr(cur));cur.setDate(cur.getDate()+1);}
+    btn.disabled=true;lb.textContent='กำลังส่ง...';
+    const r=await api('submitStaffLeave',{dates,kind:staffKind,reason});
+    if(r.ok){
+      document.getElementById('successTitle').textContent='ส่งใบลาแล้ว';
+      document.getElementById('successMsg').innerHTML=`${(r.dates||dates).length} วัน<br>${r.message||''}`;
+      document.getElementById('staffLeavePage').classList.remove('show');
+      document.getElementById('success').classList.remove('hidden');
+      setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
+    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;staffUpdateBtn();}
   }
 
   init();

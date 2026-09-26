@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Schoolflow</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- ฟอนต์โหลดแบบไม่บล็อกหน้า (media=print → all เมื่อโหลดเสร็จ) -->
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
@@ -145,8 +148,12 @@
   </div>
   <div class="content">
     <div class="section">
-      <div class="section-title">อีเมลที่ใช้ใน Schoolflow</div>
-      <input class="form-input" id="bindEmail" type="email" placeholder="teacher@example.com">
+      <div class="section-title">รหัสผูกบัญชี (8 ตัว)</div>
+      <div style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:10px;">
+        เปิดเว็บ Schoolflow บนคอม/มือถือ › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> › สร้างรหัส แล้วกรอกที่นี่ภายใน 10 นาที
+      </div>
+      <input class="form-input" id="bindCode" type="text" inputmode="text" autocomplete="one-time-code" maxlength="9"
+        placeholder="เช่น ABCD2345" style="text-transform:uppercase;letter-spacing:4px;font-size:20px;text-align:center;font-weight:700;">
       <button class="submit-btn navy" style="margin-top:12px;" onclick="bindTeacher()"><span>🔗</span><span id="bindLabel">ผูกบัญชี</span></button>
       <div class="page-status" id="bindStatus"></div>
     </div>
@@ -182,7 +189,7 @@
   <div class="content">
     <div id="staffNotBound" class="section" style="display:none;">
       <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
-        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดหน้า <b>เช็คชื่อ (ครู)</b> เพื่อผูกบัญชีด้วยอีเมลก่อน แล้วกลับมาแจ้งลาได้
+        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดหน้า <b>เช็คชื่อ (ครู)</b> แล้วกรอก <b>รหัสผูกบัญชี</b> จากเว็บ Schoolflow ก่อน แล้วกลับมาแจ้งลาได้
       </div>
     </div>
     <div id="staffForm" style="display:none;">
@@ -212,8 +219,12 @@
   const params  = new URLSearchParams(location.search);
   const SCHOOL  = params.get('school');
   const LIFF_ID = params.get('liff');
-  // ⚠️ วาง Web App URL ของ schoolflow-line (Deploy → Web app) หลัง deploy
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbz7H89yWtx0kKFBg614uNxM0lTk3fvqzfRc3Fp5i5yy2jP0Ysu0RQzBRw7rvGzvrvtoNA/exec";
+  // API หลัก = Cloudflare Worker (เร็ว) · สำรอง ?api=gas → GAS เดิม (rollback ได้ทันที)
+  const WORKER_URL = "https://schoolflow-line.witsarut-aun.workers.dev/";
+  const GAS_URL    = "https://script.google.com/macros/s/AKfycbz7H89yWtx0kKFBg614uNxM0lTk3fvqzfRc3Fp5i5yy2jP0Ysu0RQzBRw7rvGzvrvtoNA/exec";
+  const USE_GAS = params.get('api') === 'gas';
+  const API_URL = USE_GAS ? GAS_URL : WORKER_URL;
+  const DEBUG   = params.get('debug') === '1';   // แสดงเวลาที่ใช้มุมจอ
 
   let TOKEN = null, leaveType = 'sick', children = [], selectedChild = null;
   let teacher = null, curClass = null, students = [], curDate = '';
@@ -223,9 +234,20 @@
   function show(id){document.getElementById(id).classList.add('show');}
 
   async function api(action, payload){
-    const body = Object.assign({action, access_token: TOKEN}, payload||{});
-    const res = await fetch(GAS_URL+'?school='+encodeURIComponent(SCHOOL)+'&mode=liff',{method:'POST',redirect:'follow',body:JSON.stringify(body)});
-    return res.json();
+    const body = Object.assign({action, access_token: TOKEN}, payload||{}, DEBUG?{debug:true}:{});
+    const t0 = performance.now();
+    const res = await fetch(API_URL+'?school='+encodeURIComponent(SCHOOL)+'&mode=liff',{method:'POST',redirect:'follow',body:JSON.stringify(body)});
+    const out = await res.json();
+    if (DEBUG) debugLog(action+' '+Math.round(performance.now()-t0)+'ms'+(out._ms!=null?' (server '+out._ms+'ms)':'')+(USE_GAS?' [GAS]':' [Worker]'));
+    return out;
+  }
+
+  const T_START = performance.now();
+  function debugLog(msg){
+    if(!DEBUG) return;
+    let el=document.getElementById('dbg');
+    if(!el){el=document.createElement('div');el.id='dbg';el.style.cssText='position:fixed;left:6px;bottom:6px;z-index:999;background:rgba(0,0,0,.75);color:#0f0;font:11px monospace;padding:6px 8px;border-radius:6px;max-width:92vw;white-space:pre-wrap;';document.body.appendChild(el);}
+    el.textContent+=(el.textContent?'\n':'')+'+'+Math.round(performance.now()-T_START)+'ms '+msg;
   }
 
   async function init(){
@@ -234,6 +256,7 @@
       await Promise.race([liff.init({liffId:LIFF_ID}), new Promise((_,r)=>setTimeout(()=>r(new Error('กรุณาเปิดผ่าน LINE')),10000))]);
       if(!liff.isLoggedIn()){liff.login();return;}
       TOKEN = liff.getAccessToken();
+      debugLog('liff.init');
       document.getElementById('connecting').classList.add('hidden');
       const page = params.get('page');
       if(page==='approve') initTeacher();
@@ -336,7 +359,7 @@
 
   /* ===== TEACHER ===== */
   async function initTeacher(){
-    const r=await api('getTeacherClasses');
+    const r=await api(USE_GAS?'getTeacherClasses':'initTeacher');
     if(!r.bound){show('bindPage');return;}
     teacher=r;
     show('approvePage');
@@ -346,14 +369,15 @@
     const pick=document.getElementById('classPicker');
     if(classes.length>1){pick.innerHTML='<div style="display:flex;flex-wrap:wrap;">'+classes.map((c,i)=>`<span class="chip ${i===0?'active':''}" onclick="pickClass(${i})">${c.grade}/${c.classroom}</span>`).join('')+'</div>';}
     curDate=localDateStr(new Date());
-    pickClass(0);
+    if(r.roster&&r.roster.ok){curClass=classes[0];renderRoster(r.roster);}   // Worker ส่งรายชื่อห้องแรกมาแล้ว
+    else pickClass(0);
   }
   async function bindTeacher(){
-    const email=document.getElementById('bindEmail').value.trim();
+    const code=document.getElementById('bindCode').value.toUpperCase().replace(/[\s-]/g,'');
     const st=document.getElementById('bindStatus');
-    if(!email){st.textContent='กรอกอีเมล';return;}
+    if(code.length!==8){st.textContent='กรอกรหัส 8 ตัวจากเว็บ Schoolflow';return;}
     document.getElementById('bindLabel').textContent='กำลังผูก...';
-    const r=await api('bindTeacher',{email});
+    const r=await api('bindTeacher',{code});
     if(r.ok){document.getElementById('bindPage').classList.remove('show');initTeacher();}
     else{st.innerHTML=`<span style="color:var(--red)">❌ ${r.error}</span>`;document.getElementById('bindLabel').textContent='ผูกบัญชี';}
   }
@@ -367,6 +391,10 @@
     const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
     btn.disabled=true;lb.textContent='กำลังโหลด...';
     const r=await api('getRoster',{grade:curClass.grade,classroom:curClass.classroom,date:curDate});
+    renderRoster(r);
+  }
+  function renderRoster(r){
+    const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
     if(!r.ok){document.getElementById('approveInfo').textContent='❌ '+r.error;return;}
     students=r.students;
     document.getElementById('approveInfo').textContent='ห้อง '+r.classLabel+' | '+thaiDate(curDate);

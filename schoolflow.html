@@ -183,6 +183,19 @@
   <div class="content" id="homeworkBody"><div class="empty-box">กำลังโหลด...</div></div>
 </div>
 
+<!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
+<div class="page" id="notifyPage">
+  <div class="header" style="background:#D6457A;">
+    <div class="header-badge"><span>📣</span><span>สำหรับครู</span></div>
+    <h1>แจ้งผู้ปกครอง</h1>
+    <p>ส่งข่าวถึงผู้ปกครองผ่าน LINE ของโรงเรียน</p>
+  </div>
+  <div class="content">
+    <div class="section"><div class="empty-box">🚧 ฟีเจอร์นี้กำลังพัฒนา<br>เร็ว ๆ นี้ครูจะส่งข่าวถึงผู้ปกครองได้จากที่นี่</div></div>
+    <button class="submit-btn navy" onclick="openWeb()"><span>🖥️</span><span>เปิดเว็บ Schoolflow</span></button>
+  </div>
+</div>
+
 <!-- ===== TEACHER BIND ===== -->
 <div class="page" id="bindPage">
   <div class="header navy">
@@ -307,6 +320,7 @@
       else if(page==='homework') initHomework();
       else if(page==='approve') initTeacher();
       else if(page==='staffleave') initStaffLeave();
+      else if(page==='notify') show('notifyPage');
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
   }
@@ -462,6 +476,12 @@
     if(d===1) return ['ส่งพรุ่งนี้','#b45309','#fef3c7'];
     return ['อีก '+d+' วัน','#6d4fc2','#efeafb'];
   }
+  /* ===== NOTIFY (placeholder) ===== */
+  function openWeb(){
+    const url='https://schoolflow-74ffd.web.app/dashboard?school='+encodeURIComponent(SCHOOL);
+    try{ liff.openWindow({url, external:true}); }catch(e){ location.href=url; }
+  }
+
   async function initHomework(){
     show('homeworkPage');
     const body=document.getElementById('homeworkBody');

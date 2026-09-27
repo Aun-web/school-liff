@@ -88,7 +88,6 @@
     .chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
     /* ── ผลการเรียน (P1) ── */
     .header.green{background:#0E7C66;}
-    .grades-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:12px;border:2px solid #0E7C66;border-radius:12px;background:#E8F6F2;color:#0E7C66;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
     .gpa-card{display:flex;align-items:center;justify-content:space-between;background:#0E7C66;color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:12px;}
     .gpa-card .gpa{font-size:30px;font-weight:700;line-height:1;}
     .subj{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
@@ -137,7 +136,6 @@
       </div>
       <div class="page-status" id="regStatus"></div>
       <div id="childHint" style="display:none;margin-top:12px;padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.55;color:#8a6d00;"></div>
-      <button class="grades-btn" id="gradesBtn" style="display:none;" onclick="openGrades()">📊 ดูผลการเรียน</button>
     </div>
     <div class="section" id="leaveForm" style="display:none;">
       <div class="section-title">ประเภทการลา</div>
@@ -172,6 +170,18 @@
     <div id="gradesChildPicker"></div>
     <div id="gradesTermPicker"></div>
     <div id="gradesBody"><div class="empty-box">กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<!-- ===== การบ้าน (P2 — เร็ว ๆ นี้) ===== -->
+<div class="page" id="homeworkPage">
+  <div class="header" style="background:#7B5CD6;">
+    <div class="header-badge"><span>📚</span><span>สมุดการบ้าน</span></div>
+    <h1>การบ้าน</h1>
+    <p>ผู้ปกครอง · นักเรียน</p>
+  </div>
+  <div class="content">
+    <div class="section"><div class="empty-box">🚧 กำลังพัฒนา<br>เร็ว ๆ นี้ ครูจะโพสต์การบ้านให้ดูได้ที่นี่</div></div>
   </div>
 </div>
 
@@ -296,6 +306,7 @@
       document.getElementById('connecting').classList.add('hidden');
       const page = params.get('page');
       if(page==='grades') initGrades();
+      else if(page==='homework') show('homeworkPage');
       else if(page==='approve') initTeacher();
       else if(page==='staffleave') initStaffLeave();
       else initParent();
@@ -318,7 +329,6 @@
         ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รอยืนยัน'}</span></span>`;
     }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
-    document.getElementById('gradesBtn').style.display = (approved.length && !USE_GAS)?'flex':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
     const pending=children.filter(c=>c.status==='pending');
     const hint=document.getElementById('childHint');
@@ -398,7 +408,6 @@
   /* ===== ผลการเรียน (P1 — Worker getGrades) ===== */
   let gChildren=[], gChild=null, gSel=null;
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function openGrades(){document.getElementById('parentPage').classList.remove('show');gChildren=children;initGrades();}
   async function initGrades(){
     show('gradesPage');
     if(!gChildren.length){const r=await api('getChildren');gChildren=r.children||[];}

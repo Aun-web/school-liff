@@ -86,6 +86,27 @@
     .approve-footer{position:fixed;bottom:0;left:0;right:0;background:var(--white);padding:14px 18px;border-top:1px solid var(--border);}
     .chip{padding:8px 16px;border:2px solid var(--border);border-radius:20px;background:var(--white);cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;margin:0 8px 8px 0;}
     .chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+    /* ── ผลการเรียน (P1) ── */
+    .header.green{background:#0E7C66;}
+    .grades-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:12px;border:2px solid #0E7C66;border-radius:12px;background:#E8F6F2;color:#0E7C66;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
+    .gpa-card{display:flex;align-items:center;justify-content:space-between;background:#0E7C66;color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:12px;}
+    .gpa-card .gpa{font-size:30px;font-weight:700;line-height:1;}
+    .subj{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+    .subj-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+    .subj-name{font-size:15px;font-weight:700;color:var(--dark);}
+    .subj-code{font-size:12px;color:var(--gray);}
+    .grade-badge{flex-shrink:0;border-radius:10px;padding:4px 10px;font-size:14px;font-weight:700;background:#E8F6F2;color:#0E7C66;text-align:center;}
+    .grade-badge small{display:block;font-size:10px;font-weight:500;}
+    .grade-badge.special{background:var(--red-pale);color:var(--red);}
+    .bar{height:8px;background:var(--gray-light);border-radius:6px;overflow:hidden;margin-top:10px;}
+    .bar > span{display:block;height:100%;background:#0E7C66;border-radius:6px;}
+    .subj-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-top:6px;}
+    .subj details{margin-top:8px;font-size:13px;}
+    .subj summary{cursor:pointer;color:#0E7C66;font-weight:600;}
+    .comp-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);}
+    .comp-row:last-child{border-bottom:none;}
+    .note-red{margin-top:8px;padding:8px 10px;background:var(--red-pale);border-radius:10px;font-size:12px;color:var(--red);line-height:1.5;}
+    .empty-box{text-align:center;padding:28px 16px;color:var(--gray);font-size:14px;line-height:1.7;}
   </style>
 </head>
 <body>
@@ -116,6 +137,7 @@
       </div>
       <div class="page-status" id="regStatus"></div>
       <div id="childHint" style="display:none;margin-top:12px;padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.55;color:#8a6d00;"></div>
+      <button class="grades-btn" id="gradesBtn" style="display:none;" onclick="openGrades()">📊 ดูผลการเรียน</button>
     </div>
     <div class="section" id="leaveForm" style="display:none;">
       <div class="section-title">ประเภทการลา</div>
@@ -136,6 +158,20 @@
   </div>
   <div class="content" style="padding-top:0;display:none;" id="leaveSubmitWrap">
     <button class="submit-btn" id="submitLeaveBtn" disabled onclick="submitLeave()"><span>📨</span><span id="submitLeaveLabel">เลือกนักเรียน</span></button>
+  </div>
+</div>
+
+<!-- ===== ผลการเรียน (P1) ===== -->
+<div class="page" id="gradesPage">
+  <div class="header green">
+    <div class="header-badge"><span>📊</span><span id="gradesStudent">ผลการเรียน</span></div>
+    <h1>ผลการเรียน</h1>
+    <p id="gradesSub">ผู้ปกครอง · ดูได้เฉพาะบุตรหลานของคุณ</p>
+  </div>
+  <div class="content">
+    <div id="gradesChildPicker"></div>
+    <div id="gradesTermPicker"></div>
+    <div id="gradesBody"><div class="empty-box">กำลังโหลด...</div></div>
   </div>
 </div>
 
@@ -259,7 +295,8 @@
       debugLog('liff.init');
       document.getElementById('connecting').classList.add('hidden');
       const page = params.get('page');
-      if(page==='approve') initTeacher();
+      if(page==='grades') initGrades();
+      else if(page==='approve') initTeacher();
       else if(page==='staffleave') initStaffLeave();
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
@@ -281,6 +318,7 @@
         ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รอยืนยัน'}</span></span>`;
     }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
+    document.getElementById('gradesBtn').style.display = (approved.length && !USE_GAS)?'flex':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
     const pending=children.filter(c=>c.status==='pending');
     const hint=document.getElementById('childHint');
@@ -355,6 +393,59 @@
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3000);
     }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='ส่งคำขอลา';}
+  }
+
+  /* ===== ผลการเรียน (P1 — Worker getGrades) ===== */
+  let gChildren=[], gChild=null, gSel=null;
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function openGrades(){document.getElementById('parentPage').classList.remove('show');gChildren=children;initGrades();}
+  async function initGrades(){
+    show('gradesPage');
+    if(!gChildren.length){const r=await api('getChildren');gChildren=r.children||[];}
+    const ok=gChildren.filter(c=>c.status==='approved');
+    if(!ok.length){document.getElementById('gradesBody').innerHTML='<div class="empty-box">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>เพิ่มได้ที่เมนู "แจ้งลานักเรียน"</div>';return;}
+    const pick=document.getElementById('gradesChildPicker');
+    pick.innerHTML=ok.length>1?'<div style="display:flex;flex-wrap:wrap;">'+ok.map((c,i)=>`<span class="chip ${i===0?'active':''}" onclick="pickGradeChild(${i})">${esc(c.student_name)}</span>`).join('')+'</div>':'';
+    gChildren=ok;pickGradeChild(0);
+  }
+  function pickGradeChild(i){
+    gChild=gChildren[i];gSel=null;
+    document.querySelectorAll('#gradesChildPicker .chip').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+    loadGrades();
+  }
+  function pickGradeTerm(y,t){gSel={year:y,term:t};loadGrades();}
+  async function loadGrades(){
+    const body=document.getElementById('gradesBody');
+    body.innerHTML='<div class="empty-box">กำลังโหลด...</div>';
+    const r=await api('getGrades',Object.assign({student_id:gChild.student_id},gSel||{}));
+    if(!r.ok){body.innerHTML='<div class="empty-box">❌ '+esc(r.error)+'</div>';return;}
+    const st=r.student||{};
+    document.getElementById('gradesStudent').textContent=(st.name||gChild.student_name)+(st.grade?(' · '+st.grade+'/'+st.classroom):'');
+    const tp=document.getElementById('gradesTermPicker');
+    if(!r.released){tp.innerHTML='';body.innerHTML='<div class="empty-box">📭 โรงเรียนยังไม่เผยแพร่ผลการเรียน<br>เมื่อครูพร้อม จะดูได้ที่นี่</div>';return;}
+    const sel=r.selected;
+    tp.innerHTML=(r.terms||[]).length>1?'<div style="display:flex;flex-wrap:wrap;">'+r.terms.map(t=>`<span class="chip ${t.year===sel.year&&t.term===sel.term?'active':''}" onclick="pickGradeTerm(${t.year},${t.term})">เทอม ${t.term}/${t.year}</span>`).join('')+'</div>':'';
+    document.getElementById('gradesSub').textContent='ภาคเรียนที่ '+sel.term+'/'+sel.year+(sel.grades_published?' · ประกาศเกรดแล้ว':' · คะแนนเก็บระหว่างภาค');
+    let html='';
+    if(sel.grades_published&&r.gpa!=null){
+      html+=`<div class="gpa-card"><div><div style="font-size:13px;opacity:.85;">เกรดเฉลี่ย (GPA)</div>${r.gpa_partial?'<div style="font-size:11px;opacity:.75;margin-top:2px;">บางวิชายังไม่มีเกรด</div>':''}</div><div class="gpa">${r.gpa.toFixed(2)}</div></div>`;
+    }
+    if(!(r.subjects||[]).length) html+='<div class="empty-box">ยังไม่มีรายวิชาในภาคเรียนนี้</div>';
+    (r.subjects||[]).forEach(s=>{
+      let badge='';
+      if(s.special) badge=`<div class="grade-badge special">${esc(s.special)}<small>ติดต่อครู</small></div>`;
+      else if(s.grade!=null) badge=`<div class="grade-badge">${s.grade}<small>${esc(s.grade_label)}</small></div>`;
+      let prog='';
+      if(s.components){
+        const pct=s.max_total?Math.round(((s.total||0)/s.max_total)*100):0;
+        prog=`<div class="bar"><span style="width:${Math.min(100,pct)}%"></span></div>
+          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':('คะแนนเก็บ '+s.total+' / '+s.max_total)}</span><span>กรอกแล้ว ${s.filled}/${s.parts} ช่อง</span></div>
+          <details><summary>ดูรายละเอียด</summary>${s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(c.score+' / '+c.max)}</span></div>`).join('')}</details>`;
+      }
+      const note=s.special_note?`<div class="note-red">⚠️ ${esc(s.special_note)}</div>`:'';
+      html+=`<div class="subj"><div class="subj-top"><div><div class="subj-name">${esc(s.name)}</div><div class="subj-code">${esc(s.code)}${s.credit?(' · '+s.credit+' หน่วยกิต'):''}</div></div>${badge}</div>${prog}${note}</div>`;
+    });
+    body.innerHTML=html;
   }
 
   /* ===== TEACHER ===== */

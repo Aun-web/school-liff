@@ -207,9 +207,7 @@
     <h1>ประกาศ</h1>
     <p>ข่าวจากโรงเรียนและครูประจำชั้น</p>
   </div>
-  <div class="content">
-    <div class="section"><div class="empty-box">🚧 กำลังพัฒนา<br>เร็ว ๆ นี้ประกาศจากโรงเรียนจะรวมไว้ที่นี่</div></div>
-  </div>
+  <div class="content" id="noticesBody"><div class="empty-box">กำลังโหลด...</div></div>
 </div>
 
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
@@ -220,7 +218,31 @@
     <p>ส่งข่าวถึงผู้ปกครองผ่าน LINE ของโรงเรียน</p>
   </div>
   <div class="content">
-    <div class="section"><div class="empty-box">🚧 ฟีเจอร์นี้กำลังพัฒนา<br>เร็ว ๆ นี้ครูจะส่งข่าวถึงผู้ปกครองได้จากที่นี่</div></div>
+    <div id="notifyNotBound" class="section" style="display:none;">
+      <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
+        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR
+      </div>
+    </div>
+    <div id="notifyForm" style="display:none;">
+      <div class="section">
+        <div class="section-title">ส่งถึง</div>
+        <select class="form-input" id="ntAudience"></select>
+        <div class="section-title" style="margin-top:14px;">หัวข้อ <span style="color:var(--red)">*</span></div>
+        <input class="form-input" id="ntTitle" maxlength="120" placeholder="เช่น ประชุมผู้ปกครองวันศุกร์นี้" oninput="ntCount()">
+        <div class="section-title" style="margin-top:14px;">รายละเอียด <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
+        <textarea class="form-input" id="ntBody" rows="5" maxlength="1000" placeholder="วัน เวลา สถานที่ สิ่งที่ต้องเตรียม..." oninput="ntCount()"></textarea>
+        <div id="ntCounter" style="text-align:right;font-size:12px;color:var(--gray);margin-top:4px;">0/1000</div>
+        <div style="margin-top:10px;padding:10px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12.5px;line-height:1.6;color:#9A3412;">
+          ⚠️ การ์ดจะเข้ากลุ่มไลน์<b>ในชื่อของคุณ</b> ทุกคนในกลุ่มเห็น — อย่าใส่ข้อมูลรายคนของนักเรียน (ชื่อคู่กับคะแนน/สุขภาพ/พฤติกรรม)
+        </div>
+      </div>
+      <button class="submit-btn" id="ntSubmit" style="background:#D6457A;" onclick="submitNotice()"><span>📢</span><span id="ntSubmitLabel">บันทึกและแชร์เข้ากลุ่มไลน์</span></button>
+      <div style="font-size:12px;color:var(--gray);text-align:center;margin:8px 0 16px;line-height:1.6;">ไม่เสียโควตาข้อความของโรงเรียน · ผู้ปกครองที่ผูกบัญชีจะเห็นป้าย <b style="color:#E11D48">ใหม่</b> ที่เมนูประกาศ</div>
+      <div class="section">
+        <div class="section-title">ประกาศล่าสุดของฉัน</div>
+        <div id="ntRecent"><div class="empty-box">ยังไม่มีประกาศ</div></div>
+      </div>
+    </div>
     <button class="submit-btn navy" onclick="openWeb()"><span>🖥️</span><span>เปิดเว็บ Schoolflow</span></button>
   </div>
 </div>
@@ -353,9 +375,9 @@
       else if(page==='homework') initHomework();
       else if(page==='approve') initTeacher();
       else if(page==='staffleave') initStaffLeave();
-      else if(page==='notify') show('notifyPage');
+      else if(page==='notify') initNotify();
       else if(page==='kids') show('kidsPage');
-      else if(page==='notices') show('noticesPage');
+      else if(page==='notices') initNotices();
       else if(page==='bind') initBind();
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
@@ -517,7 +539,7 @@
     document.getElementById('kidsPage').classList.remove('show');
     if(p==='grades') initGrades();
     else if(p==='homework') initHomework();
-    else if(p==='notices') show('noticesPage');
+    else if(p==='notices') initNotices();
     else initParent();
   }
 
@@ -529,6 +551,115 @@
   }
 
   /* ===== NOTIFY (placeholder) ===== */
+  /* ===== NOTICES (ผู้ปกครอง · N1) ===== */
+  const fmtNoticeDate=(iso)=>{if(!iso||!/^\d{4}-/.test(iso))return 'วันนี้';try{return new Date(iso).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});}catch(e){return iso.slice(0,10);}};
+  async function initNotices(){
+    show('noticesPage');
+    const body=document.getElementById('noticesBody');
+    const r=await api('getNotices');
+    if(!r.ok){body.innerHTML='<div class="empty-box">❌ '+esc(r.error)+'</div>';return;}
+    if(!(r.children||[]).length){body.innerHTML='<div class="section"><div class="empty-box">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>ผูกได้ที่ปุ่ม <b>แจ้งลานักเรียน</b> (ใส่เลขประจำตัวนักเรียน)</div></div>';return;}
+    const ns=r.notices||[];
+    if(!ns.length){body.innerHTML='<div class="section"><div class="empty-box">ยังไม่มีประกาศใน 60 วันที่ผ่านมา</div></div>';return;}
+    const focus=params.get('id');
+    body.innerHTML=ns.map(n=>'<div class="section" id="nt_'+esc(n.id)+'"'+(n.id===focus?' style="border:2px solid #E08A1E"':'')+'>'
+      +'<div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between">'
+      +'<div style="font-weight:700;font-size:16px;line-height:1.5">'+esc(n.title)+'</div>'
+      +(n.is_new?'<span style="flex-shrink:0;background:#E11D48;color:#fff;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700">ใหม่</span>':'')
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--gray);margin-top:2px">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+(n.teacher?' · '+esc(n.teacher):'')+'</div>'
+      +(n.body?'<div style="margin-top:10px;font-size:14px;line-height:1.7;white-space:pre-wrap">'+esc(n.body)+'</div>':'')
+      +'</div>').join('');
+    if(focus){const el=document.getElementById('nt_'+focus);if(el)el.scrollIntoView({block:'center'});}
+  }
+
+  /* ===== NOTIFY (ครู · N1): บันทึก → แชร์การ์ดเข้ากลุ่มไลน์ (shareTargetPicker · ส่งในนามครู ไม่กินโควตา OA) ===== */
+  let notifyInit=null;
+  async function initNotify(){
+    show('notifyPage');
+    const r=await api('initNotify');
+    if(!r.ok){alert('❌ '+(r.error||'โหลดไม่สำเร็จ'));return;}
+    if(!r.bound){document.getElementById('notifyNotBound').style.display='block';return;}
+    notifyInit=r;
+    const opts=[];
+    if(r.manager){
+      opts.push(['{"scope":"school"}','ทั้งโรงเรียน']);
+      (r.grades||[]).forEach(g=>opts.push([JSON.stringify({scope:'grade',grade:g}),g+' ทุกห้อง']));
+    }
+    (r.classes||[]).forEach(c=>opts.push([JSON.stringify({scope:'class',grade:c.grade,classroom:c.classroom}),c.grade+'/'+c.classroom]));
+    const sel=document.getElementById('ntAudience');
+    if(!opts.length){document.getElementById('notifyForm').style.display='block';sel.innerHTML='<option value="">— ยังไม่ได้ตั้งห้องประจำชั้น (ให้แอดมินตั้งในเว็บ) —</option>';document.getElementById('ntSubmit').disabled=true;renderRecent(r.recent);return;}
+    // ผู้บริหาร/วิชาการ: บังคับเลือกเอง (กันส่ง "ทั้งโรงเรียน" โดยไม่ตั้งใจ) · ครูประจำชั้น: ห้องแรกของตัวเอง
+    sel.innerHTML=(r.manager?'<option value="" selected>— เลือกผู้รับ —</option>':'')
+      +opts.map((o,i)=>'<option value="'+esc(o[0])+'"'+(!r.manager&&i===0?' selected':'')+'>'+esc(o[1])+'</option>').join('');
+    document.getElementById('notifyForm').style.display='block';
+    ntCount();renderRecent(r.recent);
+  }
+  function ntCount(){
+    const t=document.getElementById('ntTitle').value.trim(),b=document.getElementById('ntBody').value;
+    document.getElementById('ntCounter').textContent=b.length+'/1000';
+    document.getElementById('ntSubmit').disabled=!t||!notifyInit||!(notifyInit.classes||[]).length&&!notifyInit.manager;
+  }
+  function renderRecent(list){
+    const el=document.getElementById('ntRecent');
+    if(!list||!list.length){el.innerHTML='<div class="empty-box">ยังไม่มีประกาศ</div>';return;}
+    el.innerHTML=list.map(n=>'<div style="padding:10px 0;border-top:1px solid var(--border)">'
+      +'<div style="font-weight:600;font-size:14px">'+esc(n.title)+'</div>'
+      +'<div style="font-size:12px;color:var(--gray)">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+' · '+(n.shared?'✅ แชร์แล้ว':'ยังไม่แชร์')+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:6px">'
+      +'<button class="chip" style="margin:0" onclick="reshareNotice(\''+esc(n.id)+'\')">📢 แชร์อีกครั้ง</button>'
+      +'<button class="chip" style="margin:0;color:var(--red)" onclick="removeNotice(\''+esc(n.id)+'\')">ลบ</button>'
+      +'</div></div>').join('');
+  }
+  /** แชร์การ์ดผ่าน LINE — คืน 'sent' | 'cancel' | 'unavailable' | 'error' */
+  async function shareFlex(flex){
+    try{
+      if(!liff.isApiAvailable||!liff.isApiAvailable('shareTargetPicker'))return 'unavailable';
+      const res=await liff.shareTargetPicker([flex],{isMultiple:true});
+      return res&&res.status==='success'?'sent':'cancel';
+    }catch(e){debugLog('share error '+e);return 'error';}
+  }
+  function shareMsg(st){
+    if(st==='unavailable')return 'บันทึกประกาศแล้ว แต่แชร์เข้ากลุ่มไม่ได้ — ต้องเปิดจากเมนูใน LINE และผู้ดูแลต้องเปิด Share Target Picker ใน LINE Developers';
+    if(st==='error')return 'บันทึกประกาศแล้ว แต่แชร์ไม่สำเร็จ — กด "แชร์อีกครั้ง" ในรายการด้านล่าง';
+    return 'บันทึกประกาศแล้ว (ยังไม่ได้แชร์เข้ากลุ่ม) — กด "แชร์อีกครั้ง" ได้ภายหลัง';
+  }
+  async function submitNotice(){
+    const btn=document.getElementById('ntSubmit'),lb=document.getElementById('ntSubmitLabel');
+    let audience;try{audience=JSON.parse(document.getElementById('ntAudience').value);}catch(e){alert('กรุณาเลือกผู้รับ');return;}
+    const title=document.getElementById('ntTitle').value.trim(),body=document.getElementById('ntBody').value.trim();
+    if(!title){alert('กรุณาใส่หัวข้อ');return;}
+    btn.disabled=true;lb.textContent='กำลังบันทึก...';
+    const r=await api('createNotice',{title,body,audience});
+    if(!r.ok){alert('❌ '+(r.error||'บันทึกไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';return;}
+    lb.textContent='เลือกกลุ่มไลน์...';
+    const st=await shareFlex(r.flex);
+    if(st==='sent')await api('markShared',{notice_id:r.notice_id});
+    document.getElementById('ntTitle').value='';document.getElementById('ntBody').value='';
+    lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';ntCount();
+    if(st==='sent'){
+      document.getElementById('successTitle').textContent='ประกาศแล้ว';
+      document.getElementById('successMsg').innerHTML='แชร์เข้ากลุ่มไลน์แล้ว'+(r.badged?'<br>ผู้ปกครอง '+r.badged+' คนจะเห็นป้าย "ใหม่" ที่เมนูประกาศ':'');
+      document.getElementById('notifyPage').classList.remove('show');
+      document.getElementById('success').classList.remove('hidden');
+      setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
+    }else{alert(shareMsg(st));const again=await api('initNotify');if(again.ok)renderRecent(again.recent);}
+  }
+  async function reshareNotice(id){
+    const r=await api('getNoticeFlex',{notice_id:id});
+    if(!r.ok){alert('❌ '+(r.error||'ไม่สำเร็จ'));return;}
+    const st=await shareFlex(r.flex);
+    if(st==='sent'){await api('markShared',{notice_id:id});alert('แชร์แล้ว');}
+    else if(st!=='cancel')alert(shareMsg(st));
+    const again=await api('initNotify');if(again.ok)renderRecent(again.recent);
+  }
+  async function removeNotice(id){
+    if(!confirm('ลบประกาศนี้ออกจากสมุดประกาศ? (ข้อความที่แชร์เข้ากลุ่มแล้วจะไม่ถูกลบ)'))return;
+    const r=await api('deleteNotice',{notice_id:id});
+    if(!r.ok){alert('❌ '+(r.error||'ลบไม่สำเร็จ'));return;}
+    const again=await api('initNotify');if(again.ok)renderRecent(again.recent);
+  }
+
   function openWeb(){
     const url='https://schoolflow-74ffd.web.app/dashboard?school='+encodeURIComponent(SCHOOL);
     try{ liff.openWindow({url, external:true}); }catch(e){ location.href=url; }

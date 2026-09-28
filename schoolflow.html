@@ -238,6 +238,15 @@
       </div>
       <button class="submit-btn" id="ntSubmit" style="background:#D6457A;" onclick="submitNotice()"><span>📢</span><span id="ntSubmitLabel">บันทึกและแชร์เข้ากลุ่มไลน์</span></button>
       <div style="font-size:12px;color:var(--gray);text-align:center;margin:8px 0 16px;line-height:1.6;">ไม่เสียโควตาข้อความของโรงเรียน · ผู้ปกครองที่ผูกบัญชีจะเห็นป้าย <b style="color:#E11D48">ใหม่</b> ที่เมนูประกาศ</div>
+      <!-- N2: โรงเรียนเปิดส่งตรง → หลังบันทึกให้เลือกวิธีส่ง -->
+      <div id="ntChoose" class="section" style="display:none;border:2px solid #D6457A;">
+        <div class="section-title">บันทึกแล้ว: <span id="ntChooseTitle"></span></div>
+        <div style="font-size:13px;color:var(--gray);margin-bottom:10px;">เลือกวิธีส่ง (ทำได้ทั้งสองแบบ)</div>
+        <button class="submit-btn" style="background:#D6457A;margin-bottom:8px;" onclick="chooseShare()"><span>📢</span><span>แชร์เข้ากลุ่มไลน์ (ฟรี)</span></button>
+        <button class="submit-btn navy" id="ntPushBtn" style="margin-bottom:8px;" onclick="choosePush()"><span>📨</span><span id="ntPushLabel">ส่งตรงถึงผู้ปกครอง (ใช้โควตา)</span></button>
+        <div id="ntQuota" style="font-size:12px;color:var(--gray);text-align:center;margin-bottom:8px;"></div>
+        <button class="chip" style="width:100%;margin:0;text-align:center" onclick="chooseDone()">เสร็จ</button>
+      </div>
       <div class="section">
         <div class="section-title">ประกาศล่าสุดของฉัน</div>
         <div id="ntRecent"><div class="empty-box">ยังไม่มีประกาศ</div></div>
@@ -605,9 +614,11 @@
     if(!list||!list.length){el.innerHTML='<div class="empty-box">ยังไม่มีประกาศ</div>';return;}
     el.innerHTML=list.map(n=>'<div style="padding:10px 0;border-top:1px solid var(--border)">'
       +'<div style="font-weight:600;font-size:14px">'+esc(n.title)+'</div>'
-      +'<div style="font-size:12px;color:var(--gray)">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+' · '+(n.shared?'✅ แชร์แล้ว':'ยังไม่แชร์')+'</div>'
-      +'<div style="display:flex;gap:8px;margin-top:6px">'
+      +'<div style="font-size:12px;color:var(--gray)">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+' · '+(n.shared?'✅ แชร์แล้ว':'ยังไม่แชร์')
+      +(n.pushed!=null?' · 📨 ส่งตรง '+n.pushed+' คน':'')+'</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">'
       +'<button class="chip" style="margin:0" onclick="reshareNotice(\''+esc(n.id)+'\')">📢 แชร์อีกครั้ง</button>'
+      +(notifyInit&&notifyInit.push&&n.pushed==null?'<button class="chip" style="margin:0" onclick="pushNotice(\''+esc(n.id)+'\')">📨 ส่งตรง</button>':'')
       +'<button class="chip" style="margin:0;color:var(--red)" onclick="removeNotice(\''+esc(n.id)+'\')">ลบ</button>'
       +'</div></div>').join('');
   }
@@ -632,6 +643,17 @@
     btn.disabled=true;lb.textContent='กำลังบันทึก...';
     const r=await api('createNotice',{title,body,audience});
     if(!r.ok){alert('❌ '+(r.error||'บันทึกไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';return;}
+    if(notifyInit&&notifyInit.push){   // N2: เปิดส่งตรง → ให้เลือกวิธีส่ง
+      chosen={id:r.notice_id,flex:r.flex,badged:r.badged};
+      document.getElementById('ntTitle').value='';document.getElementById('ntBody').value='';
+      lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';ntCount();
+      document.getElementById('ntChooseTitle').textContent=title;
+      const q=notifyInit.push;
+      document.getElementById('ntQuota').textContent=quotaText(q);
+      document.getElementById('ntChoose').style.display='block';
+      document.getElementById('ntChoose').scrollIntoView({block:'center'});
+      return;
+    }
     lb.textContent='เลือกกลุ่มไลน์...';
     const st=await shareFlex(r.flex);
     if(st==='sent')await api('markShared',{notice_id:r.notice_id});
@@ -645,6 +667,37 @@
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
     }else{alert(shareMsg(st));const again=await api('initNotify');if(again.ok)renderRecent(again.recent);}
   }
+  /* ── N2 ส่งตรงจาก OA ── */
+  let chosen=null;
+  function quotaText(q){
+    if(!q)return '';
+    const a=q.remaining===null?'โควตา LINE ไม่จำกัด':'โควตา LINE เดือนนี้เหลือ '+q.remaining.toLocaleString()+' ข้อความ';
+    return a+(q.cap_left===null?'':' · เพดานโรงเรียนเหลือ '+q.cap_left.toLocaleString());
+  }
+  async function chooseShare(){
+    if(!chosen)return;
+    const st=await shareFlex(chosen.flex);
+    if(st==='sent'){await api('markShared',{notice_id:chosen.id});alert('แชร์เข้ากลุ่มแล้ว');}
+    else if(st!=='cancel')alert(shareMsg(st));
+  }
+  async function choosePush(){ if(chosen) await pushNotice(chosen.id); }
+  async function chooseDone(){
+    chosen=null;document.getElementById('ntChoose').style.display='none';
+    const again=await api('initNotify');if(again.ok){notifyInit=again;renderRecent(again.recent);}
+  }
+  /** ส่งตรง: ดูจำนวนผู้รับ+โควตาก่อน → ยืนยัน → ส่ง (ครั้งเดียวต่อประกาศ) */
+  async function pushNotice(id){
+    const p=await api('previewPush',{notice_id:id});
+    if(!p.ok){alert('❌ '+(p.error||'ไม่สำเร็จ'));return;}
+    if(!p.can_send){alert('ส่งตรงไม่ได้: '+p.reason);return;}
+    if(!confirm('ส่งตรงถึงผู้ปกครอง '+p.count+' คน\nใช้โควตา '+p.count+' ข้อความ ('+quotaText(p.status)+')\n\nส่งได้ครั้งเดียวต่อประกาศ — ยืนยัน?'))return;
+    const r=await api('sendPush',{notice_id:id});
+    if(!r.ok){alert('❌ '+(r.error||'ส่งไม่สำเร็จ'));return;}
+    alert('ส่งแล้ว '+r.sent+' คน'+(r.failed?' · ไม่สำเร็จ '+r.failed+' คน':''));
+    const again=await api('initNotify');if(again.ok){notifyInit=again;renderRecent(again.recent);
+      if(chosen&&chosen.id===id)document.getElementById('ntQuota').textContent=quotaText(again.push);}
+  }
+
   async function reshareNotice(id){
     const r=await api('getNoticeFlex',{notice_id:id});
     if(!r.ok){alert('❌ '+(r.error||'ไม่สำเร็จ'));return;}

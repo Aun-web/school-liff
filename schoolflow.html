@@ -262,6 +262,10 @@
           <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="staffEnd" onchange="staffCalcDays()"></div>
         </div>
         <div class="days-badge" id="staffDaysBadge">📅 1 วัน</div>
+        <div id="staffHalfWrap" style="margin-top:12px;">
+          <div class="section-title" style="margin-bottom:8px;">ช่วงที่ลา</div>
+          <div id="staffHalf"></div>
+        </div>
         <div class="section-title" id="staffReasonLabel" style="margin-top:16px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
         <textarea class="form-input" id="staffReason" rows="3" placeholder="เช่น ธุระครอบครัว ไปราชการ..." oninput="staffUpdateBtn()"></textarea>
       </div>
@@ -582,7 +586,14 @@
   }
 
   /* ===== STAFF LEAVE (S2) ===== */
-  let staffKind='ลาป่วย';
+  let staffKind='ลาป่วย', staffHalf='full';
+  // ลาครึ่งวัน (L1): เลือกได้เมื่อลาวันเดียว
+  const STAFF_HALVES=[['full','เต็มวัน'],['morning','ครึ่งเช้า'],['afternoon','ครึ่งบ่าย']];
+  function renderStaffHalf(){
+    document.getElementById('staffHalf').innerHTML=STAFF_HALVES.map(h=>
+      `<button class="chip ${h[0]===staffHalf?'active':''}" onclick="selStaffHalf('${h[0]}')">${h[1]}</button>`).join('');
+  }
+  function selStaffHalf(h){staffHalf=h;renderStaffHalf();staffCalcDays();}
   const STAFF_KINDS=[['ลาป่วย','🤒'],['ลากิจ','📋'],['ไปราชการ','🚌'],['อื่นๆ','📌']];
   async function initStaffLeave(){
     show('staffLeavePage');
@@ -615,7 +626,11 @@
     const s=new Date(document.getElementById('staffStart').value+'T00:00:00');
     if(new Date(document.getElementById('staffEnd').value+'T00:00:00')<s)document.getElementById('staffEnd').value=document.getElementById('staffStart').value;
     const diff=Math.round((new Date(document.getElementById('staffEnd').value+'T00:00:00')-s)/86400000)+1;
-    document.getElementById('staffDaysBadge').innerHTML='📅 '+diff+' วัน';
+    const one=diff===1;
+    if(!one&&staffHalf!=='full'){staffHalf='full';}
+    document.getElementById('staffHalfWrap').style.display=one?'block':'none';
+    renderStaffHalf();
+    document.getElementById('staffDaysBadge').innerHTML='📅 '+(one&&staffHalf!=='full'?(staffHalf==='morning'?'ครึ่งวัน (เช้า)':'ครึ่งวัน (บ่าย)'):diff+' วัน');
   }
   function staffUpdateBtn(){
     const btn=document.getElementById('staffSubmitBtn'),lb=document.getElementById('staffSubmitLabel');
@@ -630,10 +645,11 @@
     const dates=[];const cur=new Date(document.getElementById('staffStart').value+'T00:00:00');const end=new Date(document.getElementById('staffEnd').value+'T00:00:00');
     while(cur<=end){dates.push(localDateStr(cur));cur.setDate(cur.getDate()+1);}
     btn.disabled=true;lb.textContent='กำลังส่ง...';
-    const r=await api('submitStaffLeave',{dates,kind:staffKind,reason});
+    const half=dates.length===1&&staffHalf!=='full'?staffHalf:null;
+    const r=await api('submitStaffLeave',{dates,kind:staffKind,reason,half});
     if(r.ok){
       document.getElementById('successTitle').textContent='ส่งใบลาแล้ว';
-      document.getElementById('successMsg').innerHTML=`${(r.dates||dates).length} วัน<br>${r.message||''}`;
+      document.getElementById('successMsg').innerHTML=(half?(half==='morning'?'ครึ่งวันเช้า':'ครึ่งวันบ่าย'):`${(r.dates||dates).length} วัน`)+`<br>${r.message||''}`;
       document.getElementById('staffLeavePage').classList.remove('show');
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);

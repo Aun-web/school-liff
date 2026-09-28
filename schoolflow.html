@@ -183,6 +183,35 @@
   <div class="content" id="homeworkBody"><div class="empty-box">กำลังโหลด...</div></div>
 </div>
 
+<!-- ===== MY KIDS (ครูที่เป็นผู้ปกครอง — เมนูครูปุ่ม 4 · N0) ===== -->
+<div class="page" id="kidsPage">
+  <div class="header" style="background:#1E9C9C;">
+    <div class="header-badge"><span>👨‍👩‍👧</span><span>สำหรับครูที่เป็นผู้ปกครอง</span></div>
+    <h1>ลูกของฉัน</h1>
+    <p>เมนูผู้ปกครอง — ผูกลูกได้ที่ แจ้งลานักเรียน</p>
+  </div>
+  <div class="content">
+    <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="leave-type-btn" onclick="openKids('leave')"><span class="type-icon">📝</span><span class="type-label">แจ้งลานักเรียน</span></button>
+      <button class="leave-type-btn" onclick="openKids('grades')"><span class="type-icon">📊</span><span class="type-label">ผลการเรียน</span></button>
+      <button class="leave-type-btn" onclick="openKids('homework')"><span class="type-icon">📚</span><span class="type-label">การบ้าน</span></button>
+      <button class="leave-type-btn" onclick="openKids('notices')"><span class="type-icon">🔔</span><span class="type-label">ประกาศ</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NOTICES (ผู้ปกครอง · กำลังพัฒนา — N1) ===== -->
+<div class="page" id="noticesPage">
+  <div class="header" style="background:#E08A1E;">
+    <div class="header-badge"><span>🔔</span><span>สมุดประกาศ</span></div>
+    <h1>ประกาศ</h1>
+    <p>ข่าวจากโรงเรียนและครูประจำชั้น</p>
+  </div>
+  <div class="content">
+    <div class="section"><div class="empty-box">🚧 กำลังพัฒนา<br>เร็ว ๆ นี้ประกาศจากโรงเรียนจะรวมไว้ที่นี่</div></div>
+  </div>
+</div>
+
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
 <div class="page" id="notifyPage">
   <div class="header" style="background:#D6457A;">
@@ -207,7 +236,7 @@
     <div class="section">
       <div class="section-title">รหัสผูกบัญชี (8 ตัว)</div>
       <div style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:10px;">
-        เปิดเว็บ Schoolflow บนคอม/มือถือ › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> › สร้างรหัส แล้วกรอกที่นี่ภายใน 10 นาที
+        เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> › สร้างรหัส แล้ว<b>สแกน QR</b> (รหัสจะกรอกให้เอง) หรือพิมพ์รหัสที่นี่ภายใน 10 นาที
       </div>
       <input class="form-input" id="bindCode" type="text" inputmode="text" autocomplete="one-time-code" maxlength="9"
         placeholder="เช่น ABCD2345" style="text-transform:uppercase;letter-spacing:4px;font-size:20px;text-align:center;font-weight:700;">
@@ -246,7 +275,7 @@
   <div class="content">
     <div id="staffNotBound" class="section" style="display:none;">
       <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
-        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดหน้า <b>เช็คชื่อ (ครู)</b> แล้วกรอก <b>รหัสผูกบัญชี</b> จากเว็บ Schoolflow ก่อน แล้วกลับมาแจ้งลาได้
+        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR ก่อน แล้วกลับมาแจ้งลาได้
       </div>
     </div>
     <div id="staffForm" style="display:none;">
@@ -325,6 +354,9 @@
       else if(page==='approve') initTeacher();
       else if(page==='staffleave') initStaffLeave();
       else if(page==='notify') show('notifyPage');
+      else if(page==='kids') show('kidsPage');
+      else if(page==='notices') show('noticesPage');
+      else if(page==='bind') initBind();
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
   }
@@ -480,6 +512,22 @@
     if(d===1) return ['ส่งพรุ่งนี้','#b45309','#fef3c7'];
     return ['อีก '+d+' วัน','#6d4fc2','#efeafb'];
   }
+  /* ===== MY KIDS (hub — ไม่ต้องสลับ Rich Menu) ===== */
+  function openKids(p){
+    document.getElementById('kidsPage').classList.remove('show');
+    if(p==='grades') initGrades();
+    else if(p==='homework') initHomework();
+    else if(p==='notices') show('noticesPage');
+    else initParent();
+  }
+
+  /* ===== BIND (จาก QR บนเว็บ: ?page=bind&code=) ===== */
+  function initBind(){
+    const c=(params.get('code')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+    document.getElementById('bindCode').value=c;
+    show('bindPage');
+  }
+
   /* ===== NOTIFY (placeholder) ===== */
   function openWeb(){
     const url='https://schoolflow-74ffd.web.app/dashboard?school='+encodeURIComponent(SCHOOL);
@@ -529,7 +577,15 @@
     if(code.length!==8){st.textContent='กรอกรหัส 8 ตัวจากเว็บ Schoolflow';return;}
     document.getElementById('bindLabel').textContent='กำลังผูก...';
     const r=await api('bindTeacher',{code});
-    if(r.ok){document.getElementById('bindPage').classList.remove('show');initTeacher();}
+    if(r.ok){
+      document.getElementById('bindPage').classList.remove('show');
+      if(params.get('page')==='bind'){   // มาจาก QR → จบที่หน้าสำเร็จ
+        document.getElementById('successTitle').textContent='ผูกบัญชีสำเร็จ';
+        document.getElementById('successMsg').innerHTML=(r.teacher_name?esc(r.teacher_name)+'<br>':'')+'เมนูในไลน์จะเปลี่ยนเป็นเมนูครู<br>(ปิดแชตแล้วเปิดใหม่ถ้ายังไม่เปลี่ยน)';
+        document.getElementById('success').classList.remove('hidden');
+        setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},4000);
+      }else initTeacher();
+    }
     else{st.innerHTML=`<span style="color:var(--red)">❌ ${r.error}</span>`;document.getElementById('bindLabel').textContent='ผูกบัญชี';}
   }
   function pickClass(i){

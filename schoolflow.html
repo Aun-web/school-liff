@@ -340,11 +340,8 @@
   const params  = new URLSearchParams(location.search);
   const SCHOOL  = params.get('school');
   const LIFF_ID = params.get('liff');
-  // API หลัก = Cloudflare Worker (เร็ว) · สำรอง ?api=gas → GAS เดิม (rollback ได้ทันที)
-  const WORKER_URL = "https://schoolflow-line.witsarut-aun.workers.dev/";
-  const GAS_URL    = "https://script.google.com/macros/s/AKfycbz7H89yWtx0kKFBg614uNxM0lTk3fvqzfRc3Fp5i5yy2jP0Ysu0RQzBRw7rvGzvrvtoNA/exec";
-  const USE_GAS = params.get('api') === 'gas';
-  const API_URL = USE_GAS ? GAS_URL : WORKER_URL;
+  // API = Cloudflare Worker (W3 · 2026-09-29: ปิดทางสำรอง GAS แล้ว — rollback ด้วย `wrangler rollback`)
+  const API_URL = "https://schoolflow-line.witsarut-aun.workers.dev/";
   const DEBUG   = params.get('debug') === '1';   // แสดงเวลาที่ใช้มุมจอ
 
   let TOKEN = null, leaveType = 'sick', children = [], selectedChild = null;
@@ -359,7 +356,7 @@
     const t0 = performance.now();
     const res = await fetch(API_URL+'?school='+encodeURIComponent(SCHOOL)+'&mode=liff',{method:'POST',redirect:'follow',body:JSON.stringify(body)});
     const out = await res.json();
-    if (DEBUG) debugLog(action+' '+Math.round(performance.now()-t0)+'ms'+(out._ms!=null?' (server '+out._ms+'ms)':'')+(USE_GAS?' [GAS]':' [Worker]'));
+    if (DEBUG) debugLog(action+' '+Math.round(performance.now()-t0)+'ms'+(out._ms!=null?' (server '+out._ms+'ms)':''));
     return out;
   }
 
@@ -742,7 +739,7 @@
 
   /* ===== TEACHER ===== */
   async function initTeacher(){
-    const r=await api(USE_GAS?'getTeacherClasses':'initTeacher');
+    const r=await api('initTeacher');
     if(!r.bound){show('bindPage');return;}
     teacher=r;
     show('approvePage');

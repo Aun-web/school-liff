@@ -106,6 +106,11 @@
     .comp-row:last-child{border-bottom:none;}
     .note-red{margin-top:8px;padding:8px 10px;background:var(--red-pale);border-radius:10px;font-size:12px;color:var(--red);line-height:1.5;}
     .empty-box{text-align:center;padding:28px 16px;color:var(--gray);font-size:14px;line-height:1.7;}
+    /* ── หนังสือรับ: สั่งการ (SB) ── */
+    .sb-pill{display:inline-block;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px;}
+    .sb-box{margin-top:10px;padding:10px 12px;background:var(--gray-light);border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-line;}
+    .sb-note{padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.6;color:#8a6d00;margin-bottom:12px;}
+    .sb-link{background:none;border:none;color:var(--navy);font-family:'Sarabun',sans-serif;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px;}
   </style>
 </head>
 <body>
@@ -336,6 +341,48 @@
   </div>
 </div>
 
+<!-- ===== SARABAN (สั่งการ/เกษียณหนังสือรับ) ===== -->
+<div class="page" id="sarabanPage">
+  <div class="header navy">
+    <div class="header-badge"><span>📨</span><span>หนังสือรับ</span></div>
+    <h1>สั่งการหนังสือ</h1>
+    <p id="sbName">กำลังโหลด...</p>
+  </div>
+  <div class="content" style="padding-bottom:110px;">
+    <div id="sbErr"></div>
+    <div id="sbForm" style="display:none;">
+      <div class="section" id="sbDoc"></div>
+      <div class="section">
+        <div class="section-title">คำเกษียณ</div>
+        <div id="sbTpl"></div>
+      </div>
+      <div class="section" id="sbWhoWrap">
+        <div class="section-title">มอบให้ <span id="sbCount" style="text-transform:none;letter-spacing:0;"></span></div>
+        <div id="sbDepts"></div>
+        <div id="sbStaff"></div>
+      </div>
+      <div class="section" id="sbDueWrap">
+        <div class="section-title">รายงานภายใน</div>
+        <input class="form-input" type="date" id="sbDue" oninput="sbSetDue()">
+      </div>
+      <div class="section">
+        <div class="section-title">ข้อความเกษียณ</div>
+        <textarea class="form-input" id="sbText" rows="3" oninput="sbEditText()"></textarea>
+        <button class="sb-link" id="sbReset" style="display:none;" onclick="sbResetText()">เขียนใหม่ตามแบบ</button>
+      </div>
+      <div class="section" id="sbFwdWrap" style="display:none;">
+        <div class="section-title">เสนอต่อ ผอ.</div>
+        <select class="form-input" id="sbDir"></select>
+        <textarea class="form-input" id="sbFwdNote" rows="2" maxlength="300" placeholder="หมายเหตุถึง ผอ. (ไม่บังคับ)" style="margin-top:10px;"></textarea>
+        <button class="submit-btn navy" id="sbFwdBtn" style="margin-top:10px;" onclick="sbForward()"><span>📤</span><span id="sbFwdLabel">เสนอต่อ ผอ.</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="approve-footer" id="sbFooter" style="display:none;">
+    <button class="submit-btn navy" id="sbBtn" onclick="sbSubmit()"><span>✍️</span><span id="sbBtnLabel">สั่งการ</span></button>
+  </div>
+</div>
+
 <script>
   const params  = new URLSearchParams(location.search);
   const SCHOOL  = params.get('school');
@@ -391,6 +438,7 @@
       else if(page==='notify') initNotify();
       else if(page==='kids') show('kidsPage');
       else if(page==='notices') initNotices();
+      else if(page==='saraban') initSaraban();
       else if(page==='bind') initBind();
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
@@ -899,6 +947,122 @@
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
     }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;staffUpdateBtn();}
+  }
+
+  /* ===== SARABAN: สั่งการ/เกษียณหนังสือรับ (?page=saraban&doc=) ===== */
+  const SB_DEPTS=[['school_management','ฝ่ายผู้บริหาร'],['academic_management','ฝ่ายบริหารวิชาการ'],['budget_management','ฝ่ายบริหารงบประมาณ'],['personnel_management','ฝ่ายบริหารงานบุคคล'],['general_administration','ฝ่ายบริหารทั่วไป'],['student_affairs','ฝ่ายกิจการนักเรียน']];
+  const SB_URG={urgent:['ด่วน','#b45309','#fef3c7'],very_urgent:['ด่วนมาก','#c2410c','#ffedd5'],most_urgent:['ด่วนที่สุด','#b91c1c','#fee2e2']};
+  const SB_TPLS=[['ack','ทราบ'],['assign','มอบ … ดำเนินการ'],['all','แจ้งเวียนครูทุกคน'],['report','มอบ … รายงานภายใน …']];
+  let sb=null, sbDocId='', sbTpl='assign', sbSel=[], sbDue='', sbManual=false;
+  async function initSaraban(){
+    show('sarabanPage');
+    sbDocId=params.get('doc')||'';
+    const err=document.getElementById('sbErr');
+    if(!sbDocId){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">❌ ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)</div></div>';return;}
+    const r=await api('sarabanEndorseInit',{doc_id:sbDocId});
+    if(!r.ok){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">❌ '+esc(r.error||'โหลดไม่สำเร็จ')+'</div></div>';return;}
+    sb=r;
+    document.getElementById('sbName').textContent=(r.me&&r.me.name)||'';
+    const d=r.doc||{};
+    const u=SB_URG[d.urgency];
+    document.getElementById('sbDoc').innerHTML=
+      (r.mode==='reendorse'?'<div class="sb-note">ฉบับนี้คุณเกษียณ "ทราบ" ไว้แล้ว — เลือกมอบงานด้านล่างเพื่อเปลี่ยนคำเกษียณ</div>':'')
+      +(d.secret?'<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px;">🔒 หนังสือลับ</div>':'')
+      +'<div style="margin-bottom:6px;">'+(u?'<span class="sb-pill" style="color:'+u[1]+';background:'+u[2]+'">'+u[0]+'</span>':'')
+      +(d.reg_no!=null?'<span style="font-size:13px;color:var(--gray);">เลขรับ '+esc(d.reg_no)+'</span>':'')+'</div>'
+      +'<div style="font-size:17px;font-weight:700;line-height:1.5;">'+esc(d.subject)+'</div>'
+      +'<div style="font-size:12px;color:var(--gray);margin-top:4px;">'+esc(d.from)+(d.doc_no?' · '+esc(d.doc_no):'')+'</div>'
+      +(d.summary?'<div class="sb-box"><b>สรุปย่อ</b>\n'+esc(d.summary)+'</div>':'')
+      +(d.todo?'<div style="margin-top:8px;font-size:13px;line-height:1.6;">ต้องทำ: '+esc(d.todo)+'</div>':'')
+      +(d.event_date?'<div style="margin-top:4px;font-size:13px;line-height:1.6;">กำหนด: '+thaiDate(d.event_date)+(d.event_note?' '+esc(d.event_note):'')+'</div>':'')
+      +(d.propose_text?'<div class="sb-box">- '+esc(String(d.propose_text).replace(/^\s*-\s*/,''))+'</div>':'')
+      +(d.forwarded_from?'<div class="sb-box">รองฯ '+esc(d.forwarded_from)+': '+esc(d.forward_note||'')+'</div>':'');
+    document.getElementById('sbDue').min=localDateStr(new Date());
+    const staff=r.staff||[];
+    document.getElementById('sbDepts').innerHTML=SB_DEPTS.filter(x=>staff.some(s=>(s.departments||[]).includes(x[0])))
+      .map(x=>`<button class="chip" id="sbd_${x[0]}" onclick="sbPickDept('${x[0]}')">${x[1]}</button>`).join('');
+    document.getElementById('sbStaff').innerHTML=staff.map((s,i)=>`<button class="chip" id="sbs_${i}" onclick="sbToggle(${i})">${esc(s.name)}</button>`).join('');
+    if(r.me&&r.me.can_forward){
+      document.getElementById('sbFwdWrap').style.display='block';
+      document.getElementById('sbDir').innerHTML=(r.directors||[]).map(x=>'<option value="'+esc(x.uid)+'">'+esc(x.name)+'</option>').join('');
+    }
+    document.getElementById('sbForm').style.display='block';
+    document.getElementById('sbFooter').style.display='block';
+    sbRender();
+  }
+  // ชื่อผู้รับมอบ: 1 คน=ชื่อ · 2+ = "ก ข และ ค" · ไม่มี = …
+  function sbNames(){
+    const n=(sb.staff||[]).filter(s=>sbSel.includes(s.uid)).map(s=>s.name);
+    if(!n.length)return '…';
+    return n.length===1?n[0]:n.slice(0,-1).join(' ')+' และ '+n[n.length-1];
+  }
+  function sbAutoText(){
+    const nm=sbNames();
+    if(sbTpl==='ack')return '- ทราบ';
+    if(sbTpl==='all')return '- แจ้งเวียนครูทุกคนทราบ';
+    if(sbTpl==='report')return '- มอบ '+nm+' ดำเนินการ และรายงานภายในวันที่ '+(sbDue?thaiDate(sbDue):'…');
+    return '- มอบ '+nm+' ดำเนินการ';
+  }
+  function sbDeptMembers(key){return (sb.staff||[]).filter(s=>(s.departments||[]).includes(key)).map(s=>s.uid);}
+  function sbRender(){
+    const re=sb.mode==='reendorse';
+    document.getElementById('sbTpl').innerHTML=SB_TPLS.filter(t=>!(re&&t[0]==='ack'))
+      .map(t=>`<button class="chip ${t[0]===sbTpl?'active':''}" onclick="sbPickTpl('${t[0]}')">${t[1]}</button>`).join('');
+    document.getElementById('sbWhoWrap').style.display=(sbTpl==='assign'||sbTpl==='report')?'block':'none';
+    document.getElementById('sbDueWrap').style.display=sbTpl==='report'?'block':'none';
+    (sb.staff||[]).forEach((s,i)=>document.getElementById('sbs_'+i).classList.toggle('active',sbSel.includes(s.uid)));
+    SB_DEPTS.forEach(x=>{const el=document.getElementById('sbd_'+x[0]);if(!el)return;
+      const m=sbDeptMembers(x[0]);el.classList.toggle('active',m.length>0&&m.every(u=>sbSel.includes(u)));});
+    document.getElementById('sbCount').textContent=sbSel.length?'· เลือก '+sbSel.length+' คน':'';
+    if(!sbManual)document.getElementById('sbText').value=sbAutoText();   // แก้เองแล้ว → หยุดเติมอัตโนมัติ
+    document.getElementById('sbReset').style.display=sbManual?'inline':'none';
+    document.getElementById('sbBtnLabel').textContent=sbTpl==='ack'?'เกษียณ "ทราบ"':'สั่งการ';
+  }
+  function sbPickTpl(t){sbTpl=t;sbRender();}
+  function sbToggle(i){
+    const u=sb.staff[i].uid,k=sbSel.indexOf(u);
+    if(k>=0)sbSel.splice(k,1);else sbSel.push(u);
+    sbRender();
+  }
+  // แตะฝ่าย: เลือกทั้งฝ่าย · ถ้าเลือกครบอยู่แล้ว = ยกเลิกทั้งฝ่าย
+  function sbPickDept(key){
+    const m=sbDeptMembers(key);
+    if(m.every(u=>sbSel.includes(u)))sbSel=sbSel.filter(u=>!m.includes(u));
+    else m.forEach(u=>{if(!sbSel.includes(u))sbSel.push(u);});
+    sbRender();
+  }
+  function sbSetDue(){sbDue=document.getElementById('sbDue').value;sbRender();}
+  function sbEditText(){sbManual=true;document.getElementById('sbReset').style.display='inline';}
+  function sbResetText(){sbManual=false;sbRender();}
+  function sbDone(title,msg){
+    document.getElementById('successTitle').textContent=title;
+    document.getElementById('successMsg').innerHTML=msg;
+    document.getElementById('sarabanPage').classList.remove('show');
+    document.getElementById('success').classList.remove('hidden');
+    setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
+  }
+  async function sbSubmit(){
+    const btn=document.getElementById('sbBtn'),lb=document.getElementById('sbBtnLabel');
+    const who=sbTpl==='assign'||sbTpl==='report';
+    const text=document.getElementById('sbText').value.trim();
+    if(who&&!sbSel.length){alert('เลือกผู้ได้รับมอบอย่างน้อย 1 คน');return;}
+    if(sbTpl==='report'&&!sbDue){alert('เลือกวันที่ต้องรายงาน');return;}
+    if(!text){alert('กรุณากรอกข้อความเกษียณ');return;}
+    const label=lb.textContent;
+    btn.disabled=true;lb.textContent='กำลังบันทึก...';
+    const r=await api('sarabanEndorse',{doc_id:sbDocId,tpl:sbTpl,assignees:who?sbSel:[],report_due:sbTpl==='report'?sbDue:'',text});
+    if(r.ok){
+      sbDone(sbTpl==='ack'?'เกษียณแล้ว':'สั่งการแล้ว',esc(r.message||'')+(r.nolink>0?'<br>'+esc(r.nolink)+' คนยังไม่ผูก LINE — เห็นในเว็บ':''));
+    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent=label;}
+  }
+  async function sbForward(){
+    const btn=document.getElementById('sbFwdBtn'),lb=document.getElementById('sbFwdLabel');
+    const to=document.getElementById('sbDir').value;
+    if(!to){alert('เลือก ผอ.');return;}
+    btn.disabled=true;lb.textContent='กำลังส่ง...';
+    const r=await api('sarabanForward',{doc_id:sbDocId,to_uid:to,note:document.getElementById('sbFwdNote').value.trim()});
+    if(r.ok)sbDone('เสนอต่อแล้ว',esc(r.message||''));
+    else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='เสนอต่อ ผอ.';}
   }
 
   init();

@@ -990,6 +990,7 @@
       +(d.summary?'<div class="sb-box"><b>สรุปย่อ</b>\n'+esc(d.summary)+'</div>':'')
       +(d.todo?'<div style="margin-top:8px;font-size:13px;line-height:1.6;">ต้องทำ: '+esc(d.todo)+'</div>':'')
       +(d.event_date?'<div style="margin-top:4px;font-size:13px;line-height:1.6;">กำหนด: '+thaiDate(d.event_date)+(d.event_note?' '+esc(d.event_note):'')+'</div>':'')
+      +((d.attachments||[]).length?'<div style="margin-top:6px;font-size:12px;line-height:1.6;color:var(--gray);">📎 สิ่งที่ส่งมาด้วย '+d.attachments.length+' ไฟล์: '+d.attachments.map(esc).join(', ')+' <span style="opacity:.8">(ดาวน์โหลดในเว็บ)</span></div>':'')
       +(d.propose_text?'<div class="sb-box">- '+esc(String(d.propose_text).replace(/^\s*-\s*/,''))+'</div>':'')
       +(d.forwarded_from?'<div class="sb-box">รองฯ '+esc(d.forwarded_from)+': '+esc(d.forward_note||'')+'</div>':'');
     document.getElementById('sbDue').min=localDateStr(new Date());

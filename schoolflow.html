@@ -398,6 +398,22 @@
   </div>
 </div>
 
+<!-- เปิดไฟล์หนังสือรับ (?page=saraban_file&doc=) — ตรวจตัวตนจาก LINE แล้วเปิด PDF ด้วยลิงก์อายุ 5 นาที -->
+<div class="page" id="sarabanFilePage">
+  <div class="header navy">
+    <div class="header-badge"><span>📨</span><span>หนังสือรับ</span></div>
+    <h1>เปิดไฟล์หนังสือ</h1>
+    <p id="sfName"></p>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="empty-box" id="sfMsg">กำลังตรวจสิทธิ์…</div>
+      <button class="submit-btn navy" id="sfAgain" style="display:none;margin-top:12px;" onclick="sfOpen()"><span>📄</span><span>เปิดไฟล์อีกครั้ง</span></button>
+      <a class="submit-btn" id="sfWeb" style="display:none;margin-top:10px;text-decoration:none;background:#e5e7eb;color:#1f2937;" target="_blank" rel="noopener"><span>🌐</span><span>ดูในเว็บ (ฉบับประทับตรา)</span></a>
+    </div>
+  </div>
+</div>
+
 <script>
   const params  = new URLSearchParams(location.search);
   const SCHOOL  = params.get('school');
@@ -454,6 +470,7 @@
       else if(page==='kids') show('kidsPage');
       else if(page==='notices') initNotices();
       else if(page==='saraban') initSaraban();
+      else if(page==='saraban_file') initSarabanFile();
       else if(page==='bind') initBind();
       else initParent();
     }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
@@ -962,6 +979,30 @@
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
     }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;staffUpdateBtn();}
+  }
+
+  /* ===== SARABAN: เปิดไฟล์หนังสือ (?page=saraban_file&doc=) ===== */
+  // Worker ตรวจว่าผู้กดเป็นผู้เกษียณ/ผู้ได้รับมอบของฉบับนั้น → token 5 นาที → /f/{token} (PDF ต้นฉบับ) · หนังสือลับ = เว็บเท่านั้น
+  async function initSarabanFile(){
+    show('sarabanFilePage');
+    await sfOpen();
+  }
+  async function sfOpen(){
+    const msg=document.getElementById('sfMsg'), again=document.getElementById('sfAgain'), web=document.getElementById('sfWeb');
+    const doc=params.get('doc')||'';
+    again.style.display='none';
+    if(!doc){msg.textContent='❌ ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)';return;}
+    msg.textContent='กำลังตรวจสิทธิ์…';
+    const r=await api('sarabanFileLink',{doc_id:doc});
+    if(r.web){web.href=r.web;web.style.display='flex';}
+    if(!r.ok){msg.textContent=(r.secret?'🔒 ':'❌ ')+(r.error||'เปิดไฟล์ไม่สำเร็จ');return;}
+    document.getElementById('sfName').textContent=r.name||'';
+    const url=API_URL+'f/'+encodeURIComponent(r.token);
+    msg.textContent='กำลังเปิดไฟล์… ถ้าไม่ขึ้น กดปุ่มด้านล่าง';
+    again.style.display='flex';
+    // Android: เบราว์เซอร์ในไลน์เปิด PDF ไม่ได้ → เบราว์เซอร์ของเครื่อง · iPhone/คอม: เปิดในหน้านี้เลย
+    if(liff.getOS()==='android') liff.openWindow({url, external:true});
+    else location.href=url;
   }
 
   /* ===== SARABAN: สั่งการ/เกษียณหนังสือรับ (?page=saraban&doc=) ===== */

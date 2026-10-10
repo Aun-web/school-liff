@@ -110,6 +110,20 @@
     .sb-pill{display:inline-block;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px;}
     .sb-box{margin-top:10px;padding:10px 12px;background:var(--gray-light);border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-line;}
     .sb-note{padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.6;color:#8a6d00;margin-bottom:12px;}
+    /* รายชื่อมอบให้ (จัดกลุ่มตามฝ่าย) */
+    .sb-list{border:1px solid var(--border);border-radius:12px;background:var(--white);margin-top:10px;overflow:hidden;}
+    .sb-gh{display:flex;align-items:center;min-height:48px;background:var(--gray-light);border-top:1px solid var(--border);}
+    .sb-gh:first-child{border-top:none;}
+    .sb-gl{flex:1;min-width:0;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;background:none;border:none;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;color:var(--navy);text-align:left;cursor:pointer;}
+    .sb-gl span{overflow:hidden;text-overflow:ellipsis;}
+    .sb-all{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 12px;font-size:12px;color:var(--gray);cursor:pointer;white-space:nowrap;}
+    .sb-all input,.sb-row input{width:20px;height:20px;accent-color:var(--navy);flex-shrink:0;margin:0;}
+    .sb-row{display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 14px;border-top:1px solid var(--border);font-size:15px;cursor:pointer;background:var(--white);}
+    .sb-row span{min-width:0;word-break:break-word;}
+    .sb-none{padding:14px;font-size:13px;color:var(--gray);text-align:center;}
+    .sb-selbar{margin-top:12px;font-size:13px;font-weight:700;color:var(--navy);}
+    .sb-sel{display:inline-flex;align-items:center;gap:4px;max-width:100%;margin:6px 6px 0 0;padding:3px 4px 3px 10px;border-radius:14px;background:var(--navy);color:var(--white);font-size:12px;font-weight:600;}
+    .sb-sel button{background:none;border:none;color:var(--white);font-size:13px;line-height:1;min-width:24px;min-height:24px;cursor:pointer;padding:0;}
     .sb-link{background:none;border:none;color:var(--navy);font-family:'Sarabun',sans-serif;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px;}
   </style>
 </head>
@@ -357,9 +371,10 @@
         <div id="sbTpl"></div>
       </div>
       <div class="section" id="sbWhoWrap">
-        <div class="section-title">มอบให้ <span id="sbCount" style="text-transform:none;letter-spacing:0;"></span></div>
-        <div id="sbDepts"></div>
-        <div id="sbStaff"></div>
+        <div class="section-title">มอบให้</div>
+        <input class="form-input" type="search" id="sbSearch" placeholder="🔍 ค้นหาชื่อครู" autocomplete="off" oninput="sbSearch(this.value)">
+        <div class="sb-list" id="sbList"></div>
+        <div class="sb-selbar" id="sbSelBar" style="display:none;"></div>
       </div>
       <div class="section" id="sbDueWrap">
         <div class="section-title">รายงานภายใน</div>
@@ -953,7 +968,7 @@
   const SB_DEPTS=[['school_management','ฝ่ายผู้บริหาร'],['academic_management','ฝ่ายบริหารวิชาการ'],['budget_management','ฝ่ายบริหารงบประมาณ'],['personnel_management','ฝ่ายบริหารงานบุคคล'],['general_administration','ฝ่ายบริหารทั่วไป'],['student_affairs','ฝ่ายกิจการนักเรียน']];
   const SB_URG={urgent:['ด่วน','#b45309','#fef3c7'],very_urgent:['ด่วนมาก','#c2410c','#ffedd5'],most_urgent:['ด่วนที่สุด','#b91c1c','#fee2e2']};
   const SB_TPLS=[['ack','ทราบ'],['assign','มอบ … ดำเนินการ'],['all','แจ้งเวียนครูทุกคน'],['report','มอบ … รายงานภายใน …']];
-  let sb=null, sbDocId='', sbTpl='assign', sbSel=[], sbDue='', sbManual=false;
+  let sb=null, sbDocId='', sbTpl='assign', sbSel=[], sbDue='', sbManual=false, sbQ='', sbOpen={};
   async function initSaraban(){
     show('sarabanPage');
     sbDocId=params.get('doc')||'';
@@ -978,10 +993,6 @@
       +(d.propose_text?'<div class="sb-box">- '+esc(String(d.propose_text).replace(/^\s*-\s*/,''))+'</div>':'')
       +(d.forwarded_from?'<div class="sb-box">รองฯ '+esc(d.forwarded_from)+': '+esc(d.forward_note||'')+'</div>':'');
     document.getElementById('sbDue').min=localDateStr(new Date());
-    const staff=r.staff||[];
-    document.getElementById('sbDepts').innerHTML=SB_DEPTS.filter(x=>staff.some(s=>(s.departments||[]).includes(x[0])))
-      .map(x=>`<button class="chip" id="sbd_${x[0]}" onclick="sbPickDept('${x[0]}')">${x[1]}</button>`).join('');
-    document.getElementById('sbStaff').innerHTML=staff.map((s,i)=>`<button class="chip" id="sbs_${i}" onclick="sbToggle(${i})">${esc(s.name)}</button>`).join('');
     if(r.me&&r.me.can_forward){
       document.getElementById('sbFwdWrap').style.display='block';
       document.getElementById('sbDir').innerHTML=(r.directors||[]).map(x=>'<option value="'+esc(x.uid)+'">'+esc(x.name)+'</option>').join('');
@@ -1003,30 +1014,64 @@
     if(sbTpl==='report')return '- มอบ '+nm+' ดำเนินการ และรายงานภายในวันที่ '+(sbDue?thaiDate(sbDue):'…');
     return '- มอบ '+nm+' ดำเนินการ';
   }
-  function sbDeptMembers(key){return (sb.staff||[]).filter(s=>(s.departments||[]).includes(key)).map(s=>s.uid);}
   function sbRender(){
     const re=sb.mode==='reendorse';
     document.getElementById('sbTpl').innerHTML=SB_TPLS.filter(t=>!(re&&t[0]==='ack'))
       .map(t=>`<button class="chip ${t[0]===sbTpl?'active':''}" onclick="sbPickTpl('${t[0]}')">${t[1]}</button>`).join('');
     document.getElementById('sbWhoWrap').style.display=(sbTpl==='assign'||sbTpl==='report')?'block':'none';
     document.getElementById('sbDueWrap').style.display=sbTpl==='report'?'block':'none';
-    (sb.staff||[]).forEach((s,i)=>document.getElementById('sbs_'+i).classList.toggle('active',sbSel.includes(s.uid)));
-    SB_DEPTS.forEach(x=>{const el=document.getElementById('sbd_'+x[0]);if(!el)return;
-      const m=sbDeptMembers(x[0]);el.classList.toggle('active',m.length>0&&m.every(u=>sbSel.includes(u)));});
-    document.getElementById('sbCount').textContent=sbSel.length?'· เลือก '+sbSel.length+' คน':'';
+    sbRenderWho();
     if(!sbManual)document.getElementById('sbText').value=sbAutoText();   // แก้เองแล้ว → หยุดเติมอัตโนมัติ
     document.getElementById('sbReset').style.display=sbManual?'inline':'none';
     document.getElementById('sbBtnLabel').textContent=sbTpl==='ack'?'เกษียณ "ทราบ"':'สั่งการ';
   }
   function sbPickTpl(t){sbTpl=t;sbRender();}
+  // กลุ่มตามฝ่าย (+ "ยังไม่ระบุฝ่าย") · เก็บ index ใน sb.staff · กรองตามคำค้น · ซ่อนกลุ่มว่าง
+  function sbGroups(){
+    const st=sb.staff||[],q=sbQ.trim().toLowerCase(),known=SB_DEPTS.map(x=>x[0]);
+    const ok=s=>!q||String(s.name||'').toLowerCase().includes(q);
+    const gs=SB_DEPTS.map(x=>({key:x[0],label:x[1],total:0,idx:[]}));
+    gs.push({key:'_none',label:'ยังไม่ระบุฝ่าย',total:0,idx:[]});
+    st.forEach((s,i)=>{
+      const ds=(s.departments||[]).filter(d=>known.includes(d));
+      (ds.length?ds:['_none']).forEach(d=>{const g=gs.find(g=>g.key===d);g.total++;if(ok(s))g.idx.push(i);});
+    });
+    return gs.filter(g=>g.idx.length);
+  }
+  // วาดรายการมอบให้ + แถบที่เลือก (ช่องค้นหาไม่ถูกวาดใหม่ จึงไม่เสียโฟกัส)
+  function sbRenderWho(){
+    const st=sb.staff||[],q=sbQ.trim();
+    const gs=sbGroups();
+    let h=gs.map(g=>{
+      const open=q?true:!!sbOpen[g.key];
+      const n=g.idx.filter(i=>sbSel.includes(st[i].uid)).length;
+      const rows=open?g.idx.map(i=>`<label class="sb-row"><input type="checkbox" ${sbSel.includes(st[i].uid)?'checked':''} onchange="sbToggle(${i})"><span>${esc(st[i].name)}</span></label>`).join(''):'';
+      return `<div class="sb-gh"><button type="button" class="sb-gl" onclick="sbToggleGroup('${g.key}')"><b>${open?'▾':'▸'}</b><span>${esc(g.label)} (${q?g.idx.length+'/'+g.total:g.total})${n?' · เลือก '+n:''}</span></button>`
+        +`<label class="sb-all"><input type="checkbox" data-g="${g.key}" ${n&&n===g.idx.length?'checked':''} onchange="sbPickDept('${g.key}')">ทั้งฝ่าย</label></div>`+rows;
+    }).join('');
+    if(!gs.length)h='<div class="sb-none">'+(st.length?'ไม่พบชื่อที่ค้นหา':'ไม่มีรายชื่อครู')+'</div>';
+    const list=document.getElementById('sbList');
+    list.innerHTML=h;
+    list.querySelectorAll('input[data-g]').forEach(el=>{
+      const g=gs.find(x=>x.key===el.dataset.g),n=g.idx.filter(i=>sbSel.includes(st[i].uid)).length;
+      el.indeterminate=n>0&&n<g.idx.length;
+    });
+    const bar=document.getElementById('sbSelBar');
+    const sel=st.map((s,i)=>[s,i]).filter(x=>sbSel.includes(x[0].uid));
+    bar.style.display=sel.length?'block':'none';
+    bar.innerHTML=sel.length?'เลือกแล้ว '+sel.length+' คน<div>'+sel.map(x=>`<span class="sb-sel">${esc(x[0].name)}<button type="button" aria-label="ลบ" onclick="sbToggle(${x[1]})">✕</button></span>`).join('')+'</div>':'';
+  }
+  function sbSearch(v){sbQ=v||'';sbRenderWho();}
+  function sbToggleGroup(key){sbOpen[key]=!sbOpen[key];sbRenderWho();}
   function sbToggle(i){
     const u=sb.staff[i].uid,k=sbSel.indexOf(u);
     if(k>=0)sbSel.splice(k,1);else sbSel.push(u);
     sbRender();
   }
-  // แตะฝ่าย: เลือกทั้งฝ่าย · ถ้าเลือกครบอยู่แล้ว = ยกเลิกทั้งฝ่าย
+  // ติ๊ก "ทั้งฝ่าย": เลือกสมาชิกที่แสดงอยู่ทั้งหมด · ถ้าเลือกครบอยู่แล้ว = ยกเลิกทั้งหมด
   function sbPickDept(key){
-    const m=sbDeptMembers(key);
+    const g=sbGroups().find(x=>x.key===key);if(!g)return;
+    const m=g.idx.map(i=>sb.staff[i].uid);
     if(m.every(u=>sbSel.includes(u)))sbSel=sbSel.filter(u=>!m.includes(u));
     else m.forEach(u=>{if(!sbSel.includes(u))sbSel.push(u);});
     sbRender();

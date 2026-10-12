@@ -416,8 +416,16 @@
 
 <script>
   const params  = new URLSearchParams(location.search);
-  const SCHOOL  = params.get('school');
-  const LIFF_ID = params.get('liff');
+  // เปิดผ่าน liff.line.me ครั้งแรก LINE ส่งพารามิเตอร์ของลิงก์มาใน liff.state (?school=&liff=&page=)
+  // → Endpoint URL ใน LINE Developers ไม่มี school/liff ก็ยังเปิดได้ (หลัง liff.init SDK พากลับมาพร้อมพารามิเตอร์ครบ)
+  const stateParams = (function () {
+    const st = params.get('liff.state');
+    if (!st) return null;
+    const q = st.indexOf('?');
+    return new URLSearchParams(q >= 0 ? st.slice(q + 1) : '');
+  })();
+  const SCHOOL  = params.get('school') || (stateParams && stateParams.get('school'));
+  const LIFF_ID = params.get('liff') || (stateParams && stateParams.get('liff'));
   // API = Cloudflare Worker (W3 · 2026-09-29: ปิดทางสำรอง GAS แล้ว — rollback ด้วย `wrangler rollback`)
   const API_URL = "https://schoolflow-line.witsarut-aun.workers.dev/";
   const DEBUG   = params.get('debug') === '1';   // แสดงเวลาที่ใช้มุมจอ
@@ -461,7 +469,7 @@
       TOKEN = liff.getAccessToken();
       debugLog('liff.init');
       document.getElementById('connecting').classList.add('hidden');
-      const page = params.get('page');
+      const page = params.get('page') || (stateParams && stateParams.get('page'));
       if(page==='grades') initGrades();
       else if(page==='homework') initHomework();
       else if(page==='approve') initTeacher();

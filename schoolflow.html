@@ -165,6 +165,65 @@
     .nb-fab{position:fixed;left:14px;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:16px;border:none;background:linear-gradient(100deg,#F2CF7A,#D4A84B);color:#2A2207;font-weight:700;font-size:17px;box-shadow:0 10px 24px rgba(184,137,47,.35);cursor:pointer;z-index:10;}
     .nb-fab[hidden]{display:none;}
     .nb-chip:focus-visible,.nb-hit:focus-visible,.nb-btn:focus-visible,.nb-fab:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
+
+    /* ===== หน้าสั่งการบ้าน (L4) — scope เฉพาะ #assignHwPage ===== */
+    #assignHwPage{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:17px;color:#14231E;background:radial-gradient(circle at 90% 30%,rgba(167,139,250,.25) 0,rgba(167,139,250,0) 40%),#F2F5F1;}
+    #assignHwPage button,#assignHwPage input,#assignHwPage textarea,#assignHwPage select{font-family:inherit;font-size:inherit;}
+    .hw-head{position:relative;overflow:hidden;padding:18px 18px 16px;background:linear-gradient(115deg,#0B3B30 0%,#0F7A62 55%,#14967A 100%);color:#fff;}
+    .hw-head svg{position:absolute;right:-60px;top:-80px;}
+    .hw-head h1{position:relative;margin:0;font-size:24px;font-weight:700;}
+    .hw-head p{position:relative;margin:0;font-size:14px;color:#CDEBE1;}
+    .hw-wrap{flex:1;width:100%;max-width:480px;margin:0 auto;padding:12px 14px 120px;display:flex;flex-direction:column;gap:12px;}
+    .hw-msg{padding:28px 16px;text-align:center;color:#3B4B45;font-size:15px;line-height:1.7;}
+    .hw-card{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 6px rgba(11,59,48,.06);}
+    .hw-f{display:flex;flex-direction:column;gap:6px;}
+    #assignHwPage [hidden],#noticesPage [hidden]{display:none!important;}
+    .hw-lb{font-size:15px;font-weight:700;}
+    .hw-req{color:#BE123C;}
+    .hw-chips{display:flex;flex-wrap:wrap;gap:6px;}
+    .hw-chip{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid #DDD6FE;background:#F5F3FF;color:#5B21B6;font-weight:600;cursor:pointer;}
+    .hw-chip[aria-checked="true"]{border-color:transparent;background:linear-gradient(100deg,#8B5CF6,#6D28D9);color:#fff;font-weight:700;}
+    .hw-in{width:100%;min-height:46px;padding:0 12px;border-radius:12px;border:1px solid #D5DED8;background:#fff;color:#14231E;}
+    textarea.hw-in{padding:10px 12px;line-height:1.5;resize:vertical;}
+    .hw-cnt{font-size:13px;color:#9A3412;text-align:right;}
+    .hw-due{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+    .hw-dbtn{min-height:44px;border-radius:12px;border:1px solid #D5DED8;background:#fff;color:#14231E;font-weight:600;font-size:15px;cursor:pointer;}
+    .hw-dbtn[aria-checked="true"]{border-color:transparent;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;}
+    .hw-dbtn:disabled{opacity:.5;cursor:default;}
+    .hw-dlbl{font-size:14px;color:#0B5E4B;font-weight:600;}
+    .hw-dlbl.hw-none{color:#4A5A54;font-weight:500;}
+    .hw-cal{border:1px solid #E3E9E4;border-radius:14px;padding:8px;background:#FAFCFA;}
+    .hw-calh{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+    .hw-calt{font-weight:700;font-size:15px;text-align:center;flex:1;}
+    .hw-nav{width:44px;height:44px;border-radius:12px;border:1px solid #D5DED8;background:#fff;color:#14231E;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .hw-nav:disabled{opacity:.35;cursor:default;}
+    .hw-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;margin-top:6px;}
+    .hw-dw{text-align:center;font-size:13px;font-weight:700;color:#3B4B45;padding:4px 0;}
+    .hw-day{min-height:44px;border-radius:10px;border:none;background:transparent;color:#14231E;font-size:15px;font-weight:600;cursor:pointer;}
+    .hw-day.hw-we{color:#8A9A93;font-weight:500;}
+    .hw-day:disabled{color:#B8C2BC;cursor:default;text-decoration:line-through;}
+    .hw-day[aria-pressed="true"]{background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;}
+    .hw-link{align-self:flex-start;min-height:44px;padding:0 4px;border:none;background:transparent;color:#0F7A62;font-weight:600;font-size:15px;cursor:pointer;}
+    .hw-h2{margin:4px 4px 0;font-size:14px;font-weight:700;color:#3B4B45;}
+    .hw-list{display:flex;flex-direction:column;gap:8px;}
+    .hw-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);}
+    .hw-ico{width:34px;height:34px;flex:none;border-radius:10px;background:#F5F3FF;color:#6D28D9;display:flex;align-items:center;justify-content:center;}
+    .hw-txt{flex:1;min-width:0;display:flex;flex-direction:column;}
+    .hw-ttl{font-weight:600;font-size:15px;line-height:1.4;overflow-wrap:anywhere;}
+    .hw-meta{font-size:13px;color:#4A5A54;}
+    .hw-bd{flex:none;padding:2px 9px;border-radius:999px;background:#DCFCE7;color:#166534;font-size:13px;font-weight:700;white-space:nowrap;}
+    .hw-bd.hw-warn{background:#FEF3C7;color:#92400E;}
+    .hw-bd.hw-late{background:#E5E7EB;color:#4B5563;}
+    .hw-del{flex:none;width:48px;height:48px;border-radius:12px;border:1px solid #FECDD3;background:#FFF1F2;color:#9F1239;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;}
+    .hw-del:disabled{opacity:.6;cursor:default;}
+    .hw-foot{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:10px 14px calc(16px + env(safe-area-inset-bottom));background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid #E3E9E4;}
+    .hw-foot[hidden]{display:none;}
+    .hw-go{display:flex;width:100%;max-width:480px;margin:0 auto;align-items:center;justify-content:center;gap:8px;min-height:52px;border-radius:14px;border:none;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;font-size:17px;box-shadow:0 6px 16px rgba(15,122,98,.28);cursor:pointer;}
+    .hw-go:disabled{background:#C9D3CD;color:#4A5A54;box-shadow:none;cursor:default;}
+    .hw-toast{position:fixed;left:14px;right:14px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:20;max-width:452px;margin:0 auto;padding:12px 14px;border-radius:14px;background:#0B3B30;color:#fff;font-size:15px;line-height:1.5;box-shadow:0 8px 24px rgba(11,59,48,.3);}
+    .hw-toast.hw-err{background:#9F1239;}
+    .hw-toast[hidden]{display:none;}
+    #assignHwPage button:focus-visible,#assignHwPage input:focus-visible,#assignHwPage select:focus-visible,#assignHwPage textarea:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
   </style>
 </head>
 <body>
@@ -270,6 +329,52 @@
   <div class="nb-tabs" id="noticesTabs" role="tablist" aria-label="กรองประกาศ" hidden></div>
   <div class="nb-list" id="noticesBody"><div class="nb-msg">กำลังโหลด...</div></div>
   <button class="nb-fab" id="noticesNew" type="button" hidden onclick="noticesNew()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>ประกาศถึงผู้ปกครอง</button>
+</div>
+
+<!-- ===== สั่งการบ้าน (ครู · L4) ===== -->
+<div class="page" id="assignHwPage">
+  <header class="hw-head">
+    <svg width="180" height="180" viewBox="0 0 180 180" aria-hidden="true"><circle cx="90" cy="90" r="82" fill="#D4A84B" opacity=".9"/><circle cx="90" cy="90" r="52" fill="#0F7A62"/></svg>
+    <h1>สั่งการบ้าน</h1>
+    <p>ผู้ปกครองเห็นที่เมนู การบ้าน</p>
+  </header>
+  <div class="hw-wrap">
+    <div class="hw-msg" id="hwMsg">กำลังโหลด...</div>
+    <div id="hwMain" hidden>
+      <div class="hw-card">
+        <div class="hw-f">
+          <span class="hw-lb" id="hwClsLb">ห้อง <span class="hw-req" aria-hidden="true">*</span></span>
+          <div class="hw-chips" id="hwCls" role="radiogroup" aria-labelledby="hwClsLb"></div>
+        </div>
+        <div class="hw-f">
+          <label class="hw-lb" for="hwSub">วิชา <span class="hw-req" aria-hidden="true">*</span></label>
+          <select class="hw-in" id="hwSub"></select>
+          <input class="hw-in" id="hwSubOther" maxlength="80" placeholder="พิมพ์ชื่อวิชา" aria-label="ชื่อวิชา (พิมพ์เอง)" hidden>
+        </div>
+        <div class="hw-f">
+          <label class="hw-lb" for="hwTitle">งานที่สั่ง <span class="hw-req" aria-hidden="true">*</span></label>
+          <input class="hw-in" id="hwTitle" maxlength="120" placeholder="เช่น แบบฝึกหัด หน้า 24 ข้อ 1–10" autocomplete="off">
+          <div class="hw-cnt" id="hwTitleCnt" hidden></div>
+        </div>
+        <div class="hw-f">
+          <span class="hw-lb" id="hwDueLb">กำหนดส่ง <span class="hw-req" aria-hidden="true">*</span></span>
+          <div id="hwDue"></div>
+        </div>
+        <button class="hw-link" id="hwDetBtn" type="button" data-act="detail" aria-expanded="false" aria-controls="hwDetWrap">+ เพิ่มรายละเอียด</button>
+        <div class="hw-f" id="hwDetWrap" hidden>
+          <label class="hw-lb" for="hwDetail">รายละเอียด</label>
+          <textarea class="hw-in" id="hwDetail" rows="3" maxlength="500" placeholder="เช่น ส่งที่โต๊ะครู · ให้ผู้ปกครองเซ็นรับทราบ"></textarea>
+          <div class="hw-cnt" id="hwDetCnt" hidden></div>
+        </div>
+      </div>
+      <h2 class="hw-h2" style="margin-top:12px;">สั่งไปแล้ว</h2>
+      <div class="hw-list" id="hwList"></div>
+    </div>
+  </div>
+  <div class="hw-foot" id="hwFoot" hidden>
+    <button class="hw-go" id="hwGo" type="button" data-act="submit" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg><span id="hwGoTx">สั่งการบ้าน</span></button>
+  </div>
+  <div class="hw-toast" id="hwToast" role="status" aria-live="polite" hidden></div>
 </div>
 
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
@@ -520,6 +625,7 @@
       else if(page==='notify') initNotify();
       else if(page==='kids') show('kidsPage');
       else if(page==='notices') initNotices();
+      else if(page==='assign_hw') initAssignHw();
       else if(page==='saraban') initSaraban();
       else if(page==='saraban_file') initSarabanFile();
       else if(page==='bind') initBind();
@@ -785,6 +891,194 @@
     if(!r.ok){alert(r.error||'ลบไม่สำเร็จ');if(btn)btn.disabled=false;return;}
     await initNotices();
   }
+
+  /* ===== สั่งการบ้าน (ครู · L4) ===== */
+  /* HW-JS-BEGIN */
+  const HW_MON=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  const HW_MS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const HW_DS=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  const HW_BOOK='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></svg>';
+  const HW_CHEV=(d)=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(d<0?'M15 6l-6 6 6 6':'M9 6l6 6-6 6')+'"/></svg>';
+  const hw={bound:false,data:null,ci:0,sub:'',mode:'next',pick:'',due:'',calOpen:false,cy:0,cm:0,detOpen:false,busy:false,tt:null};
+  const hwEl=id=>document.getElementById(id);
+  // วันที่ทำด้วย UTC ล้วน (ยึด today จาก server ไม่พึ่ง timezone เครื่อง)
+  function hwP(s){const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?Date.UTC(+m[1],+m[2]-1,+m[3]):NaN;}
+  function hwF(ms){const d=new Date(ms);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}
+  function hwAdd(s,n){return hwF(hwP(s)+n*864e5);}
+  function hwDiff(a,b){return Math.round((hwP(b)-hwP(a))/864e5);}
+  function hwFmt(s){const t=new Date(hwP(s));return HW_DS[t.getUTCDay()]+' '+t.getUTCDate()+' '+HW_MS[t.getUTCMonth()]+' '+(t.getUTCFullYear()+543);}
+  function hwP3(){const today=hw.data.today;let d=hwAdd(today,3);const w=new Date(hwP(d)).getUTCDay();if(w===6)d=hwAdd(d,2);else if(w===0)d=hwAdd(d,1);return d;}
+  function hwCls(){return (hw.data&&hw.data.classes||[])[hw.ci]||null;}
+  function hwKeep(fn){
+    const a=document.activeElement,k=a&&a.dataset&&a.dataset.k;
+    fn();
+    if(k){const e=hwEl('assignHwPage').querySelector('[data-k="'+k+'"]');if(e&&!e.disabled)e.focus();}
+  }
+  function hwToast(msg,err){
+    const t=hwEl('hwToast');t.textContent=msg;t.classList.toggle('hw-err',!!err);t.hidden=false;
+    clearTimeout(hw.tt);hw.tt=setTimeout(()=>{t.hidden=true;},err?6000:4500);
+  }
+  async function initAssignHw(){
+    show('assignHwPage');
+    if(!hw.bound){hw.bound=true;
+      const pg=hwEl('assignHwPage');
+      pg.addEventListener('click',hwClick);
+      pg.addEventListener('input',hwInput);
+      pg.addEventListener('change',e=>{if(e.target.id==='hwSub'){hw.sub=e.target.value;hwSubUi();hwCheck();}});
+    }
+    hwEl('hwMsg').hidden=false;hwEl('hwMsg').textContent='กำลังโหลด...';
+    hwEl('hwMain').hidden=true;hwEl('hwFoot').hidden=true;
+    const r=await api('listMyHomeworkTargets');
+    if(!r||!r.ok||r.bound===false){
+      const unbound=r&&(r.bound===false||/ผูกบัญชี/.test(r.error||''));
+      hwEl('hwMsg').innerHTML=unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ');
+      return;
+    }
+    hw.data=r;hw.ci=0;hw.mode='next';hw.pick='';hw.calOpen=false;hw.detOpen=false;hw.busy=false;
+    hwEl('hwTitle').value='';hwEl('hwDetail').value='';hwEl('hwSubOther').value='';
+    hwEl('hwDetWrap').hidden=true;hwEl('hwDetBtn').textContent='+ เพิ่มรายละเอียด';hwEl('hwDetBtn').setAttribute('aria-expanded','false');
+    hwEl('hwMsg').hidden=true;hwEl('hwMain').hidden=false;hwEl('hwFoot').hidden=false;
+    hwResetSub();hwRenderCls();hwSubUi();hwRenderDue();hwRenderList();hwCounts();hwCheck();
+    if(!(r.classes||[]).length){
+      hwEl('hwMain').hidden=true;hwEl('hwMsg').hidden=false;
+      hwEl('hwMsg').textContent='ยังไม่มีห้อง/วิชาที่คุณสั่งการบ้านได้ — ให้หัวหน้าวิชาการกำหนดวิชาที่สอนในเว็บ (วิชาการ › รายวิชา) หรือแอดมินตั้งห้องประจำชั้น';
+      hwEl('hwGo').disabled=true;
+    }
+  }
+  function hwResetSub(){
+    const c=hwCls();
+    if(!c){hw.sub='';return;}
+    hw.sub=(c.subjects||[]).length?String(c.subjects[0].id):(c.free_text?'__other':'');
+  }
+  function hwRenderCls(){
+    hwEl('hwCls').innerHTML=(hw.data.classes||[]).map((c,i)=>{
+      const l=esc(c.grade+'/'+c.classroom);
+      return '<button type="button" class="hw-chip" role="radio" aria-checked="'+(i===hw.ci)+'" data-act="cls" data-i="'+i+'" data-k="cls'+i+'">'+l+'</button>';
+    }).join('');
+  }
+  function hwSubUi(){
+    const c=hwCls(),sel=hwEl('hwSub'),subs=c?(c.subjects||[]):[];
+    let h=subs.map(s=>'<option value="'+esc(s.id)+'"'+(String(s.id)===hw.sub?' selected':'')+'>'+esc(s.name)+'</option>').join('');
+    if(c&&c.free_text)h+='<option value="__other"'+(hw.sub==='__other'?' selected':'')+'>อื่น ๆ (พิมพ์เอง)</option>';
+    if(!h)h='<option value="">— ไม่มีวิชา —</option>';
+    sel.innerHTML=h;sel.value=hw.sub;
+    hwEl('hwSubOther').hidden=hw.sub!=='__other';
+  }
+  function hwRenderDue(){
+    const d=hw.data,today=d.today,max=d.max_due;
+    const nx=d.next_school_day,p3=hwP3();
+    const okd=s=>!!s&&s>=today&&s<=max;
+    const nxLb=nx===hwAdd(today,1)?'พรุ่งนี้':'วัน'+['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'][new Date(nx+'T00:00:00Z').getUTCDay()];
+    if(hw.mode==='next')hw.due=okd(nx)?nx:'';
+    else if(hw.mode==='p3')hw.due=okd(p3)?p3:'';
+    else hw.due=hw.pick;
+    const b=(m,lb,dis)=>'<button type="button" class="hw-dbtn" role="radio" aria-checked="'+(hw.mode===m)+'" data-act="due" data-m="'+m+'" data-k="due-'+m+'"'+(dis?' disabled':'')+'>'+lb+'</button>';
+    let h='<div class="hw-due" role="radiogroup" aria-labelledby="hwDueLb">'+b('next',nxLb,!okd(nx))+b('p3','+3 วัน',!okd(p3))+b('pick','เลือกวัน',false)+'</div>';
+    if(hw.calOpen)h+=hwCalHtml();
+    h+='<div class="hw-dlbl'+(hw.due?'':' hw-none')+'" style="margin-top:6px;" id="hwDueLbl">'+(hw.due?'ส่ง '+esc(hwFmt(hw.due)):'ยังไม่ได้เลือกวันส่ง')+'</div>';
+    hwEl('hwDue').innerHTML=h;
+  }
+  function hwCalHtml(){
+    const today=hw.data.today,max=hw.data.max_due,y=hw.cy,m=hw.cm;
+    const t0=new Date(hwP(today)),t1=new Date(hwP(max));
+    const prevOff=y*12+m<=t0.getUTCFullYear()*12+t0.getUTCMonth(),nextOff=y*12+m>=t1.getUTCFullYear()*12+t1.getUTCMonth();
+    const first=new Date(Date.UTC(y,m,1)).getUTCDay(),n=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+    let g=HW_DS.map(x=>'<div class="hw-dw" aria-hidden="true">'+x+'</div>').join('');
+    for(let i=0;i<first;i++)g+='<div></div>';
+    for(let d=1;d<=n;d++){
+      const ds=hwF(Date.UTC(y,m,d)),w=(first+d-1)%7,off=ds<today||ds>max;
+      g+='<button type="button" class="hw-day'+(w===0||w===6?' hw-we':'')+'" data-act="day" data-d="'+ds+'" data-k="day-'+ds+'" aria-pressed="'+(ds===hw.due&&hw.mode==='pick')+'" aria-label="'+esc(hwFmt(ds))+'"'+(off?' disabled':'')+'>'+d+'</button>';
+    }
+    return '<div class="hw-cal" style="margin-top:8px;"><div class="hw-calh">'
+      +'<button type="button" class="hw-nav" data-act="mon" data-n="-1" data-k="mon-1" aria-label="เดือนก่อน"'+(prevOff?' disabled':'')+'>'+HW_CHEV(-1)+'</button>'
+      +'<div class="hw-calt" aria-live="polite">'+HW_MON[m]+' '+(y+543)+'</div>'
+      +'<button type="button" class="hw-nav" data-act="mon" data-n="1" data-k="mon-2" aria-label="เดือนถัดไป"'+(nextOff?' disabled':'')+'>'+HW_CHEV(1)+'</button>'
+      +'</div><div class="hw-grid">'+g+'</div></div>';
+  }
+  function hwRenderList(){
+    const mine=(hw.data&&hw.data.mine)||[],today=hw.data.today;
+    hwEl('hwList').innerHTML=mine.length?mine.map(m=>{
+      const df=hwDiff(today,m.due_date);
+      const bd=df<0?['เลยกำหนด','hw-late']:df===0?['ส่งวันนี้','hw-warn']:df===1?['ส่งพรุ่งนี้','hw-warn']:['อีก '+df+' วัน',''];
+      const t=m.title||'';
+      return '<div class="hw-row"><span class="hw-ico">'+HW_BOOK+'</span>'
+        +'<span class="hw-txt"><span class="hw-ttl">'+esc(t)+'</span><span class="hw-meta">'+esc(m.grade+'/'+m.classroom)+' · '+esc(m.subject_name)+' · ส่ง '+esc(hwFmt(m.due_date))+'</span></span>'
+        +'<span class="hw-bd '+bd[1]+'">'+esc(bd[0])+'</span>'
+        +'<button type="button" class="hw-del" data-act="del" data-id="'+esc(m.id)+'" aria-label="ลบการบ้าน '+esc(t)+'">'+NB_TRASH+'</button></div>';
+    }).join(''):'<div class="hw-msg" style="padding:16px;">ยังไม่ได้สั่งการบ้าน</div>';
+  }
+  function hwCounts(){
+    [['hwTitle','hwTitleCnt',120],['hwDetail','hwDetCnt',500]].forEach(a=>{
+      const left=a[2]-hwEl(a[0]).value.length,c=hwEl(a[1]);
+      c.hidden=left>=20;c.textContent='เหลือ '+left+' ตัวอักษร';
+    });
+  }
+  function hwReady(){
+    const c=hwCls();
+    if(!c||!hw.data||hw.busy)return false;
+    if(!hw.sub)return false;
+    if(hw.sub==='__other'&&!hwEl('hwSubOther').value.trim())return false;
+    if(!hwEl('hwTitle').value.trim())return false;
+    return !!hw.due&&hw.due>=hw.data.today&&hw.due<=hw.data.max_due;
+  }
+  function hwCheck(){hwEl('hwGo').disabled=!hwReady();}
+  function hwInput(e){
+    const id=e.target.id;
+    if(id==='hwTitle'||id==='hwDetail')hwCounts();
+    if(id==='hwTitle'||id==='hwSubOther')hwCheck();
+  }
+  function hwClick(e){
+    const t=e.target.closest&&e.target.closest('[data-act]');
+    if(!t||!hw.data)return;
+    const act=t.dataset.act;
+    if(act==='cls'){hw.ci=+t.dataset.i;hwResetSub();hwKeep(()=>{hwRenderCls();hwSubUi();});hwCheck();}
+    else if(act==='due'){
+      const m=t.dataset.m;
+      if(m==='pick'){
+        hw.mode='pick';hw.calOpen=!hw.calOpen||!hw.pick;
+        const s=hw.pick||hw.data.today,d=new Date(hwP(s));hw.cy=d.getUTCFullYear();hw.cm=d.getUTCMonth();
+      }else{hw.mode=m;hw.calOpen=false;}
+      hwKeep(hwRenderDue);hwCheck();
+    }
+    else if(act==='mon'){
+      let y=hw.cy,m=hw.cm+(+t.dataset.n);
+      if(m<0){m=11;y--;}else if(m>11){m=0;y++;}
+      hw.cy=y;hw.cm=m;hwKeep(hwRenderDue);
+    }
+    else if(act==='day'){hw.mode='pick';hw.pick=t.dataset.d;hw.calOpen=false;hwRenderDue();const b=hwEl('hwDue').querySelector('[data-k="due-pick"]');if(b)b.focus();hwCheck();}
+    else if(act==='detail'){
+      hw.detOpen=!hw.detOpen;hwEl('hwDetWrap').hidden=!hw.detOpen;
+      t.textContent=hw.detOpen?'− ซ่อนรายละเอียด':'+ เพิ่มรายละเอียด';t.setAttribute('aria-expanded',String(hw.detOpen));
+      if(hw.detOpen)hwEl('hwDetail').focus();
+    }
+    else if(act==='submit')hwSubmit();
+    else if(act==='del')hwRemove(t.dataset.id,t);
+  }
+  async function hwSubmit(){
+    if(!hwReady())return;
+    const c=hwCls(),body={grade:c.grade,classroom:c.classroom,title:hwEl('hwTitle').value.trim(),due_date:hw.due};
+    const dt=hwEl('hwDetail').value.trim();if(dt)body.detail=dt;
+    if(hw.sub==='__other')body.subject_name=hwEl('hwSubOther').value.trim();else body.subject_id=hw.sub;
+    hw.busy=true;hwEl('hwGo').disabled=true;hwEl('hwGoTx').textContent='กำลังบันทึก...';
+    let r;
+    try{r=await api('createHomework',body);}catch(err){r={ok:false,error:'บันทึกไม่สำเร็จ — ลองอีกครั้ง'};}
+    hw.busy=false;hwEl('hwGoTx').textContent='สั่งการบ้าน';
+    if(!r||!r.ok){hwToast((r&&r.error)||'บันทึกไม่สำเร็จ',true);hwCheck();return;}
+    if(r.mine)hw.data.mine=r.mine;
+    hwEl('hwTitle').value='';hwEl('hwDetail').value='';hwCounts();
+    hwRenderList();hwCheck();
+    hwToast('สั่งการบ้านแล้ว — ผู้ปกครอง '+c.grade+'/'+c.classroom+' เห็นที่เมนู การบ้าน');
+    hwEl('hwTitle').focus();
+  }
+  async function hwRemove(id,btn){
+    if(!confirm('ลบการบ้านนี้? ผู้ปกครองจะไม่เห็นอีก'))return;
+    if(btn)btn.disabled=true;
+    const r=await api('deleteHomework',{id});
+    if(!r||!r.ok){hwToast((r&&r.error)||'ลบไม่สำเร็จ',true);if(btn)btn.disabled=false;return;}
+    if(r.mine)hw.data.mine=r.mine;
+    hwRenderList();
+  }
+  /* HW-JS-END */
 
   /* ===== NOTIFY (ครู · N1): บันทึก → แชร์การ์ดเข้ากลุ่มไลน์ (shareTargetPicker · ส่งในนามครู ไม่กินโควตา OA) ===== */
   let notifyInit=null;

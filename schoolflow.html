@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- ฟอนต์โหลดแบบไม่บล็อกหน้า (media=print → all เมื่อโหลดเสร็จ) -->
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
@@ -125,6 +126,45 @@
     .sb-sel{display:inline-flex;align-items:center;gap:4px;max-width:100%;margin:6px 6px 0 0;padding:3px 4px 3px 10px;border-radius:14px;background:var(--navy);color:var(--white);font-size:12px;font-weight:600;}
     .sb-sel button{background:none;border:none;color:var(--white);font-size:13px;line-height:1;min-width:24px;min-height:24px;cursor:pointer;padding:0;}
     .sb-link{background:none;border:none;color:var(--navy);font-family:'Sarabun',sans-serif;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px;}
+    /* ===== หน้าประกาศ (L3) — สไตล์เขียว-ทอง scope เฉพาะ #noticesPage ===== */
+    #noticesPage{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:17px;color:#14231E;background:radial-gradient(circle at 15% 35%,rgba(16,185,129,.22) 0,rgba(16,185,129,0) 40%),radial-gradient(circle at 90% 60%,rgba(212,168,75,.28) 0,rgba(212,168,75,0) 40%),#F2F5F1;}
+    #noticesPage button{font-family:inherit;}
+    .nb-head{position:relative;overflow:hidden;padding:18px 18px 16px;background:linear-gradient(115deg,#0B3B30 0%,#0F7A62 55%,#14967A 100%);color:#fff;}
+    .nb-head svg{position:absolute;right:-60px;top:-80px;}
+    .nb-head h1{position:relative;margin:0;font-size:24px;font-weight:700;}
+    .nb-sub{position:relative;display:flex;align-items:center;gap:8px;font-size:14px;color:#CDEBE1;}
+    .nb-role{padding:1px 9px;border-radius:999px;background:#D4A84B;color:#2A2207;font-size:13px;font-weight:700;}
+    .nb-info{margin:12px 14px 0;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);font-size:14px;color:#3B4B45;line-height:1.5;}
+    .nb-tabs{display:flex;gap:6px;padding:12px 14px 4px;}
+    .nb-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid #D5DED8;background:#fff;color:#14231E;font-size:15px;font-weight:600;cursor:pointer;}
+    .nb-chip[aria-selected="true"]{border-color:transparent;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;}
+    .nb-count{padding:0 7px;border-radius:999px;background:#E11D48;color:#fff;font-size:13px;}
+    .nb-list{flex:1;width:100%;max-width:480px;margin:0 auto;padding:8px 14px 24px;display:flex;flex-direction:column;gap:10px;}
+    .nb-list.nb-pad{padding-bottom:100px;}
+    .nb-msg{padding:28px 16px;text-align:center;color:#3B4B45;font-size:15px;line-height:1.7;}
+    .nb-card{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:18px;background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 24px rgba(11,59,48,.10);}
+    .nb-card.nb-old{background:#fff;box-shadow:0 1px 6px rgba(11,59,48,.06);}
+    .nb-card.nb-focus{border:2px solid #D4A84B;}
+    .nb-hit{display:flex;flex-direction:column;gap:6px;border-radius:10px;}
+    .nb-hit[role="button"]{cursor:pointer;}
+    .nb-row{display:flex;align-items:center;gap:8px;}
+    .nb-sp{flex:1;}
+    .nb-aud{padding:2px 10px;border-radius:999px;background:#FFEDD5;color:#9A3412;font-size:13px;font-weight:700;}
+    .nb-aud.nb-all{background:#FEF3C7;color:#92400E;}
+    .nb-new{padding:2px 9px;border-radius:999px;background:#E11D48;color:#fff;font-size:13px;font-weight:700;}
+    .nb-st{font-size:13px;color:#047857;font-weight:600;}
+    .nb-st.nb-dim{color:#4A5A54;}
+    .nb-title{font-weight:700;font-size:16px;line-height:1.4;}
+    .nb-text{font-size:15px;color:#3B4B45;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .nb-card.nb-open .nb-text{display:block;white-space:pre-wrap;overflow:visible;}
+    .nb-meta{font-size:13px;color:#4A5A54;}
+    .nb-acts{display:flex;gap:8px;margin-top:4px;}
+    .nb-btn{flex:1;min-height:44px;border-radius:12px;border:1px solid #D5DED8;background:#fff;color:#14231E;font-weight:600;font-size:15px;cursor:pointer;}
+    .nb-del{flex:none;width:48px;display:inline-flex;align-items:center;justify-content:center;border-color:#FECDD3;background:#FFF1F2;color:#9F1239;}
+    .nb-btn:disabled{opacity:.6;cursor:default;}
+    .nb-fab{position:fixed;left:14px;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:16px;border:none;background:linear-gradient(100deg,#F2CF7A,#D4A84B);color:#2A2207;font-weight:700;font-size:17px;box-shadow:0 10px 24px rgba(184,137,47,.35);cursor:pointer;z-index:10;}
+    .nb-fab[hidden]{display:none;}
+    .nb-chip:focus-visible,.nb-hit:focus-visible,.nb-btn:focus-visible,.nb-fab:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
   </style>
 </head>
 <body>
@@ -221,12 +261,15 @@
 
 <!-- ===== NOTICES (ผู้ปกครอง · กำลังพัฒนา — N1) ===== -->
 <div class="page" id="noticesPage">
-  <div class="header" style="background:#E08A1E;">
-    <div class="header-badge"><span>🔔</span><span>สมุดประกาศ</span></div>
+  <header class="nb-head">
+    <svg width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="92" fill="#D4A84B" opacity=".9"/><circle cx="100" cy="100" r="58" fill="#0F7A62"/></svg>
     <h1>ประกาศ</h1>
-    <p>ข่าวจากโรงเรียนและครูประจำชั้น</p>
-  </div>
-  <div class="content" id="noticesBody"><div class="empty-box">กำลังโหลด...</div></div>
+    <div class="nb-sub"><span>ข่าวจากโรงเรียน</span><span class="nb-role" id="noticesRole" hidden>ผู้ดูแลโรงเรียน</span></div>
+  </header>
+  <div class="nb-info" id="noticesInfo" hidden></div>
+  <div class="nb-tabs" id="noticesTabs" role="tablist" aria-label="กรองประกาศ" hidden></div>
+  <div class="nb-list" id="noticesBody"><div class="nb-msg">กำลังโหลด...</div></div>
+  <button class="nb-fab" id="noticesNew" type="button" hidden onclick="noticesNew()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>ประกาศถึงผู้ปกครอง</button>
 </div>
 
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
@@ -654,24 +697,93 @@
   /* ===== NOTIFY (placeholder) ===== */
   /* ===== NOTICES (ผู้ปกครอง · N1) ===== */
   const fmtNoticeDate=(iso)=>{if(!iso||!/^\d{4}-/.test(iso))return 'วันนี้';try{return new Date(iso).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});}catch(e){return iso.slice(0,10);}};
+  const nb={data:null,filter:'all',open:{},bound:false,focused:false};
+  const NB_TRASH='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg>';
   async function initNotices(){
     show('noticesPage');
-    const body=document.getElementById('noticesBody');
-    const r=await api('getNotices');
-    if(!r.ok){body.innerHTML='<div class="empty-box">❌ '+esc(r.error)+'</div>';return;}
-    if(!(r.children||[]).length){body.innerHTML='<div class="section"><div class="empty-box">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>ผูกได้ที่ปุ่ม <b>แจ้งลานักเรียน</b> (ใส่เลขประจำตัวนักเรียน)</div></div>';return;}
-    const ns=r.notices||[];
-    if(!ns.length){body.innerHTML='<div class="section"><div class="empty-box">ยังไม่มีประกาศใน 60 วันที่ผ่านมา</div></div>';return;}
+    if(!nb.bound){nb.bound=true;
+      const pg=document.getElementById('noticesPage');
+      pg.addEventListener('click',nbClick);
+      pg.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.act==='toggle'){e.preventDefault();nbClick(e);}});
+    }
+    if(!nb.data)document.getElementById('noticesBody').innerHTML='<div class="nb-msg">กำลังโหลด...</div>';
+    nb.data=await api('getNotices');
+    nbRender();
     const focus=params.get('id');
-    body.innerHTML=ns.map(n=>'<div class="section" id="nt_'+esc(n.id)+'"'+(n.id===focus?' style="border:2px solid #E08A1E"':'')+'>'
-      +'<div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between">'
-      +'<div style="font-weight:700;font-size:16px;line-height:1.5">'+esc(n.title)+'</div>'
-      +(n.is_new?'<span style="flex-shrink:0;background:#E11D48;color:#fff;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700">ใหม่</span>':'')
-      +'</div>'
-      +'<div style="font-size:12px;color:var(--gray);margin-top:2px">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+(n.teacher?' · '+esc(n.teacher):'')+'</div>'
-      +(n.body?'<div style="margin-top:10px;font-size:14px;line-height:1.7;white-space:pre-wrap">'+esc(n.body)+'</div>':'')
-      +'</div>').join('');
-    if(focus){const el=document.getElementById('nt_'+focus);if(el)el.scrollIntoView({block:'center'});}
+    if(focus&&!nb.focused){nb.focused=true;const el=document.getElementById('nt_'+focus);if(el)el.scrollIntoView({block:'center'});}
+  }
+  function nbClick(e){
+    const t=e.target.closest&&e.target.closest('[data-act]');
+    if(!t)return;
+    const act=t.dataset.act,id=t.dataset.id;
+    if(act==='toggle'){
+      nb.open[id]=!(id in nb.open?nb.open[id]:id===params.get('id'));
+      nbRender();
+      const el=document.querySelector('#nt_'+CSS.escape(id)+' .nb-hit');if(el)el.focus();
+    }
+    else if(act==='filter'){nb.filter=t.dataset.f;nbRender();}
+    else if(act==='share')noticesShare(id,t);
+    else if(act==='del')noticesRemove(id,t);
+  }
+  function nbRender(){
+    const r=nb.data,body=document.getElementById('noticesBody');
+    const tabs=document.getElementById('noticesTabs'),info=document.getElementById('noticesInfo');
+    const role=document.getElementById('noticesRole'),fab=document.getElementById('noticesNew');
+    tabs.hidden=true;info.hidden=true;role.hidden=true;fab.hidden=true;body.classList.remove('nb-pad');
+    if(!r||!r.ok){body.innerHTML='<div class="nb-msg">'+esc(r&&r.error||'โหลดไม่สำเร็จ')+'</div>';return;}
+    const staff=r.role==='staff',manage=staff&&!!r.can_manage;
+    if(!staff&&!(r.children||[]).length){body.innerHTML='<div class="nb-msg">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>ผูกได้ที่ปุ่ม <b>แจ้งลานักเรียน</b> (ใส่เลขประจำตัวนักเรียน)</div>';return;}
+    if(staff){
+      info.textContent=manage?'เฉพาะผู้ดูแลโรงเรียนประกาศได้ · ครูและผู้บริหารคนอื่นอ่านได้อย่างเดียว':'อ่านอย่างเดียว · เฉพาะผู้ดูแลโรงเรียนประกาศได้';
+      info.hidden=false;role.hidden=!manage;
+    }
+    if(manage){fab.hidden=false;body.classList.add('nb-pad');}
+    const all=r.notices||[],unread=all.filter(n=>n.is_new).length;
+    if(!unread)nb.filter='all';
+    if(unread){
+      tabs.innerHTML='<button type="button" class="nb-chip" role="tab" data-act="filter" data-f="all" aria-selected="'+(nb.filter==='all')+'">ทั้งหมด</button>'
+        +'<button type="button" class="nb-chip" role="tab" data-act="filter" data-f="unread" aria-selected="'+(nb.filter==='unread')+'">ยังไม่อ่าน <span class="nb-count">'+unread+'</span></button>';
+      tabs.hidden=false;
+    }
+    if(!all.length){body.innerHTML='<div class="nb-msg">ยังไม่มีประกาศใน 60 วันที่ผ่านมา</div>';return;}
+    const focus=params.get('id');
+    const ns=nb.filter==='unread'?all.filter(n=>n.is_new):all;
+    body.innerHTML=ns.map(n=>{
+      const id=esc(n.id),isF=n.id===focus,open=n.id in nb.open?nb.open[n.id]:isF;
+      let st='';
+      if(n.is_new)st='<span class="nb-new">ใหม่</span>';
+      else if(manage)st='<span class="nb-st'+(n.pushed!=null||n.shared?'':' nb-dim')+'">'+(n.pushed!=null?'ส่งตรง '+esc(n.pushed)+' คน':n.shared?'แชร์กลุ่มแล้ว':'ยังไม่แชร์')+'</span>';
+      else if(!staff)st='<span class="nb-st">อ่านแล้ว</span>';
+      const hit=n.body?' role="button" tabindex="0" aria-expanded="'+!!open+'" data-act="toggle" data-id="'+id+'"':'';
+      return '<article class="nb-card'+(n.is_new?'':' nb-old')+(open?' nb-open':'')+(isF?' nb-focus':'')+'" id="nt_'+id+'">'
+        +'<div class="nb-hit"'+hit+'>'
+        +'<div class="nb-row"><span class="nb-aud'+(n.audience_label==='ทั้งโรงเรียน'?' nb-all':'')+'">'+esc(n.audience_label)+'</span><span class="nb-sp"></span>'+st+'</div>'
+        +'<div class="nb-title">'+esc(n.title)+'</div>'
+        +(n.body?'<div class="nb-text">'+esc(n.body)+'</div>':'')
+        +'<div class="nb-meta">'+(n.teacher?esc(n.teacher)+' · ':'')+esc(fmtNoticeDate(n.created_at))+'</div>'
+        +'</div>'
+        +(manage?'<div class="nb-acts"><button type="button" class="nb-btn" data-act="share" data-id="'+id+'">แชร์ไปกลุ่มไลน์</button>'
+          +'<button type="button" class="nb-btn nb-del" data-act="del" data-id="'+id+'" aria-label="ลบประกาศ '+esc(n.title)+'">'+NB_TRASH+'</button></div>':'')
+        +'</article>';
+    }).join('')||'<div class="nb-msg">ไม่มีประกาศที่ยังไม่อ่าน</div>';
+  }
+  function noticesNew(){document.getElementById('noticesPage').classList.remove('show');initNotify();}
+  async function noticesShare(id,btn){
+    if(btn)btn.disabled=true;
+    const r=await api('getNoticeFlex',{notice_id:id});
+    if(!r.ok){alert(r.error||'ไม่สำเร็จ');if(btn)btn.disabled=false;return;}
+    const st=await shareFlex(r.flex);
+    if(st==='sent')await api('markShared',{notice_id:id});
+    else if(st==='unavailable')alert('แชร์เข้ากลุ่มไม่ได้ — ต้องเปิดจากเมนูใน LINE และผู้ดูแลต้องเปิด Share Target Picker ใน LINE Developers');
+    else if(st!=='cancel')alert('แชร์ไม่สำเร็จ — ลองอีกครั้ง');
+    await initNotices();
+  }
+  async function noticesRemove(id,btn){
+    if(!confirm('ลบประกาศนี้ออกจากสมุดประกาศ? (ข้อความที่แชร์เข้ากลุ่มแล้วจะไม่ถูกลบ)'))return;
+    if(btn)btn.disabled=true;
+    const r=await api('deleteNotice',{notice_id:id});
+    if(!r.ok){alert(r.error||'ลบไม่สำเร็จ');if(btn)btn.disabled=false;return;}
+    await initNotices();
   }
 
   /* ===== NOTIFY (ครู · N1): บันทึก → แชร์การ์ดเข้ากลุ่มไลน์ (shareTargetPicker · ส่งในนามครู ไม่กินโควตา OA) ===== */

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;width:2500px;height:1686px;overflow:hidden}
+.g{width:2500px;height:1686px;box-sizing:border-box;padding:20px;background:linear-gradient(135deg,#0B3B30,#0F7A62);
+  display:grid;grid-template-columns:813px 814px 813px;grid-template-rows:repeat(2,813px);gap:20px;font-family:'IBM Plex Sans Thai Looped',sans-serif}
+.t{border-radius:56px;color:#14231E;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px}
+.i{width:300px;height:300px;border-radius:84px;color:#fff;display:flex;align-items:center;justify-content:center}
+.l{font-size:92px;font-weight:700;line-height:1.2}
+</style></head><body><div class="g" id="g"></div>
+<script>
+const P={
+ 1:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="m9 13 2 2 4-4"/>',
+ 2:'<path d="M4 5a2 2 0 0 1 2-2h6v17H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-6v17h6a2 2 0 0 1 2 2z"/><path d="m15 9 1.5 1.5L19 8"/>',
+ 3:'<path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6a8 8 0 0 1 0 12"/>',
+ 4:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h4"/>',
+ 5:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M12 13v3l2 1"/>',
+ 6:'<circle cx="9" cy="7" r="3"/><circle cx="17" cy="10" r="2.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M14.5 20a4 4 0 0 1 7 0"/>'};
+const T=[['เช็คชื่อ','#FDBA74','#C2410C','#FFF7ED'],['สั่งการบ้าน','#A78BFA','#6D28D9','#F5F3FF'],['ประกาศ','#F2CF7A','#B8892F','#FFFBEB'],
+ ['แจ้งลา','#7DD3FC','#0369A1','#F0F9FF'],['ตารางวันนี้','#5EEAD4','#0F766E','#F0FDFA'],['ลูกของฉัน','#F9A8D4','#BE185D','#FDF2F8']];
+document.getElementById('g').innerHTML=T.map(([l,a,b,bg],i)=>'<div class="t" style="background:linear-gradient(160deg,#fff 0%,'+bg+' 100%)">'
+ +'<span class="i" style="background:linear-gradient(135deg,'+a+','+b+');box-shadow:0 28px 60px '+b+'55"><svg width="168" height="168" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[i+1]+'</svg></span>'
+ +'<span class="l">'+l+'</span></div>').join('');
+</script></body></html>

@@ -177,7 +177,7 @@
     .hw-msg{padding:28px 16px;text-align:center;color:#3B4B45;font-size:15px;line-height:1.7;}
     .hw-card{background:#fff;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 6px rgba(11,59,48,.06);}
     .hw-f{display:flex;flex-direction:column;gap:6px;}
-    #assignHwPage [hidden],#noticesPage [hidden]{display:none!important;}
+    #assignHwPage [hidden],#noticesPage [hidden],#todayPage [hidden]{display:none!important;}
     .hw-lb{font-size:15px;font-weight:700;}
     .hw-req{color:#BE123C;}
     .hw-chips{display:flex;flex-wrap:wrap;gap:6px;}
@@ -224,6 +224,56 @@
     .hw-toast.hw-err{background:#9F1239;}
     .hw-toast[hidden]{display:none;}
     #assignHwPage button:focus-visible,#assignHwPage input:focus-visible,#assignHwPage select:focus-visible,#assignHwPage textarea:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
+
+    /* ===== ตารางสอนวันนี้ (L5) — scope เฉพาะ #todayPage ===== */
+    #todayPage{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:17px;color:#14231E;background:radial-gradient(circle at 90% 6%,rgba(167,139,250,.25) 0,rgba(167,139,250,0) 40%),#EEF2EE;}
+    #todayPage button{font-family:inherit;font-size:inherit;}
+    .td-head{padding:14px 14px 10px;background:linear-gradient(100deg,#0B5E4B 0%,#0F7A62 45%,#14967A 100%);color:#fff;display:flex;flex-direction:column;gap:10px;}
+    .td-head h1{margin:0;font-size:20px;font-weight:700;}
+    .td-sub{font-size:14px;color:#CDEBE1;}
+    .td-mk{display:inline-block;margin-top:4px;padding:1px 10px;border-radius:999px;background:#D4A84B;color:#2A2207;font-size:13px;font-weight:700;}
+    .td-tabs{display:grid;gap:6px;}
+    .td-tab{position:relative;min-height:48px;border-radius:12px;border:none;background:rgba(255,255,255,.14);color:#fff;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;cursor:pointer;padding:0;}
+    .td-tab span{font-size:15px;}
+    .td-tab .td-dn{font-size:14px;}
+    .td-tab[aria-selected="true"]{background:#fff;color:#0B5E4B;font-weight:700;}
+    .td-tab.td-off{color:rgba(255,255,255,.62);}
+    .td-tab.td-off[aria-selected="true"]{color:#5B6B65;}
+    .td-tab.td-today::after{content:"";position:absolute;left:50%;bottom:4px;width:14px;height:3px;margin-left:-7px;border-radius:2px;background:#D4A84B;}
+    .td-dot{position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:#FB7185;}
+    .td-wrap{flex:1;width:100%;max-width:480px;margin:0 auto;padding:12px 14px 28px;display:flex;flex-direction:column;gap:8px;}
+    .td-msg{padding:28px 16px;text-align:center;color:#3B4B45;font-size:15px;line-height:1.7;}
+    .td-off-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 16px;border-radius:18px;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);text-align:center;color:#3B4B45;font-size:16px;font-weight:600;}
+    .td-off-card svg{color:#0F7A62;}
+    .td-alert{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,241,242,.85);border:1px solid #FECDD3;color:#9F1239;font-size:15px;font-weight:600;}
+    .td-alert-ic{width:32px;height:32px;flex:none;border-radius:10px;background:linear-gradient(135deg,#FB7185,#BE123C);color:#fff;display:flex;align-items:center;justify-content:center;}
+    .td-alert ul{flex:1;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;line-height:1.4;}
+    .td-r{display:flex;gap:10px;align-items:stretch;}
+    .td-r.td-done{opacity:.7;}
+    .td-t{width:52px;flex:none;text-align:right;font-size:13px;color:#4A5A54;padding-top:11px;}
+    .td-r.td-now .td-t{font-weight:700;color:#0B5E4B;padding-top:13px;}
+    .td-c{flex:1;min-width:0;padding:10px 12px;border-radius:14px;border:1px solid var(--bd,#D5DED8);background:linear-gradient(135deg,var(--bg,#fff),#fff);display:flex;flex-direction:column;gap:8px;}
+    .td-r.td-now .td-c{padding:12px;border:2px solid #0F7A62;border-radius:16px;box-shadow:0 8px 22px rgba(15,122,98,.18);}
+    .td-top{display:flex;align-items:center;gap:8px;}
+    .td-tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+    .td-nm{font-weight:700;font-size:16px;line-height:1.35;overflow-wrap:anywhere;}
+    .td-mt{font-size:13px;color:#4A5A54;line-height:1.4;overflow-wrap:anywhere;}
+    .td-bd{flex:none;padding:2px 10px;border-radius:999px;background:#E5E7EB;color:#374151;font-size:13px;font-weight:700;white-space:nowrap;}
+    .td-bd.td-g{background:#0F7A62;color:#fff;}
+    .td-bd.td-p{background:#FFE4E6;color:#9F1239;}
+    .td-bd.td-n{background:#FEF3C7;color:#92400E;}
+    .td-ok{font-size:13px;color:#047857;font-weight:700;white-space:nowrap;}
+    .td-r.td-rsub .td-c{--bg:#FFF1F2;--bd:#FECDD3;}
+    .td-r.td-cov .td-c,.td-r.td-can .td-c{--bg:#F1F3F2;--bd:#D5DED8;}
+    .td-r.td-cov .td-nm{text-decoration:line-through;font-weight:500;color:#4A5A54;}
+    .td-r.td-free .td-c{border:1px dashed #D5DED8;background:rgba(255,255,255,.5);color:#4A5A54;font-size:15px;}
+    .td-r.td-un .td-c{border:1px solid #FDE68A;background:repeating-linear-gradient(135deg,#FEF3C7 0 8px,#FFFBEB 8px 16px);color:#92400E;}
+    .td-r.td-brk{align-items:center;}
+    .td-r.td-brk .td-t{padding-top:0;}
+    .td-r.td-brk .td-c{padding:6px 12px;border-radius:10px;border:none;background:repeating-linear-gradient(135deg,#F7F3E6 0 10px,#FBF8EF 10px 20px);color:#6B4E12;font-size:14px;font-weight:600;}
+    .td-chk{min-height:44px;border-radius:12px;background:#fff;border:1px solid #FED7AA;color:#9A3412;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:15px;}
+    #todayPage button.td-chk{width:100%;font-family:inherit;font-size:15px;cursor:pointer;}
+    #todayPage .td-tab:focus-visible,#todayPage .td-chk:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
   </style>
 </head>
 <body>
@@ -375,6 +425,19 @@
     <button class="hw-go" id="hwGo" type="button" data-act="submit" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg><span id="hwGoTx">สั่งการบ้าน</span></button>
   </div>
   <div class="hw-toast" id="hwToast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<!-- ===== ตารางสอนวันนี้ (ครู · L5) ===== -->
+<div class="page" id="todayPage">
+  <header class="td-head" id="tdHead" hidden>
+    <div>
+      <h1>ตารางสอนของฉัน</h1>
+      <div class="td-sub" id="tdSub"></div>
+      <span class="td-mk" id="tdMk" hidden></span>
+    </div>
+    <div class="td-tabs" id="tdTabs" role="tablist" aria-label="เลือกวัน"></div>
+  </header>
+  <div class="td-wrap" id="tdBody"><div class="td-msg">กำลังโหลด...</div></div>
 </div>
 
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
@@ -626,6 +689,7 @@
       else if(page==='kids') show('kidsPage');
       else if(page==='notices') initNotices();
       else if(page==='assign_hw') initAssignHw();
+      else if(page==='today') initToday();
       else if(page==='saraban') initSaraban();
       else if(page==='saraban_file') initSarabanFile();
       else if(page==='bind') initBind();
@@ -1079,6 +1143,159 @@
     hwRenderList();
   }
   /* HW-JS-END */
+
+  /* ===== ตารางสอนวันนี้ (ครู · L5): api myTimetable · เลือกวันฝั่ง client ไม่เรียกซ้ำ ===== */
+  /* TD-JS-BEGIN */
+  const TD_DS=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  const TD_DF=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const TD_MS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const TD_PAL=[['#EDE9FE','#6D28D9'],['#FFEDD5','#C2410C'],['#DCFCE7','#15803D'],['#DBEAFE','#1D4ED8'],['#FCE7F3','#BE185D'],['#CCFBF1','#0F766E'],['#FEF9C3','#A16207'],['#E0E7FF','#4338CA']];
+  const TD_ICO={
+    swap:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg>',
+    off:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>'
+  };
+  const td={bound:false,data:null,sel:'',scrolled:false};
+  const tdEl=id=>document.getElementById(id);
+  function tdP(s){const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3])):null;}
+  function tdPal(name){let h=0;const s=String(name||'');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return TD_PAL[h%TD_PAL.length];}
+  function tdPer(r){const lb=String(r.label!=null&&r.label!==''?r.label:(r.period!=null?r.period:''));return /^\d+$/.test(lb)?'คาบ '+lb:lb;}
+  function tdIsTeach(r){return r.type==='class'||r.type==='sub';}
+  function tdSubLabel(r){
+    if(r.mode==='supervise')return 'คุมชั้น';
+    if(r.mode==='combine')return 'ควบชั้น';
+    if(r.mode==='swap')return r.swap_return?'คืนคาบ':'สลับคาบ';
+    return 'สอนแทน';
+  }
+  function tdDay(){return ((td.data&&td.data.days)||[]).find(d=>d.date===td.sel)||null;}
+  function tdIsSchool(d){return d&&(d.status==='school_day'||d.status==='no_terms');}
+  function tdCount(d){return (d.rows||[]).filter(tdIsTeach).length;}
+  /** ไปหน้าเช็คชื่อในหน้าเดิม (ไม่โหลดใหม่ — กัน liff.init ซ้ำ) */
+  function tdOpenCheck(){document.getElementById('todayPage').classList.remove('show');initTeacher();}
+  async function initToday(){
+    show('todayPage');
+    if(!td.bound){td.bound=true;
+      tdEl('tdTabs').addEventListener('click',e=>{
+        const b=e.target.closest('[data-date]');if(!b)return;
+        td.sel=b.getAttribute('data-date');tdRender();
+        const nb=tdEl('tdTabs').querySelector('[aria-selected="true"]');if(nb)nb.focus();
+      });
+    }
+    tdEl('tdHead').hidden=true;
+    tdEl('tdBody').innerHTML='<div class="td-msg">กำลังโหลด...</div>';
+    const r=await api('myTimetable');
+    if(!r||!r.ok){
+      const unbound=r&&/ผูกบัญชี/.test(r.error||'');
+      tdEl('tdBody').innerHTML='<div class="td-msg">'+(unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ'))+'</div>';
+      return;
+    }
+    td.data=r;td.scrolled=false;
+    td.sel=r.selected||r.today||((r.days||[])[0]||{}).date||'';
+    if(!(r.days||[]).some(d=>d.date===td.sel))td.sel=((r.days||[])[0]||{}).date||'';
+    tdEl('tdHead').hidden=false;
+    tdRender();
+  }
+  function tdRender(){
+    const r=td.data,days=r.days||[],d=tdDay();
+    const isToday=td.sel===r.today;
+    // แท็บวัน
+    const tabs=tdEl('tdTabs');
+    tabs.style.gridTemplateColumns='repeat('+Math.max(days.length,1)+',minmax(0,1fr))';
+    tabs.innerHTML=days.map(x=>{
+      const t=tdP(x.date),sel=x.date===td.sel;
+      const off=!tdIsSchool(x);
+      const hasSub=(x.rows||[]).some(q=>q.type==='sub');
+      return '<button type="button" class="td-tab'+(off?' td-off':'')+(x.date===r.today?' td-today':'')+'" role="tab" aria-selected="'+sel+'" tabindex="'+(sel?0:-1)+'" data-date="'+esc(x.date)+'">'+
+        '<span>'+(t?TD_DS[t.getUTCDay()]:'')+'</span><span class="td-dn">'+(t?t.getUTCDate():'')+'</span>'+
+        (hasSub?'<i class="td-dot" role="img" aria-label="มีสอนแทน"></i>':'')+'</button>';
+    }).join('');
+    // หัว
+    const t=tdP(td.sel);
+    let sub=t?TD_DF[t.getUTCDay()]+' '+t.getUTCDate()+' '+TD_MS[t.getUTCMonth()]+' '+(t.getUTCFullYear()+543):'';
+    const body=tdEl('tdBody');
+    const mk=tdEl('tdMk');
+    if(d&&d.makeup){const di=Number(d.day_index);mk.textContent='วันเรียนชดเชย (ใช้ตารางวัน'+(TD_DF[di]||TD_DF[(di+1)%7]||'')+')';mk.hidden=false;}else mk.hidden=true;
+    if(!d){tdEl('tdSub').textContent=sub;body.innerHTML='<div class="td-msg">ไม่พบข้อมูลวันนี้</div>';return;}
+    if(!tdIsSchool(d)){
+      tdEl('tdSub').textContent=sub;
+      const m={holiday:'วันหยุด — ไม่มีเรียน',outside_term:'นอกภาคเรียน',weekend:'วันหยุดสุดสัปดาห์'}[d.status]||'ไม่มีเรียน';
+      body.innerHTML='<div class="td-off-card">'+TD_ICO.off+'<span>'+esc(m)+'</span></div>';
+      return;
+    }
+    if(!r.configured){
+      tdEl('tdSub').textContent=sub;
+      body.innerHTML='<div class="td-msg">โรงเรียนยังไม่ได้ตั้งตารางสอนภาคเรียนนี้ (ภาคเรียน '+esc(r.term)+'/'+esc(r.year)+')</div>';
+      return;
+    }
+    const rows=d.rows||[],n=tdCount(d);
+    tdEl('tdSub').textContent=sub+' · '+(n?n+' คาบ':'ไม่มีคาบสอน');
+    const now=String(r.now||''),hr=(r.homeroom||[]).map(x=>String(x).trim());
+    // ตัวแจ้งเตือนสอนแทน
+    const subs=rows.filter(q=>q.type==='sub');
+    let h='';
+    if(subs.length){
+      h+='<div class="td-alert" role="status"><span class="td-alert-ic">'+TD_ICO.swap+'</span><ul>'+subs.map(q=>{
+        const p=esc(tdPer(q)),rm=q.room?' '+esc(q.room):'',sj=q.subject?esc(q.subject)+rm:rm.trim();
+        let tx;
+        if(q.mode==='supervise')tx=p+' คุมชั้น · '+(q.room?esc(q.room):sj);
+        else if(q.mode==='combine')tx=p+' ควบชั้น'+(q.combine_with?'กับ '+esc(q.combine_with):'')+' · '+sj;
+        else if(q.mode==='swap')tx=p+' '+(q.swap_return?'คืนคาบ':'สลับคาบ')+' · '+sj;
+        else tx=p+' สอนแทน · '+sj;
+        return '<li>'+tx+'</li>';
+      }).join('')+'</ul></div>';
+    }
+    // หาคาบกำลังสอน/ถัดไป
+    let cur=-1,next=-1;
+    if(isToday&&now){
+      rows.forEach((q,i)=>{if(tdIsTeach(q)&&cur<0&&String(q.start)<=now&&now<String(q.end))cur=i;});
+      if(cur<0)rows.forEach((q,i)=>{if(tdIsTeach(q)&&next<0&&String(q.start)>now)next=i;});
+    }
+    h+=rows.map((q,i)=>{
+      const st=esc(q.start||''),p=esc(tdPer(q));
+      const done=isToday&&now&&tdIsTeach(q)&&String(q.end)<=now;
+      const isCur=i===cur;
+      let cls='td-r',inner='',style='';
+      if(q.type==='break'){
+        return '<div class="td-r td-brk"><div class="td-t">'+st+'</div><div class="td-c">'+esc(q.label||'พัก')+'</div></div>';
+      }
+      if(q.type==='free'){
+        const un=!!q.unavailable;
+        return '<div class="td-r td-free'+(un?' td-un':'')+'"><div class="td-t">'+st+'</div><div class="td-c">'+(un?'<span class="td-nm">ไม่สะดวก</span><span class="td-mt">'+p+' · แจ้งไว้</span>':p+' · ว่าง')+'</div></div>';
+      }
+      if(q.type==='covered'){
+        const who=esc(q.by_name||'ครูอื่น');
+        return '<div class="td-r td-cov"><div class="td-t">'+st+'</div><div class="td-c"><div class="td-nm">'+esc(q.subject)+'</div><div class="td-mt">'+p+(q.room?' · '+esc(q.room):'')+'</div><div class="td-mt">'+(q.mode==='swap'?'สลับคาบกับ ':'มีครูสอนแทน: ')+who+(q.note?' · '+esc(q.note):'')+'</div></div></div>';
+      }
+      if(q.type==='cancelled'){
+        return '<div class="td-r td-can"><div class="td-t">'+st+'</div><div class="td-c"><div class="td-top"><span class="td-tx"><span class="td-nm">'+esc(q.subject)+'</span><span class="td-mt">'+p+(q.room?' · '+esc(q.room):'')+'</span></span><span class="td-bd">งดคาบ</span></div>'+(q.note?'<div class="td-mt">'+esc(q.note)+'</div>':'')+'</div></div>';
+      }
+      // class / sub
+      const isSub=q.type==='sub';
+      if(!isSub){const pal=tdPal(q.subject);style=' style="--bg:'+pal[0]+';--bd:'+pal[1]+'33"';}
+      cls+=isSub?' td-rsub':'';
+      if(isCur)cls+=' td-now';else if(done)cls+=' td-done';
+      let badge='';
+      if(isCur)badge='<span class="td-bd td-g">กำลังสอน</span>';
+      else if(done)badge='<span class="td-ok">สอนแล้ว</span>';
+      else if(i===next)badge='<span class="td-bd td-n">ถัดไป</span>';
+      const meta=p+(q.room?' · '+esc(q.room):'')+(isCur?' · ถึง '+esc(q.end):'');
+      let extra='';
+      if(isSub){
+        const w=tdSubLabel(q);
+        extra='<div class="td-top"><span class="td-bd td-p">'+esc(w)+'</span>'+(q.mode==='combine'&&q.combine_with?'<span class="td-mt">กับ '+esc(q.combine_with)+'</span>':'')+'</div>'+(q.note?'<div class="td-mt">'+esc(q.note)+'</div>':'');
+      }
+      if(isCur&&hr.indexOf(String(q.room||'').trim())>=0){
+        extra+='<button type="button" class="td-chk" onclick="tdOpenCheck()">เช็คชื่อ</button>';
+      }
+      return '<div class="'+cls+'"'+(isCur||(cur<0&&i===next)?' data-cur="1"':'')+'><div class="td-t">'+st+'</div><div class="td-c"'+style+'><div class="td-top"><span class="td-tx"><span class="td-nm">'+esc(q.subject)+'</span><span class="td-mt">'+meta+'</span></span>'+badge+'</div>'+extra+'</div></div>';
+    }).join('');
+    body.innerHTML=h;
+    if(isToday&&!td.scrolled){
+      td.scrolled=true;
+      const c=body.querySelector('[data-cur]');
+      if(c)setTimeout(()=>{try{c.scrollIntoView({block:'center'});}catch(e){}},0);
+    }
+  }
+  /* TD-JS-END */
 
   /* ===== NOTIFY (ครู · N1): บันทึก → แชร์การ์ดเข้ากลุ่มไลน์ (shareTargetPicker · ส่งในนามครู ไม่กินโควตา OA) ===== */
   let notifyInit=null;

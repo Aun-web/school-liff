@@ -7,125 +7,151 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- ฟอนต์โหลดแบบไม่บล็อกหน้า (media=print → all เมื่อโหลดเสร็จ) -->
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
-      --red:#C0392B; --red-pale:#FDEDEC; --yellow:#F39C12; --yellow-pale:#FEF9E7;
-      --navy:#0F2044; --dark:#1A1A1A; --gray:#6B6B6B; --gray-light:#F5F5F5;
-      --border:#E8E8E8; --white:#FFFFFF; --green:#1E8449; --green-pale:#EAFAF1;
+      /* ชุดเขียว-ทอง (L6) */
+      --g900:#0B3B30; --g700:#0B5E4B; --g600:#0F7A62; --g500:#14967A;
+      --gold:#D4A84B; --gold-hi:#F2CF7A; --gold-ink:#2A2207;
+      --ink:#14231E; --ink2:#3B4B45; --muted:#4A5A54;
+      --bg:#F2F5F1; --line:#D5DED8;
+      --danger:#9F1239; --danger-bg:#FFF1F2;
+      /* ชื่อเดิม — ชี้ค่าใหม่ เพื่อ inline style เดิมไม่พัง */
+      --red:var(--danger); --red-pale:var(--danger-bg);
+      --yellow:var(--gold); --yellow-pale:#FEF3C7;
+      --navy:var(--g700); --dark:var(--ink); --gray:var(--muted); --gray-light:var(--bg);
+      --border:var(--line); --white:#FFFFFF; --green:var(--g600); --green-pale:#ECFDF5;
+      --amber-ink:#92400E;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Sarabun',sans-serif;background:var(--gray-light);min-height:100vh;}
+    body{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:16px;color:var(--ink);background:radial-gradient(circle at 90% 30%,rgba(212,168,75,.16) 0,rgba(212,168,75,0) 40%),var(--bg);min-height:100vh;}
+    button,input,select,textarea{font-family:inherit;}
+    .ic{display:inline-block;vertical-align:-3px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[role=button]:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
     .connecting{position:fixed;inset:0;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:100;}
     .connecting.hidden{display:none;}
-    .spinner{width:40px;height:40px;border:3px solid var(--red-pale);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
+    .spinner{width:40px;height:40px;border:3px solid #D1FAE5;border-top-color:var(--g600);border-radius:50%;animation:spin .8s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .connecting p{color:var(--gray);font-size:14px;}
+    @media (prefers-reduced-motion:reduce){.spinner{animation-duration:2.4s;}}
+    .connecting p{color:var(--muted);font-size:15px;padding:0 24px;text-align:center;}
     .page{display:none;flex-direction:column;min-height:100vh;}
     .page.show{display:flex;}
-    .header{background:var(--red);padding:28px 24px 20px;position:relative;overflow:hidden;}
-    .header.navy{background:var(--navy);}
-    .header::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.08);}
-    .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,0.9);margin-bottom:10px;}
-    .header h1{color:var(--white);font-size:23px;font-weight:700;position:relative;z-index:1;}
-    .header p{color:rgba(255,255,255,0.75);font-size:13px;margin-top:4px;position:relative;z-index:1;}
-    .deadline-bar{background:var(--yellow);padding:10px 24px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--dark);}
-    .content{flex:1;padding:20px 16px 32px;max-width:480px;width:100%;margin:0 auto;}
-    .section{background:var(--white);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid var(--border);}
-    .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:12px;}
-    .form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:'Sarabun',sans-serif;color:var(--dark);outline:none;background:var(--white);}
-    .form-input:focus{border-color:var(--navy);}
-    textarea.form-input{resize:none;}
+    /* หัวหน้า — เขียวไล่ + วงทองมุมขวาบน (ตาม mockup) */
+    .header{position:relative;overflow:hidden;padding:18px 18px 16px;background:linear-gradient(115deg,#0B3B30 0%,#0F7A62 55%,#14967A 100%);color:#fff;}
+    .header::before{content:'';position:absolute;right:-60px;top:-80px;width:200px;height:200px;border-radius:50%;background:var(--gold);opacity:.9;}
+    .header::after{content:'';position:absolute;right:-18px;top:-38px;width:116px;height:116px;border-radius:50%;background:var(--g600);}
+    .header>*{position:relative;z-index:1;}
+    .header-badge{display:inline-flex;align-items:center;gap:8px;max-width:calc(100% - 70px);padding:4px 12px 4px 4px;border-radius:999px;background:rgba(255,255,255,.14);font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;}
+    .header-badge>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .hb-s,.hb-ic{width:22px;height:22px;flex:none;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+    .hb-s{background:var(--gold);color:var(--g900);}
+    .hb-ic{background:rgba(255,255,255,.18);color:#fff;}
+    .header h1{color:#fff;font-size:24px;font-weight:700;line-height:1.3;}
+    .header p{color:#CDEBE1;font-size:14px;margin-top:2px;}
+    .deadline-bar{background:#FEF3C7;border-bottom:1px solid var(--gold-hi);padding:10px 18px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--amber-ink);}
+    .content{flex:1;padding:14px 14px 32px;max-width:480px;width:100%;margin:0 auto;}
+    .section{background:var(--white);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(11,59,48,.06);}
+    .section-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+    .form-input{width:100%;min-height:48px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;color:var(--ink);background:var(--white);}
+    .form-input:focus{border-color:var(--g600);}
+    textarea.form-input{resize:none;line-height:1.5;}
     .leave-types{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .leave-type-btn{border:2px solid var(--border);border-radius:12px;padding:14px 12px;background:var(--white);cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;}
-    .leave-type-btn .type-icon{font-size:26px;}
-    .leave-type-btn .type-label{font-size:14px;font-weight:600;color:var(--dark);}
-    .leave-type-btn .type-desc{font-size:11px;color:var(--gray);}
-    .leave-type-btn.active{border-color:var(--red);background:var(--red-pale);}
-    .leave-type-btn.active .type-label{color:var(--red);}
-    .date-row2{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;}
-    .date-field label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;display:block;margin-bottom:6px;}
-    .date-field input{width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:15px;font-family:'Sarabun',sans-serif;color:var(--dark);background:var(--white);outline:none;-webkit-appearance:none;}
-    .date-arrow{font-size:18px;color:var(--gray);margin-top:20px;}
-    .days-badge{display:inline-flex;align-items:center;gap:6px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--yellow);margin-top:12px;}
-    .child-chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--border);border-radius:12px;padding:10px 14px;margin:0 8px 8px 0;cursor:pointer;font-size:14px;font-weight:500;background:var(--white);}
-    .child-chip.active{border-color:var(--red);background:var(--red-pale);color:var(--red);font-weight:700;}
-    .child-chip.pending{opacity:.6;cursor:not-allowed;}
-    .status-pill{font-size:11px;padding:2px 8px;border-radius:10px;}
-    .pill-approved{background:var(--green-pale);color:var(--green);}
-    .pill-pending{background:var(--yellow-pale);color:#b8860b;}
-    .submit-btn{width:100%;padding:17px;border:none;border-radius:16px;background:var(--red);color:var(--white);font-size:17px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-    .submit-btn.navy{background:var(--navy);}
-    .submit-btn:disabled{background:#BDBDBD;cursor:not-allowed;}
-    .page-status{text-align:center;margin-top:10px;font-size:14px;font-weight:500;min-height:20px;}
+    .leave-type-btn{min-height:76px;border:1.5px solid var(--line);border-radius:14px;padding:12px;background:var(--white);color:var(--ink);cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+    .leave-type-btn .type-icon{display:flex;color:var(--g700);}
+    .leave-type-btn .type-label{font-size:15px;font-weight:600;color:var(--ink);}
+    .leave-type-btn .type-desc{font-size:13px;color:var(--muted);}
+    .leave-type-btn.active{border-color:var(--g600);background:#ECFDF5;box-shadow:inset 0 0 0 1px var(--g600);}
+    .leave-type-btn.active .type-label{color:var(--g700);font-weight:700;}
+    .date-row2{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:8px;}
+    .date-field label{font-size:13px;font-weight:700;color:var(--ink2);display:block;margin-bottom:6px;}
+    .date-field input{width:100%;min-width:0;min-height:48px;padding:10px 6px 10px 10px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit;color:var(--ink);background:var(--white);-webkit-appearance:none;}
+    .date-field input:focus{border-color:var(--g600);}
+    .date-field{min-width:0;}
+    .date-arrow{font-size:18px;color:var(--muted);margin-top:22px;}
+    .days-badge{display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;border:1px solid var(--gold-hi);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;color:var(--amber-ink);margin-top:12px;}
+    .child-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;border:1.5px solid var(--line);border-radius:12px;padding:8px 14px;margin:0 8px 8px 0;cursor:pointer;font-size:15px;font-weight:500;background:var(--white);}
+    .child-chip.active{border-color:var(--g600);background:#ECFDF5;color:var(--g700);font-weight:700;}
+    .child-chip.pending{opacity:.65;cursor:not-allowed;}
+    .status-pill{font-size:13px;padding:2px 9px;border-radius:999px;}
+    .pill-approved{background:var(--green-pale);color:var(--g700);}
+    .pill-pending{background:#FEF3C7;color:var(--amber-ink);}
+    .submit-btn{width:100%;min-height:52px;padding:12px 16px;border:none;border-radius:14px;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-size:17px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 16px rgba(15,122,98,.28);text-decoration:none;}
+    .submit-btn.navy{background:linear-gradient(100deg,#0B5E4B,#14967A);}
+    .submit-btn.ghost{background:#fff;color:var(--g700);border:1.5px solid var(--line);box-shadow:none;}
+    .submit-btn:disabled{background:#C9D3CD;color:var(--muted);cursor:not-allowed;box-shadow:none;}
+    .page-status{text-align:center;margin-top:10px;font-size:15px;font-weight:500;min-height:20px;}
     .success-screen{position:fixed;inset:0;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center;z-index:100;}
     .success-screen.hidden{display:none;}
-    .success-icon{width:72px;height:72px;background:var(--green-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;}
-    .success-screen h2{font-size:22px;font-weight:700;color:var(--dark);}
-    .success-screen p{font-size:14px;color:var(--gray);line-height:1.6;}
+    .success-icon{width:76px;height:76px;background:linear-gradient(135deg,#D1FAE5,#ECFDF5);border:2px solid var(--g500);color:var(--g600);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .success-icon .ic{stroke-width:2.6;}
+    .success-screen h2{font-size:22px;font-weight:700;color:var(--ink);}
+    .success-screen p{font-size:15px;color:var(--muted);line-height:1.6;}
     /* approve */
-    .summary-bar{background:var(--white);padding:14px 20px;display:flex;border-bottom:1px solid var(--border);}
-    .summary-item{flex:1;text-align:center;border-right:1px solid var(--border);}
+    .summary-bar{background:var(--white);padding:14px 20px;display:flex;border-bottom:1px solid var(--line);}
+    .summary-item{flex:1;text-align:center;border-right:1px solid var(--line);}
     .summary-item:last-child{border-right:none;}
-    .summary-num{font-size:22px;font-weight:700;}
-    .num-present{color:var(--green);} .num-leave{color:var(--yellow);} .num-absent{color:var(--red);}
-    .summary-label{font-size:11px;color:var(--gray);margin-top:2px;}
-    .approve-content{flex:1;padding:12px 16px 100px;}
-    .student-card{background:var(--white);border-radius:14px;padding:13px 15px;margin-bottom:10px;border:1px solid var(--border);}
-    .student-card.s-absent{border-color:var(--red);background:var(--red-pale);}
-    .student-card.s-leave{border-color:var(--yellow);background:var(--yellow-pale);}
+    .summary-num{font-size:24px;font-weight:700;}
+    .num-present{color:var(--g600);} .num-leave{color:var(--amber-ink);} .num-absent{color:var(--danger);}
+    .summary-label{font-size:13px;color:var(--muted);margin-top:2px;}
+    .approve-content{flex:1;padding:12px 14px 110px;}
+    .student-card{background:var(--white);border-radius:16px;padding:13px 15px;margin-bottom:10px;border:1px solid var(--line);}
+    .student-card.s-absent{border-color:#FECDD3;background:var(--danger-bg);}
+    .student-card.s-leave{border-color:var(--gold-hi);background:#FFFBEB;}
     .student-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-    .student-no{background:var(--gray-light);color:var(--navy);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
-    .student-name{font-weight:600;font-size:15px;flex:1;}
+    .student-no{background:#ECFDF5;color:var(--g700);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+    .student-name{font-weight:600;font-size:16px;flex:1;}
     .btn-group{display:flex;gap:6px;}
-    .btn-status{flex:1;padding:9px 6px;border:2px solid var(--border);border-radius:10px;background:var(--white);cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:500;}
-    .btn-status.on-present{background:var(--green-pale);border-color:var(--green);color:var(--green);font-weight:700;}
-    .btn-status.on-leave{background:var(--yellow-pale);border-color:var(--yellow);color:#b8860b;font-weight:700;}
-    .btn-status.on-absent{background:var(--red-pale);border-color:var(--red);color:var(--red);font-weight:700;}
-    .approve-footer{position:fixed;bottom:0;left:0;right:0;background:var(--white);padding:14px 18px;border-top:1px solid var(--border);}
-    .chip{padding:8px 16px;border:2px solid var(--border);border-radius:20px;background:var(--white);cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;margin:0 8px 8px 0;}
-    .chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+    .btn-status{flex:1;min-height:44px;padding:8px 6px;border:1.5px solid var(--line);border-radius:12px;background:var(--white);color:var(--ink);cursor:pointer;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+    .btn-status.on-present{background:var(--green-pale);border-color:var(--g600);color:var(--g700);font-weight:700;}
+    .btn-status.on-leave{background:#FEF3C7;border-color:var(--gold);color:var(--amber-ink);font-weight:700;}
+    .btn-status.on-absent{background:var(--danger-bg);border-color:#FDA4AF;color:var(--danger);font-weight:700;}
+    .approve-footer{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:10px 14px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);z-index:10;}
+    .approve-footer .submit-btn{max-width:480px;margin:0 auto;}
+    .chip{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid var(--line);border-radius:999px;background:var(--white);color:var(--ink);cursor:pointer;font-size:15px;font-weight:600;margin:0 8px 8px 0;}
+    .chip.active{background:linear-gradient(100deg,#0B5E4B,#14967A);border-color:transparent;color:#fff;font-weight:700;}
     /* ── ผลการเรียน (P1) ── */
-    .header.green{background:#0E7C66;}
-    .gpa-card{display:flex;align-items:center;justify-content:space-between;background:#0E7C66;color:#fff;border-radius:16px;padding:16px 18px;margin-bottom:12px;}
-    .gpa-card .gpa{font-size:30px;font-weight:700;line-height:1;}
-    .subj{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+    .gpa-card{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:0 6px 16px rgba(15,122,98,.22);}
+    .gpa-card .gpa{font-size:32px;font-weight:700;line-height:1;}
+    .subj{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 10px rgba(11,59,48,.06);}
     .subj-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-    .subj-name{font-size:15px;font-weight:700;color:var(--dark);}
-    .subj-code{font-size:12px;color:var(--gray);}
-    .grade-badge{flex-shrink:0;border-radius:10px;padding:4px 10px;font-size:14px;font-weight:700;background:#E8F6F2;color:#0E7C66;text-align:center;}
-    .grade-badge small{display:block;font-size:10px;font-weight:500;}
-    .grade-badge.special{background:var(--red-pale);color:var(--red);}
-    .bar{height:8px;background:var(--gray-light);border-radius:6px;overflow:hidden;margin-top:10px;}
-    .bar > span{display:block;height:100%;background:#0E7C66;border-radius:6px;}
-    .subj-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-top:6px;}
-    .subj details{margin-top:8px;font-size:13px;}
-    .subj summary{cursor:pointer;color:#0E7C66;font-weight:600;}
-    .comp-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);}
+    .subj-name{font-size:16px;font-weight:700;color:var(--ink);}
+    .subj-code{font-size:13px;color:var(--muted);}
+    .grade-badge{flex-shrink:0;border-radius:12px;padding:4px 10px;font-size:15px;font-weight:700;background:#ECFDF5;color:var(--g700);text-align:center;}
+    .grade-badge small{display:block;font-size:13px;font-weight:500;}
+    .grade-badge.special{background:var(--danger-bg);color:var(--danger);}
+    .bar{height:8px;background:#E3E9E4;border-radius:6px;overflow:hidden;margin-top:10px;}
+    .bar > span{display:block;height:100%;background:linear-gradient(90deg,#0F7A62,#14967A);border-radius:6px;}
+    .subj-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px;}
+    .subj details{margin-top:8px;font-size:14px;}
+    .subj summary{cursor:pointer;color:var(--g700);font-weight:600;min-height:44px;display:flex;align-items:center;}
+    .comp-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);}
     .comp-row:last-child{border-bottom:none;}
-    .note-red{margin-top:8px;padding:8px 10px;background:var(--red-pale);border-radius:10px;font-size:12px;color:var(--red);line-height:1.5;}
-    .empty-box{text-align:center;padding:28px 16px;color:var(--gray);font-size:14px;line-height:1.7;}
+    .note-red{margin-top:8px;padding:8px 10px;background:var(--danger-bg);border-radius:10px;font-size:13px;color:var(--danger);line-height:1.5;display:flex;gap:6px;align-items:flex-start;}
+    .empty-box{text-align:center;padding:28px 16px;color:var(--muted);font-size:15px;line-height:1.7;}
     /* ── หนังสือรับ: สั่งการ (SB) ── */
-    .sb-pill{display:inline-block;border-radius:10px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px;}
-    .sb-box{margin-top:10px;padding:10px 12px;background:var(--gray-light);border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-line;}
-    .sb-note{padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.6;color:#8a6d00;margin-bottom:12px;}
+    .sb-pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700;margin-right:6px;}
+    .sb-box{margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:12px;font-size:14px;line-height:1.6;white-space:pre-line;}
+    .sb-note{padding:12px 14px;background:#FEF3C7;border:1px solid var(--gold-hi);border-radius:12px;font-size:14px;line-height:1.6;color:var(--amber-ink);margin-bottom:12px;}
     /* รายชื่อมอบให้ (จัดกลุ่มตามฝ่าย) */
-    .sb-list{border:1px solid var(--border);border-radius:12px;background:var(--white);margin-top:10px;overflow:hidden;}
-    .sb-gh{display:flex;align-items:center;min-height:48px;background:var(--gray-light);border-top:1px solid var(--border);}
+    .sb-list{border:1px solid var(--line);border-radius:12px;background:var(--white);margin-top:10px;overflow:hidden;}
+    .sb-gh{display:flex;align-items:center;min-height:48px;background:var(--bg);border-top:1px solid var(--line);}
     .sb-gh:first-child{border-top:none;}
-    .sb-gl{flex:1;min-width:0;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;background:none;border:none;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;color:var(--navy);text-align:left;cursor:pointer;}
+    .sb-gl{flex:1;min-width:0;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;background:none;border:none;font-size:15px;font-weight:700;color:var(--g700);text-align:left;cursor:pointer;}
     .sb-gl span{overflow:hidden;text-overflow:ellipsis;}
-    .sb-all{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 12px;font-size:12px;color:var(--gray);cursor:pointer;white-space:nowrap;}
-    .sb-all input,.sb-row input{width:20px;height:20px;accent-color:var(--navy);flex-shrink:0;margin:0;}
-    .sb-row{display:flex;align-items:center;gap:12px;min-height:44px;padding:6px 14px;border-top:1px solid var(--border);font-size:15px;cursor:pointer;background:var(--white);}
+    .sb-all{display:flex;align-items:center;gap:6px;min-height:48px;padding:0 12px;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+    .sb-all input,.sb-row input{width:22px;height:22px;accent-color:var(--g600);flex-shrink:0;margin:0;}
+    .sb-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 14px;border-top:1px solid var(--line);font-size:16px;cursor:pointer;background:var(--white);}
     .sb-row span{min-width:0;word-break:break-word;}
-    .sb-none{padding:14px;font-size:13px;color:var(--gray);text-align:center;}
-    .sb-selbar{margin-top:12px;font-size:13px;font-weight:700;color:var(--navy);}
-    .sb-sel{display:inline-flex;align-items:center;gap:4px;max-width:100%;margin:6px 6px 0 0;padding:3px 4px 3px 10px;border-radius:14px;background:var(--navy);color:var(--white);font-size:12px;font-weight:600;}
-    .sb-sel button{background:none;border:none;color:var(--white);font-size:13px;line-height:1;min-width:24px;min-height:24px;cursor:pointer;padding:0;}
-    .sb-link{background:none;border:none;color:var(--navy);font-family:'Sarabun',sans-serif;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;margin-top:6px;}
+    .sb-none{padding:14px;font-size:14px;color:var(--muted);text-align:center;}
+    .sb-selbar{margin-top:12px;font-size:14px;font-weight:700;color:var(--g700);}
+    .sb-sel{display:inline-flex;align-items:center;gap:4px;max-width:100%;margin:6px 6px 0 0;padding:3px 4px 3px 12px;border-radius:999px;background:var(--g700);color:#fff;font-size:13px;font-weight:600;}
+    .sb-sel button{background:none;border:none;color:#fff;font-size:14px;line-height:1;min-width:32px;min-height:32px;cursor:pointer;padding:0;}
+    .sb-link{background:none;border:none;color:var(--g700);font-size:14px;text-decoration:underline;cursor:pointer;padding:0 4px;min-height:44px;margin-top:2px;}
+    .note-box{padding:12px 14px;background:#FEF3C7;border:1px solid var(--gold-hi);border-radius:12px;font-size:14px;line-height:1.6;color:var(--amber-ink);}
+    .warn-box{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;font-size:13px;line-height:1.6;color:#9A3412;}
+    .hint-s{font-size:13px;color:var(--muted);line-height:1.6;}
+
     /* ===== หน้าประกาศ (L3) — สไตล์เขียว-ทอง scope เฉพาะ #noticesPage ===== */
     #noticesPage{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:17px;color:#14231E;background:radial-gradient(circle at 15% 35%,rgba(16,185,129,.22) 0,rgba(16,185,129,0) 40%),radial-gradient(circle at 90% 60%,rgba(212,168,75,.28) 0,rgba(212,168,75,0) 40%),#F2F5F1;}
     #noticesPage button{font-family:inherit;}
@@ -274,6 +300,242 @@
     .td-chk{min-height:44px;border-radius:12px;background:#fff;border:1px solid #FED7AA;color:#9A3412;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:15px;}
     #todayPage button.td-chk{width:100%;font-family:inherit;font-size:15px;cursor:pointer;}
     #todayPage .td-tab:focus-visible,#todayPage .td-chk:focus-visible{outline:3px solid #D4A84B;outline-offset:2px;}
+
+    /* ===== ตัวเลือกวัน พ.ศ. ใช้ร่วม (sfDate) — ปุ่ม + bottom sheet ===== */
+    .sfd-btn{width:100%;min-height:48px;padding:0 12px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:12px;background:var(--white);color:var(--ink);font-size:15px;text-align:left;cursor:pointer;white-space:nowrap;}
+    .sfd-btn .sfd-v{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+    #regStatus:empty{display:none;}
+    .sfd-btn .ic{color:var(--g600);}
+    .date-field .sfd-btn{padding:0 12px;}
+    .date-field .sfd-btn .ic{display:none;}
+    .sfd-btn.sfd-empty .sfd-v{color:var(--muted);}
+    .sfd-ov{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:center;background:rgba(11,59,48,.45);animation:sfdFade .15s ease-out;}
+    .sfd-sheet{width:100%;max-width:480px;max-height:92vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:8px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(11,59,48,.2);animation:sfdUp .2s ease-out;}
+    .sfd-grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px;}
+    .sfd-title{font-size:16px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;}
+    .sfd-head{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+    .sfd-mon{flex:1;text-align:center;font-size:16px;font-weight:700;}
+    .sfd-nav{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .sfd-nav:disabled{opacity:.35;cursor:default;}
+    .sfd-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;margin-top:8px;}
+    .sfd-dw{text-align:center;font-size:13px;font-weight:700;color:var(--ink2);padding:4px 0;}
+    .sfd-day{position:relative;min-height:44px;border-radius:10px;border:none;background:transparent;color:var(--ink);font-size:16px;font-weight:600;cursor:pointer;}
+    .sfd-day.sfd-we{color:#6B7A74;font-weight:500;}
+    .sfd-day.sfd-today::after{content:'';position:absolute;left:50%;bottom:5px;width:14px;height:3px;margin-left:-7px;border-radius:2px;background:var(--gold);}
+    .sfd-day:disabled{color:#B8C2BC;cursor:default;text-decoration:line-through;}
+    .sfd-day[aria-pressed="true"]{background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;}
+    .sfd-close{width:100%;min-height:48px;margin-top:10px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--g700);font-size:16px;font-weight:700;cursor:pointer;}
+    @keyframes sfdFade{from{opacity:0;}to{opacity:1;}}
+    @keyframes sfdUp{from{transform:translateY(24px);opacity:.6;}to{transform:none;opacity:1;}}
+    @media (prefers-reduced-motion:reduce){.sfd-ov,.sfd-sheet{animation:none;}}
+
+    /* ===== แจ้งลานักเรียน (L6 รอบ 2) ===== */
+    #parentPage .content{padding-bottom:120px;}
+    .pk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .pk-kid{display:flex;align-items:center;gap:8px;width:100%;min-height:56px;padding:6px 10px;border-radius:14px;border:1.5px solid var(--line);background:var(--white);color:var(--ink);text-align:left;cursor:pointer;}
+    .pk-kid[aria-checked="true"]{border-color:var(--g600);background:#ECFDF5;box-shadow:inset 0 0 0 1px var(--g600);}
+    .pk-kid:disabled{opacity:.65;cursor:not-allowed;}
+    .pk-av{width:32px;height:32px;flex:none;border-radius:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;}
+    .pk-tx{min-width:0;display:flex;flex-direction:column;}
+    .pk-nm{font-weight:700;font-size:14px;line-height:1.3;overflow-wrap:anywhere;}
+    .pk-rm{font-size:13px;color:var(--muted);}
+    .pk-pend{display:inline-block;margin-top:2px;align-self:flex-start;padding:0 8px;border-radius:999px;background:#FEF3C7;color:var(--amber-ink);font-size:13px;font-weight:700;}
+    .pk-add{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;margin-top:4px;border:none;background:transparent;color:var(--g600);font-size:15px;font-weight:600;cursor:pointer;}
+    .pk-reg{display:flex;gap:8px;margin-top:6px;}
+    .pk-reg .submit-btn{width:auto;padding:0 20px;font-size:15px;}
+    .pk-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .pk-type{min-height:60px;border-radius:14px;border:1.5px solid;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:700;cursor:pointer;}
+    .pk-type.sick{background:#FFFBEB;border-color:var(--gold-hi);color:var(--amber-ink);}
+    .pk-type.sick.active{background:linear-gradient(135deg,#F2CF7A,#D4A84B);border-color:transparent;color:var(--gold-ink);box-shadow:0 6px 14px rgba(184,137,47,.3);}
+    .pk-type.personal{background:#F0F9FF;border-color:#BAE6FD;color:#075985;}
+    .pk-type.personal.active{background:linear-gradient(135deg,#0284C7,#075985);border-color:transparent;color:#fff;box-shadow:0 6px 14px rgba(2,132,199,.28);}
+    .pk-lb{display:block;font-size:14px;font-weight:700;color:var(--ink2);margin-bottom:6px;}
+    #parentPage .date-row2{grid-template-columns:1fr 1fr;gap:8px;}
+    #parentPage .days-badge{font-weight:700;}
+
+    /* ===== ผลการเรียน (L6 รอบ 2) ===== */
+    #gradesPage .header{padding-bottom:18px;}
+    #gradesPage .header.gp-tall{padding-bottom:62px;}
+    .gp-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+    .gp-tab{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:transparent;color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+    .gp-tab[aria-selected="true"]{background:#fff;border-color:#fff;color:var(--g700);font-weight:700;}
+    #gradesGpa:not(:empty){position:relative;z-index:2;margin-top:-52px;margin-bottom:4px;}
+    .gp-glass{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(11,59,48,.15);}
+    .gp-glass>div:first-child{flex:1;min-width:0;}
+    .gp-t{font-size:14px;font-weight:600;color:var(--ink2);}
+    .gp-s{font-size:13px;color:var(--muted);}
+    .gp-n{font-size:40px;font-weight:700;line-height:1.1;color:var(--g600);background:linear-gradient(135deg,#0F7A62,#B8892F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .gr{padding:10px 12px;border-radius:16px;margin-bottom:8px;}
+    .gr-top{display:flex;align-items:center;gap:12px;}
+    .gr-dot{width:10px;height:36px;flex:none;border-radius:999px;}
+    .gr-t{flex:1;min-width:0;}
+    .gr-n{display:block;font-weight:600;font-size:15px;line-height:1.35;overflow-wrap:anywhere;}
+    .gr-c{font-size:13px;color:var(--muted);}
+    .gr-b{flex:none;min-width:52px;text-align:center;padding:5px 10px;border-radius:12px;font-size:18px;font-weight:700;line-height:1.2;}
+    .gr-b small{display:block;font-size:13px;font-weight:600;}
+    .gr-b.g4{background:#D1FAE5;color:#065F46;}
+    .gr-b.g3{background:#E0F2FE;color:#075985;}
+    .gr-b.g2{background:#FEF3C7;color:#92400E;}
+    .gr-b.g0{background:#FFE4E6;color:#9F1239;}
+
+    /* ===== การบ้าน (ผู้ปกครอง) + ลูกของฉัน (L6 รอบ 2) ===== */
+    .hk-list{display:flex;flex-direction:column;gap:8px;}
+    .hk-list .hw-row{background:var(--white);border:1px solid var(--line);}
+    .hk-list .hw-row.hk-late{opacity:.72;}
+    .hk-list .hw-row{align-items:flex-start;}
+    .hk-list .hw-bd{margin-top:2px;}
+    .hk-det{font-size:13px;color:var(--muted);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px;}
+    .hk-h{margin:16px 4px 8px;font-size:15px;font-weight:700;color:var(--ink2);}
+    .hk-h:first-child{margin-top:4px;}
+    .kd-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .kd-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:140px;padding:16px 10px;border:1px solid var(--line);border-radius:20px;background:var(--white);color:var(--ink);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(11,59,48,.06);}
+    .kd-ic{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 14px rgba(11,59,48,.18);}
+    .kd-ic.k1{background:linear-gradient(135deg,#14967A,#0B5E4B);}
+    .kd-ic.k2{background:linear-gradient(135deg,#8B5CF6,#5B21B6);}
+    .kd-ic.k3{background:linear-gradient(135deg,#F2CF7A,#D4A84B);color:var(--gold-ink);}
+    .kd-ic.k4{background:linear-gradient(135deg,#0EA5E9,#075985);}
+
+    /* ===== รอบ 3: เช็คชื่อ · แจ้งลาครู · แจ้งผู้ปกครอง · สั่งการหนังสือ · ผูกบัญชี ===== */
+    .hd-back{display:flex;width:fit-content;align-items:center;gap:4px;min-height:44px;margin:-8px 0 2px -8px;padding:0 12px 0 6px;border:none;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+    .ft-note{display:block;max-width:480px;margin:6px auto 0;font-size:13px;color:var(--muted);text-align:center;}
+    .submit-btn.gold{background:linear-gradient(100deg,#F2CF7A,#D4A84B);color:var(--gold-ink);box-shadow:0 8px 20px rgba(184,137,47,.32);}
+    .submit-btn.gold:disabled{background:#C9D3CD;color:var(--muted);box-shadow:none;}
+    .ub{display:flex;gap:12px;align-items:flex-start;}
+    .ub-ic{width:44px;height:44px;flex:none;border-radius:14px;background:linear-gradient(135deg,#F2CF7A,#D4A84B);color:var(--gold-ink);display:flex;align-items:center;justify-content:center;}
+    .ub-t{font-size:16px;font-weight:700;margin-bottom:4px;}
+    .ub-d{font-size:14px;color:var(--ink2);line-height:1.7;}
+    /* เช็คชื่อ */
+    #approvePage{background:radial-gradient(circle at 90% 8%,rgba(212,168,75,.20) 0,rgba(212,168,75,0) 40%),#EEF2EE;}
+    .ap-bar{display:flex;align-items:flex-start;gap:8px;padding:10px 14px 0;}
+    #classPicker{flex:1;min-width:0;}
+    .ap-all{flex:none;margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--g600);background:#ECFDF5;color:var(--g700);font-size:15px;font-weight:700;cursor:pointer;}
+    .ap-all:disabled{opacity:.5;cursor:default;}
+    .ap-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:10px 14px;}
+    .ap-sum>div{text-align:center;padding:6px 0;border-radius:12px;}
+    .ap-sum b{display:block;font-size:22px;font-weight:700;line-height:1.3;}
+    .ap-sum span{font-size:13px;font-weight:600;}
+    .ap-s-p{background:linear-gradient(135deg,#D1FAE5,#A7F3D0);color:#065F46;}
+    .ap-s-s{background:linear-gradient(135deg,#FEF3C7,#FDE68A);color:#92400E;}
+    .ap-s-k{background:linear-gradient(135deg,#E0F2FE,#BAE6FD);color:#075985;}
+    .ap-s-a{background:linear-gradient(135deg,#FFE4E6,#FECDD3);color:#9F1239;}
+    #approvePage .approve-content{padding:0 14px 110px;display:flex;flex-direction:column;gap:8px;}
+    .ap-card{padding:10px 12px;border-radius:16px;background:var(--white);box-shadow:0 1px 6px rgba(11,59,48,.06);}
+    .ap-card.ap-c-leave_sick{background:#FFFBEB;}
+    .ap-card.ap-c-leave_personal{background:#F0F9FF;}
+    .ap-card.ap-c-absent{background:#FFF1F2;}
+    .ap-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .ap-no{width:26px;flex:none;font-size:14px;color:var(--muted);text-align:right;}
+    .ap-nm{flex:1;min-width:0;font-weight:600;font-size:16px;line-height:1.35;overflow-wrap:anywhere;}
+    .ap-par{flex:none;padding:2px 9px;border-radius:999px;background:#E0F2FE;color:#075985;font-size:13px;font-weight:600;}
+    .ap-opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+    .ap-st{min-height:44px;border-radius:11px;border:none;font-size:15px;font-weight:700;cursor:pointer;}
+    .ap-st.p{background:#F0FDF4;color:#065F46;}
+    .ap-st.s{background:#FFFBEB;color:#92400E;}
+    .ap-st.k{background:#F0F9FF;color:#075985;}
+    .ap-st.a{background:#FFF1F2;color:#9F1239;}
+    .ap-st[aria-checked="true"]{box-shadow:0 3px 10px rgba(11,59,48,.18);}
+    .ap-st.p[aria-checked="true"]{background:linear-gradient(135deg,#0F7A62,#065F46);color:#fff;}
+    .ap-st.s[aria-checked="true"]{background:linear-gradient(135deg,#F2CF7A,#D4A84B);color:var(--gold-ink);}
+    .ap-st.k[aria-checked="true"]{background:linear-gradient(135deg,#0369A1,#075985);color:#fff;}
+    .ap-st.a[aria-checked="true"]{background:linear-gradient(135deg,#E11D48,#9F1239);color:#fff;}
+    /* แจ้งลาครู */
+    #staffLeavePage .content{padding-bottom:120px;}
+    .sl-lb{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+    .sl-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .sl-kind{min-height:76px;border-radius:16px;border:1.5px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:700;cursor:pointer;}
+    .sl-kind.k-sick{background:#FFFBEB;border-color:var(--gold-hi);color:var(--amber-ink);}
+    .sl-kind.k-biz{background:#F0F9FF;border-color:#BAE6FD;color:#075985;}
+    .sl-kind.k-gov{background:#F0FDF4;border-color:#BBF7D0;color:#166534;}
+    .sl-kind.k-oth{background:#F4F6F5;border-color:var(--line);color:var(--ink2);}
+    .sl-kind[aria-checked="true"]{border-color:transparent;box-shadow:0 6px 14px rgba(11,59,48,.2);}
+    .sl-kind.k-sick[aria-checked="true"]{background:linear-gradient(135deg,#F2CF7A,#D4A84B);color:var(--gold-ink);}
+    .sl-kind.k-biz[aria-checked="true"]{background:linear-gradient(135deg,#0369A1,#075985);color:#fff;}
+    .sl-kind.k-gov[aria-checked="true"]{background:linear-gradient(135deg,#0F7A62,#065F46);color:#fff;}
+    .sl-kind.k-oth[aria-checked="true"]{background:linear-gradient(135deg,#475569,#1E293B);color:#fff;}
+    .sl-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:4px;border-radius:14px;background:var(--bg);}
+    .sl-seg button{min-height:44px;border-radius:11px;border:none;background:transparent;color:var(--muted);font-size:15px;font-weight:600;cursor:pointer;}
+    .sl-seg button[aria-checked="true"]{background:#fff;color:var(--g700);font-weight:700;box-shadow:0 2px 8px rgba(11,59,48,.12);}
+    .sl-sum{margin-bottom:12px;padding:12px 14px;border-radius:16px;background:linear-gradient(120deg,#ECFDF5,#FFF8E1);border:1px solid var(--gold-hi);}
+    .sl-sum-r{display:flex;align-items:baseline;justify-content:space-between;}
+    .sl-sum-r span{font-weight:700;}
+    .sl-sum-r b{font-size:22px;font-weight:700;color:var(--g700);}
+    .sl-sum-n{margin-top:4px;font-size:14px;color:var(--ink2);line-height:1.6;}
+    /* แจ้งผู้ปกครอง */
+    #notifyPage .content{padding-bottom:130px;}
+    .nt-lb{display:block;font-size:15px;font-weight:700;color:var(--ink);margin:14px 0 6px;}
+    .nt-lb:first-child{margin-top:0;}
+    .nt-lb small{font-size:14px;font-weight:400;color:var(--muted);}
+    .nt-cnt{text-align:right;font-size:13px;color:var(--muted);margin-top:4px;}
+    .nt-choose{box-shadow:0 0 0 2px var(--gold),0 2px 10px rgba(11,59,48,.06);}
+    .nt-ct{font-size:15px;font-weight:700;margin-bottom:2px;overflow-wrap:anywhere;}
+    .nt-cs{font-size:14px;color:var(--muted);margin-bottom:10px;}
+    .nt-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .nt-opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:112px;padding:12px 8px;border-radius:16px;border:1.5px solid var(--line);background:#fff;color:var(--ink);text-align:center;cursor:pointer;}
+    .nt-opt-i{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#14967A,#0B5E4B);}
+    .nt-opt.gold .nt-opt-i{background:linear-gradient(135deg,#F2CF7A,#D4A84B);color:var(--gold-ink);}
+    .nt-opt b{font-size:15px;line-height:1.3;}
+    .nt-opt small{font-size:13px;color:var(--muted);line-height:1.3;}
+    .nt-opt:disabled{opacity:.6;cursor:default;}
+    .nt-done{width:100%;min-height:44px;margin-top:10px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--g700);font-size:15px;font-weight:700;cursor:pointer;}
+    .nt-quota{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;}
+    .nt-row{padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff;margin-top:8px;}
+    .nt-row:first-child{margin-top:0;}
+    .nt-rtt{font-weight:700;font-size:15px;line-height:1.4;overflow-wrap:anywhere;}
+    .nt-rm{font-size:13px;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;}
+    .nt-pill{padding:0 9px;border-radius:999px;font-size:13px;font-weight:700;background:#DCFCE7;color:#166534;}
+    .nt-pill.w{background:#FEF3C7;color:var(--amber-ink);}
+    .nt-pill.b{background:#E0F2FE;color:#075985;}
+    .nt-ra{display:flex;gap:8px;margin-top:10px;}
+    .nt-btn{flex:1;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;}
+    .nt-del{flex:none;width:48px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;border:1px solid #FECDD3;background:var(--danger-bg);color:var(--danger);cursor:pointer;}
+    /* สั่งการหนังสือ */
+    #sarabanPage{background:radial-gradient(circle at 90% 25%,rgba(212,168,75,.20) 0,rgba(212,168,75,0) 40%),var(--bg);}
+    #sarabanPage .content{padding-bottom:140px;}
+    #sbDoc{background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(11,59,48,.08);display:flex;flex-direction:column;gap:6px;}
+    .sbd-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .sbd-no{padding:1px 10px;border-radius:999px;background:#FEF9C3;color:#854D0E;font-size:13px;font-weight:700;}
+    .sbd-open{margin-left:auto;display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px;color:var(--g700);font-size:14px;font-weight:700;text-decoration:none;}
+    .sbd-t{font-weight:700;font-size:16px;line-height:1.45;overflow-wrap:anywhere;}
+    .sbd-t.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .sbd-m{font-size:13px;color:var(--muted);}
+    .sbd-x{font-size:14px;line-height:1.6;}
+    .sbd-more{align-self:flex-start;min-height:44px;padding:0 4px;border:none;background:none;color:var(--g700);font-size:14px;font-weight:700;cursor:pointer;}
+    .sbd-lock{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--danger);}
+    #sbTpl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+    .sb-tpl{min-height:48px;padding:6px 8px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:15px;font-weight:600;line-height:1.3;cursor:pointer;}
+    .sb-tpl[aria-checked="true"]{border-color:transparent;background:linear-gradient(100deg,#0B5E4B,#14967A);color:#fff;font-weight:700;}
+    .sb-who-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .sb-who-h .section-title{margin:0;}
+    .sb-cnt{font-size:14px;font-weight:700;color:var(--g700);}
+    .sb-sw{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 12px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--muted);}
+    .sb-sw input{flex:1;min-width:0;min-height:44px;border:none;outline:none;background:transparent;color:var(--ink);font-size:16px;}
+    .sb-sw:focus-within{border-color:var(--g600);}
+    .sb-list{border:1px solid #EEF3EF;}
+    .sb-gh{background:linear-gradient(100deg,#ECFDF5,#F8FAF9);}
+    .sb-gl .sb-chev{transition:transform .15s;color:var(--g600);}
+    .sb-gl .sb-chev.open{transform:rotate(90deg);}
+    .sb-row,.sb-all{position:relative;}
+    .sb-row input,.sb-all input{position:absolute;opacity:0;width:100%;height:100%;left:0;top:0;margin:0;cursor:pointer;}
+    .sb-ck{width:24px;height:24px;flex:none;border-radius:7px;border:2px solid #C9D3CD;background:#fff;color:#fff;display:flex;align-items:center;justify-content:center;}
+    .sb-ck .ic{opacity:0;}
+    input:checked+.sb-ck{background:var(--g600);border-color:var(--g600);}
+    input:checked+.sb-ck .ic{opacity:1;}
+    input:indeterminate+.sb-ck{background:var(--g600);border-color:var(--g600);}
+    input:indeterminate+.sb-ck::after{content:'';width:10px;height:2.5px;border-radius:2px;background:#fff;}
+    input:indeterminate+.sb-ck .ic{display:none;}
+    input:focus-visible+.sb-ck{outline:3px solid var(--gold);outline-offset:2px;}
+    .sb-row.on{background:#ECFDF5;}
+    .sb-sel{min-height:44px;padding:0 0 0 14px;margin:8px 8px 0 0;font-size:14px;}
+    .sb-sel button{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;}
+    /* ไฟล์หนังสือ · ผูกบัญชี */
+    .pg-ic{width:60px;height:60px;margin:4px auto 10px;border-radius:50%;background:linear-gradient(135deg,#D1FAE5,#ECFDF5);border:2px solid var(--g500);color:var(--g600);display:flex;align-items:center;justify-content:center;}
+    #bindCode{min-height:64px;font-size:28px;font-weight:700;letter-spacing:6px;text-align:center;text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;border-color:var(--gold);}
+    #bindCode:focus{border-color:var(--g600);}
+    #bindCode::placeholder{font-size:20px;letter-spacing:4px;font-weight:500;color:#8A9A93;}
+    .bd-steps{margin:0 0 14px;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:s;}
+    .bd-steps li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.6;color:var(--ink2);counter-increment:s;}
+    .bd-steps li::before{content:counter(s);width:26px;height:26px;flex:none;border-radius:50%;background:var(--gold);color:var(--gold-ink);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    #bindStatus{color:var(--danger);font-weight:600;}
   </style>
 </head>
 <body>
@@ -281,7 +543,7 @@
 <div class="connecting" id="connecting"><div class="spinner"></div><p id="connMsg">กำลังเชื่อมต่อ LINE...</p></div>
 
 <div class="success-screen hidden" id="success">
-  <div class="success-icon">✅</div>
+  <div class="success-icon"><svg class="ic" width="38" height="38" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></div>
   <h2 id="successTitle">สำเร็จ</h2>
   <p id="successMsg"></p>
 </div>
@@ -289,62 +551,63 @@
 <!-- ===== PARENT ===== -->
 <div class="page" id="parentPage">
   <div class="header">
-    <div class="header-badge"><span>🏫</span><span id="brand">MLPY School</span></div>
+    <div class="header-badge"><span class="hb-s" aria-hidden="true">S</span><span id="brand" data-school-name>โรงเรียน</span></div>
     <h1>แจ้งลานักเรียน</h1>
     <p>ผู้ปกครอง</p>
   </div>
-  <div class="deadline-bar"><span>⏰</span><span id="deadlineText">แจ้งลาก่อน 08:30 น. ของวันที่ลา</span></div>
+  <div class="deadline-bar"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span id="deadlineText">แจ้งลาก่อน 08:30 น. ของวันที่ลา</span></div>
   <div class="content">
     <div class="section">
-      <div class="section-title">นักเรียนของคุณ</div>
-      <div id="childList"><p style="color:var(--gray);font-size:13px;">กำลังโหลด...</p></div>
-      <div style="margin-top:10px;display:flex;gap:8px;">
-        <input class="form-input" id="regCode" placeholder="เลขประจำตัวนักเรียน" style="flex:1;">
-        <button class="submit-btn" style="width:auto;padding:0 18px;font-size:14px;" onclick="registerChild()">เพิ่ม</button>
+      <div class="section-title" id="kidH">ลาให้ใคร</div>
+      <div id="childList" class="pk-grid" role="radiogroup" aria-labelledby="kidH"><p style="color:var(--gray);font-size:14px;">กำลังโหลด...</p></div>
+      <button type="button" class="pk-add" id="regToggle" aria-expanded="false" aria-controls="regWrap" onclick="toggleReg()" style="display:none;">+ เพิ่มบุตรหลาน (เลขประจำตัวนักเรียน)</button>
+      <div class="pk-reg" id="regWrap" style="display:none;">
+        <input class="form-input" id="regCode" placeholder="เลขประจำตัวนักเรียน" aria-label="เลขประจำตัวนักเรียน" style="flex:1;" autocomplete="off">
+        <button type="button" class="submit-btn" onclick="registerChild()">เพิ่ม</button>
       </div>
-      <div class="page-status" id="regStatus"></div>
-      <div id="childHint" style="display:none;margin-top:12px;padding:12px 14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:13px;line-height:1.55;color:#8a6d00;"></div>
+      <div class="page-status" id="regStatus" role="status" aria-live="polite"></div>
+      <div id="childHint" class="note-box" style="display:none;margin-top:12px;"></div>
     </div>
     <div class="section" id="leaveForm" style="display:none;">
-      <div class="section-title">ประเภทการลา</div>
-      <div class="leave-types">
-        <button class="leave-type-btn active" id="t-sick" onclick="selType('sick')"><span class="type-icon">🤒</span><span class="type-label">ลาป่วย</span><span class="type-desc">ไม่สบาย</span></button>
-        <button class="leave-type-btn" id="t-personal" onclick="selType('personal')"><span class="type-icon">📋</span><span class="type-label">ลากิจ</span><span class="type-desc">ธุระส่วนตัว</span></button>
+      <div class="section-title" id="typeH">ลาเพราะ</div>
+      <div class="pk-types" role="radiogroup" aria-labelledby="typeH">
+        <button type="button" class="pk-type sick active" id="t-sick" role="radio" aria-checked="true" onclick="selType('sick')"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg>ลาป่วย</button>
+        <button type="button" class="pk-type personal" id="t-personal" role="radio" aria-checked="false" onclick="selType('personal')"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-briefcase"/></svg>ลากิจ</button>
       </div>
       <div class="section-title" style="margin-top:16px;">วันที่ลา</div>
       <div class="date-row2">
-        <div class="date-field"><label>วันแรก</label><input type="date" id="startDate" onchange="calcDays()"></div>
-        <div class="date-arrow">→</div>
-        <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="endDate" onchange="calcDays()"></div>
+        <div class="date-field"><label for="startDateBtn">วันแรก</label><input type="hidden" id="startDate" data-change="calcDays"><button type="button" class="sfd-btn" id="startDateBtn" data-title="วันแรกที่ลา" onclick="sfDatePick('startDate')"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg><span class="sfd-v"></span></button></div>
+        <div class="date-field"><label for="endDateBtn">วันสุดท้าย</label><input type="hidden" id="endDate" data-change="calcDays" data-minof="startDate"><button type="button" class="sfd-btn" id="endDateBtn" data-title="วันสุดท้ายที่ลา" onclick="sfDatePick('endDate')"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg><span class="sfd-v"></span></button></div>
       </div>
-      <div class="days-badge" id="daysBadge">📅 1 วัน</div>
-      <div class="section-title" id="reasonLabel" style="margin-top:16px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
-      <textarea class="form-input" id="reason" rows="3" placeholder="เช่น ไข้หวัด ธุระครอบครัว..." oninput="updateLeaveBtn()"></textarea>
+      <div class="days-badge" id="daysBadge" role="status"><svg class="ic" width="16" height="16" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg> รวม 1 วัน</div>
+      <label class="section-title" for="reason" id="reasonLabel" style="display:block;margin-top:16px;margin-bottom:6px;">หมายเหตุถึงครู <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></label>
+      <textarea class="form-input" id="reason" rows="3" placeholder="เช่น มีไข้ ไปหาหมอ ธุระครอบครัว" oninput="updateLeaveBtn()"></textarea>
     </div>
   </div>
-  <div class="content" style="padding-top:0;display:none;" id="leaveSubmitWrap">
-    <button class="submit-btn" id="submitLeaveBtn" disabled onclick="submitLeave()"><span>📨</span><span id="submitLeaveLabel">เลือกนักเรียน</span></button>
+  <div class="approve-footer" id="leaveSubmitWrap" style="display:none;">
+    <button type="button" class="submit-btn" id="submitLeaveBtn" disabled onclick="submitLeave()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-send"/></svg><span id="submitLeaveLabel">เลือกนักเรียน</span></button>
   </div>
 </div>
 
 <!-- ===== ผลการเรียน (P1) ===== -->
 <div class="page" id="gradesPage">
-  <div class="header green">
-    <div class="header-badge"><span>📊</span><span id="gradesStudent">ผลการเรียน</span></div>
+  <div class="header" id="gradesHead">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-chart"/></svg></span><span id="gradesStudent">ผลการเรียน</span></div>
     <h1>ผลการเรียน</h1>
     <p id="gradesSub">ผู้ปกครอง · ดูได้เฉพาะบุตรหลานของคุณ</p>
+    <div id="gradesChildPicker"></div>
   </div>
   <div class="content">
-    <div id="gradesChildPicker"></div>
-    <div id="gradesTermPicker"></div>
+    <div id="gradesGpa"></div>
+    <div id="gradesTermPicker" role="tablist" aria-label="ภาคเรียน"></div>
     <div id="gradesBody"><div class="empty-box">กำลังโหลด...</div></div>
   </div>
 </div>
 
 <!-- ===== การบ้าน (P2 — Worker getHomework) ===== -->
 <div class="page" id="homeworkPage">
-  <div class="header" style="background:#7B5CD6;">
-    <div class="header-badge"><span>📚</span><span>สมุดการบ้าน</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span><span>สมุดการบ้าน</span></div>
     <h1>การบ้าน</h1>
     <p>งานที่ครูสั่ง · เรียงตามวันส่ง</p>
   </div>
@@ -353,17 +616,17 @@
 
 <!-- ===== MY KIDS (ครูที่เป็นผู้ปกครอง — เมนูครูปุ่ม 4 · N0) ===== -->
 <div class="page" id="kidsPage">
-  <div class="header" style="background:#1E9C9C;">
-    <div class="header-badge"><span>👨‍👩‍👧</span><span>สำหรับครูที่เป็นผู้ปกครอง</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-family"/></svg></span><span>สำหรับครูที่เป็นผู้ปกครอง</span></div>
     <h1>ลูกของฉัน</h1>
     <p>เมนูผู้ปกครอง — ผูกลูกได้ที่ แจ้งลานักเรียน</p>
   </div>
   <div class="content">
-    <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <button class="leave-type-btn" onclick="openKids('leave')"><span class="type-icon">📝</span><span class="type-label">แจ้งลานักเรียน</span></button>
-      <button class="leave-type-btn" onclick="openKids('grades')"><span class="type-icon">📊</span><span class="type-label">ผลการเรียน</span></button>
-      <button class="leave-type-btn" onclick="openKids('homework')"><span class="type-icon">📚</span><span class="type-label">การบ้าน</span></button>
-      <button class="leave-type-btn" onclick="openKids('notices')"><span class="type-icon">🔔</span><span class="type-label">ประกาศ</span></button>
+    <div class="kd-grid">
+      <button type="button" class="kd-btn" onclick="openKids('leave')"><span class="kd-ic k1"><svg class="ic" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-edit"/></svg></span>แจ้งลานักเรียน</button>
+      <button type="button" class="kd-btn" onclick="openKids('grades')"><span class="kd-ic k2"><svg class="ic" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-chart"/></svg></span>ผลการเรียน</button>
+      <button type="button" class="kd-btn" onclick="openKids('homework')"><span class="kd-ic k3"><svg class="ic" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-book"/></svg></span>การบ้าน</button>
+      <button type="button" class="kd-btn" onclick="openKids('notices')"><span class="kd-ic k4"><svg class="ic" width="30" height="30" aria-hidden="true" focusable="false"><use href="#i-bell"/></svg></span>ประกาศ</button>
     </div>
   </div>
 </div>
@@ -442,157 +705,159 @@
 
 <!-- ===== NOTIFY PARENTS (ครู · กำลังพัฒนา) ===== -->
 <div class="page" id="notifyPage">
-  <div class="header" style="background:#D6457A;">
-    <div class="header-badge"><span>📣</span><span>สำหรับครู</span></div>
+  <div class="header">
+    <button type="button" class="hd-back" onclick="ntBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>ประกาศทั้งหมด</button>
     <h1>แจ้งผู้ปกครอง</h1>
     <p>ส่งข่าวถึงผู้ปกครองผ่าน LINE ของโรงเรียน</p>
   </div>
   <div class="content">
     <div id="notifyNotBound" class="section" style="display:none;">
-      <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
-        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR
-      </div>
+      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR</div></div></div>
     </div>
     <div id="notifyForm" style="display:none;">
       <div class="section">
-        <div class="section-title">ส่งถึง</div>
+        <label class="nt-lb" for="ntAudience">ส่งถึง</label>
         <select class="form-input" id="ntAudience"></select>
-        <div class="section-title" style="margin-top:14px;">หัวข้อ <span style="color:var(--red)">*</span></div>
+        <label class="nt-lb" for="ntTitle">หัวข้อ <span style="color:var(--red)" aria-hidden="true">*</span></label>
         <input class="form-input" id="ntTitle" maxlength="120" placeholder="เช่น ประชุมผู้ปกครองวันศุกร์นี้" oninput="ntCount()">
-        <div class="section-title" style="margin-top:14px;">รายละเอียด <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
+        <label class="nt-lb" for="ntBody">รายละเอียด <small>(ไม่บังคับ)</small></label>
         <textarea class="form-input" id="ntBody" rows="5" maxlength="1000" placeholder="วัน เวลา สถานที่ สิ่งที่ต้องเตรียม..." oninput="ntCount()"></textarea>
-        <div id="ntCounter" style="text-align:right;font-size:12px;color:var(--gray);margin-top:4px;">0/1000</div>
-        <div style="margin-top:10px;padding:10px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12.5px;line-height:1.6;color:#9A3412;">
-          ⚠️ การ์ดจะเข้ากลุ่มไลน์<b>ในชื่อของคุณ</b> ทุกคนในกลุ่มเห็น — อย่าใส่ข้อมูลรายคนของนักเรียน (ชื่อคู่กับคะแนน/สุขภาพ/พฤติกรรม)
-        </div>
+        <div class="nt-cnt" id="ntCounter">0/1000</div>
+        <div class="warn-box"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-alert"/></svg><span>การ์ดจะเข้ากลุ่มไลน์<b>ในชื่อของคุณ</b> ทุกคนในกลุ่มเห็น — อย่าใส่ข้อมูลรายคนของนักเรียน (ชื่อคู่กับคะแนน/สุขภาพ/พฤติกรรม)</span></div>
       </div>
-      <button class="submit-btn" id="ntSubmit" style="background:#D6457A;" onclick="submitNotice()"><span>📢</span><span id="ntSubmitLabel">บันทึกและแชร์เข้ากลุ่มไลน์</span></button>
-      <div style="font-size:12px;color:var(--gray);text-align:center;margin:8px 0 16px;line-height:1.6;">ไม่เสียโควตาข้อความของโรงเรียน · ผู้ปกครองที่ผูกบัญชีจะเห็นป้าย <b style="color:#E11D48">ใหม่</b> ที่เมนูประกาศ</div>
       <!-- N2: โรงเรียนเปิดส่งตรง → หลังบันทึกให้เลือกวิธีส่ง -->
-      <div id="ntChoose" class="section" style="display:none;border:2px solid #D6457A;">
-        <div class="section-title">บันทึกแล้ว: <span id="ntChooseTitle"></span></div>
-        <div style="font-size:13px;color:var(--gray);margin-bottom:10px;">เลือกวิธีส่ง (ทำได้ทั้งสองแบบ)</div>
-        <button class="submit-btn" style="background:#D6457A;margin-bottom:8px;" onclick="chooseShare()"><span>📢</span><span>แชร์เข้ากลุ่มไลน์ (ฟรี)</span></button>
-        <button class="submit-btn navy" id="ntPushBtn" style="margin-bottom:8px;" onclick="choosePush()"><span>📨</span><span id="ntPushLabel">ส่งตรงถึงผู้ปกครอง (ใช้โควตา)</span></button>
-        <div id="ntQuota" style="font-size:12px;color:var(--gray);text-align:center;margin-bottom:8px;"></div>
-        <button class="chip" style="width:100%;margin:0;text-align:center" onclick="chooseDone()">เสร็จ</button>
+      <div id="ntChoose" class="section nt-choose" style="display:none;">
+        <div class="nt-ct">บันทึกแล้ว: <span id="ntChooseTitle"></span></div>
+        <div class="nt-cs">เลือกวิธีส่ง (ทำได้ทั้งสองแบบ)</div>
+        <div class="nt-opts">
+          <button type="button" class="nt-opt" onclick="chooseShare()"><span class="nt-opt-i"><svg class="ic" width="22" height="22" aria-hidden="true" focusable="false"><use href="#i-megaphone"/></svg></span><b>แชร์เข้ากลุ่มไลน์</b><small>ฟรี</small></button>
+          <button type="button" class="nt-opt gold" id="ntPushBtn" onclick="choosePush()"><span class="nt-opt-i"><svg class="ic" width="22" height="22" aria-hidden="true" focusable="false"><use href="#i-send"/></svg></span><b id="ntPushLabel">ส่งตรงถึงผู้ปกครอง</b><small>ใช้โควตาข้อความ</small></button>
+        </div>
+        <div class="nt-quota" id="ntQuota"></div>
+        <button type="button" class="nt-done" onclick="chooseDone()">เสร็จ</button>
       </div>
       <div class="section">
         <div class="section-title">ประกาศล่าสุดของฉัน</div>
         <div id="ntRecent"><div class="empty-box">ยังไม่มีประกาศ</div></div>
       </div>
+      <div class="approve-footer">
+        <button class="submit-btn gold" id="ntSubmit" onclick="submitNotice()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-megaphone"/></svg><span id="ntSubmitLabel">บันทึกและแชร์เข้ากลุ่มไลน์</span></button>
+        <span class="ft-note">ไม่เสียโควตาข้อความของโรงเรียน · ผู้ปกครองที่ผูกบัญชีจะเห็นป้าย <b style="color:#BE123C">ใหม่</b> ที่เมนูประกาศ</span>
+      </div>
     </div>
-    <button class="submit-btn navy" onclick="openWeb()"><span>🖥️</span><span>เปิดเว็บ Schoolflow</span></button>
+    <button class="submit-btn ghost" onclick="openWeb()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg><span>เปิดเว็บ Schoolflow</span></button>
   </div>
 </div>
 
 <!-- ===== TEACHER BIND ===== -->
 <div class="page" id="bindPage">
-  <div class="header navy">
-    <div class="header-badge"><span>👩‍🏫</span><span>MLPY School</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-s" aria-hidden="true">S</span><span data-school-name>โรงเรียน</span></div>
     <h1>ยืนยันตัวตนครู</h1>
     <p>ผูกบัญชี LINE กับระบบครั้งแรก</p>
   </div>
   <div class="content">
     <div class="section">
-      <div class="section-title">รหัสผูกบัญชี (8 ตัว)</div>
-      <div style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:10px;">
-        เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> › สร้างรหัส แล้ว<b>สแกน QR</b> (รหัสจะกรอกให้เอง) หรือพิมพ์รหัสที่นี่ภายใน 10 นาที
-      </div>
-      <input class="form-input" id="bindCode" type="text" inputmode="text" autocomplete="one-time-code" maxlength="9"
-        placeholder="เช่น ABCD2345" style="text-transform:uppercase;letter-spacing:4px;font-size:20px;text-align:center;font-weight:700;">
-      <button class="submit-btn navy" style="margin-top:12px;" onclick="bindTeacher()"><span>🔗</span><span id="bindLabel">ผูกบัญชี</span></button>
-      <div class="page-status" id="bindStatus"></div>
+      <ol class="bd-steps">
+        <li><span>เปิดเว็บ Schoolflow กดชื่อมุมขวาบน แล้วเลือก <b>ผูกบัญชี LINE</b></span></li>
+        <li><span>สร้างรหัส แล้ว<b>สแกน QR</b> (รหัสจะกรอกให้เอง) หรือพิมพ์รหัสที่นี่ภายใน 10 นาที</span></li>
+      </ol>
+      <label class="section-title" for="bindCode" style="display:block;margin-bottom:8px;">รหัสผูกบัญชี (8 ตัว)</label>
+      <input class="form-input" id="bindCode" type="text" inputmode="text" autocomplete="one-time-code" maxlength="9" autocapitalize="characters" spellcheck="false"
+        placeholder="ABCD2345">
+      <button class="submit-btn navy" style="margin-top:12px;" onclick="bindTeacher()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-link"/></svg><span id="bindLabel">ผูกบัญชี</span></button>
+      <div class="page-status" id="bindStatus" role="status" aria-live="polite"></div>
     </div>
   </div>
 </div>
 
 <!-- ===== TEACHER APPROVE ===== -->
 <div class="page" id="approvePage">
-  <div class="header navy">
-    <div class="header-badge"><span>✅</span><span id="approveTeacher">เช็คชื่อ</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-check"/></svg></span><span id="approveTeacher">เช็คชื่อ</span></div>
     <h1 id="approveTitle">เช็คชื่อนักเรียน</h1>
     <p id="approveInfo">กำลังโหลด...</p>
   </div>
-  <div id="classPicker" class="content" style="padding-bottom:0;"></div>
-  <div class="summary-bar">
-    <div class="summary-item"><div class="summary-num num-present" id="cPresent">0</div><div class="summary-label">มาเรียน</div></div>
-    <div class="summary-item"><div class="summary-num num-leave" id="cLeave">0</div><div class="summary-label">ลา</div></div>
-    <div class="summary-item"><div class="summary-num num-absent" id="cAbsent">0</div><div class="summary-label">ขาด</div></div>
+  <div class="ap-bar"><div id="classPicker"></div><button type="button" class="ap-all" id="apAll" disabled onclick="allPresent()"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>ทุกคนมา</button></div>
+  <div class="ap-sum" role="status" aria-live="polite">
+    <div class="ap-s-p"><b id="cPresent">0</b><span>มา</span></div>
+    <div class="ap-s-s"><b id="cSick">0</b><span>ลาป่วย</span></div>
+    <div class="ap-s-k"><b id="cPersonal">0</b><span>ลากิจ</span></div>
+    <div class="ap-s-a"><b id="cAbsent">0</b><span>ขาด</span></div>
   </div>
   <div class="approve-content" id="studentList"></div>
   <div class="approve-footer">
-    <button class="submit-btn navy" id="approveBtn" disabled onclick="submitApprove()"><span>💾</span><span id="approveLabel">กำลังโหลด...</span></button>
+    <button class="submit-btn navy" id="approveBtn" disabled onclick="submitApprove()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-save"/></svg><span id="approveLabel">กำลังโหลด...</span></button>
   </div>
 </div>
 
 <!-- ===== STAFF LEAVE (ครูแจ้งลา) ===== -->
 <div class="page" id="staffLeavePage">
-  <div class="header navy">
-    <div class="header-badge"><span>🧑‍🏫</span><span id="staffName">ครู</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-user"/></svg></span><span id="staffName">ครู</span></div>
     <h1>แจ้งลา (บุคลากร)</h1>
     <p>ส่งใบลา → ผู้อำนวยการอนุมัติ</p>
   </div>
   <div class="content">
     <div id="staffNotBound" class="section" style="display:none;">
-      <div style="padding:14px;background:var(--yellow-pale);border:1px solid var(--yellow);border-radius:12px;font-size:14px;line-height:1.6;color:#8a6d00;">
-        ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR ก่อน แล้วกลับมาแจ้งลาได้
-      </div>
+      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR ก่อน แล้วกลับมาแจ้งลาได้</div></div></div>
     </div>
     <div id="staffForm" style="display:none;">
       <div class="section">
-        <div class="section-title">ประเภทการลา</div>
-        <div class="leave-types" id="staffKinds"></div>
+        <div class="sl-lb" id="staffKindH">ประเภทการลา</div>
+        <div class="sl-kinds" id="staffKinds" role="radiogroup" aria-labelledby="staffKindH"></div>
       </div>
       <div class="section">
         <div class="section-title">วันที่ลา</div>
         <div class="date-row2">
-          <div class="date-field"><label>วันแรก</label><input type="date" id="staffStart" onchange="staffCalcDays()"></div>
-          <div class="date-arrow">→</div>
-          <div class="date-field"><label>วันสุดท้าย</label><input type="date" id="staffEnd" onchange="staffCalcDays()"></div>
+          <div class="date-field"><label for="staffStartBtn">วันแรก</label><input type="hidden" id="staffStart" data-change="staffCalcDays"><button type="button" class="sfd-btn" id="staffStartBtn" data-title="วันแรกที่ลา" onclick="sfDatePick('staffStart')"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg><span class="sfd-v"></span></button></div>
+          <div class="date-field"><label for="staffEndBtn">วันสุดท้าย</label><input type="hidden" id="staffEnd" data-change="staffCalcDays" data-minof="staffStart"><button type="button" class="sfd-btn" id="staffEndBtn" data-title="วันสุดท้ายที่ลา" onclick="sfDatePick('staffEnd')"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg><span class="sfd-v"></span></button></div>
         </div>
-        <div class="days-badge" id="staffDaysBadge">📅 1 วัน</div>
-        <div id="staffHalfWrap" style="margin-top:12px;">
-          <div class="section-title" style="margin-bottom:8px;">ช่วงที่ลา</div>
-          <div id="staffHalf"></div>
+        <div id="staffHalfWrap" style="margin-top:14px;">
+          <div class="sl-lb" id="staffHalfH">ช่วงที่ลา</div>
+          <div class="sl-seg" id="staffHalf" role="radiogroup" aria-labelledby="staffHalfH"></div>
         </div>
-        <div class="section-title" id="staffReasonLabel" style="margin-top:16px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></div>
+        <label class="section-title" id="staffReasonLabel" for="staffReason" style="display:block;margin-top:16px;margin-bottom:8px;">เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span></label>
         <textarea class="form-input" id="staffReason" rows="3" placeholder="เช่น ธุระครอบครัว ไปราชการ..." oninput="staffUpdateBtn()"></textarea>
+      </div>
+      <div class="sl-sum" role="status" aria-live="polite">
+        <div class="sl-sum-r"><span>รวม</span><b id="staffDaysBadge">1 วัน</b></div>
+        <div class="sl-sum-n" id="staffSumNote"></div>
       </div>
     </div>
   </div>
-  <div class="content" id="staffSubmitWrap" style="padding-top:0;display:none;">
-    <button class="submit-btn navy" id="staffSubmitBtn" onclick="submitStaffLeave()"><span>📨</span><span id="staffSubmitLabel">ส่งใบลา</span></button>
+  <div class="approve-footer" id="staffSubmitWrap" style="display:none;">
+    <button class="submit-btn navy" id="staffSubmitBtn" onclick="submitStaffLeave()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-send"/></svg><span id="staffSubmitLabel">ส่งใบลา</span></button>
   </div>
 </div>
 
 <!-- ===== SARABAN (สั่งการ/เกษียณหนังสือรับ) ===== -->
 <div class="page" id="sarabanPage">
-  <div class="header navy">
-    <div class="header-badge"><span>📨</span><span>หนังสือรับ</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></span><span>หนังสือรับ</span></div>
     <h1>สั่งการหนังสือ</h1>
     <p id="sbName">กำลังโหลด...</p>
   </div>
-  <div class="content" style="padding-bottom:110px;">
+  <div class="content">
     <div id="sbErr"></div>
     <div id="sbForm" style="display:none;">
       <div class="section" id="sbDoc"></div>
       <div class="section">
-        <div class="section-title">คำเกษียณ</div>
-        <div id="sbTpl"></div>
+        <div class="section-title" id="sbTplH">คำเกษียณ</div>
+        <div id="sbTpl" role="radiogroup" aria-labelledby="sbTplH"></div>
       </div>
       <div class="section" id="sbWhoWrap">
-        <div class="section-title">มอบให้</div>
-        <input class="form-input" type="search" id="sbSearch" placeholder="🔍 ค้นหาชื่อครู" autocomplete="off" oninput="sbSearch(this.value)">
+        <div class="sb-who-h"><div class="section-title" id="sbWhoH">มอบให้</div><span class="sb-cnt" id="sbCnt"></span></div>
+        <label class="sb-sw"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input type="search" id="sbSearch" placeholder="ค้นหาชื่อครู" aria-label="ค้นหาชื่อครู" autocomplete="off" oninput="sbSearch(this.value)"></label>
         <div class="sb-list" id="sbList"></div>
         <div class="sb-selbar" id="sbSelBar" style="display:none;"></div>
       </div>
       <div class="section" id="sbDueWrap">
         <div class="section-title">รายงานภายใน</div>
-        <input class="form-input" type="date" id="sbDue" oninput="sbSetDue()">
+        <input type="hidden" id="sbDue" data-change="sbSetDue"><button type="button" class="sfd-btn sfd-empty" id="sbDueBtn" data-title="รายงานภายในวันที่" data-ph="เลือกวันที่ต้องรายงาน" onclick="sfDatePick('sbDue')" aria-label="รายงานภายในวันที่"><svg class="ic" width="18" height="18" aria-hidden="true" focusable="false"><use href="#i-calendar"/></svg><span class="sfd-v">เลือกวันที่ต้องรายงาน</span></button>
       </div>
       <div class="section">
-        <div class="section-title">ข้อความเกษียณ</div>
+        <label class="section-title" for="sbText" style="display:block;">ข้อความเกษียณ</label>
         <textarea class="form-input" id="sbText" rows="3" oninput="sbEditText()"></textarea>
         <button class="sb-link" id="sbReset" style="display:none;" onclick="sbResetText()">เขียนใหม่ตามแบบ</button>
       </div>
@@ -600,27 +865,29 @@
         <div class="section-title">เสนอต่อ ผอ.</div>
         <select class="form-input" id="sbDir"></select>
         <textarea class="form-input" id="sbFwdNote" rows="2" maxlength="300" placeholder="หมายเหตุถึง ผอ. (ไม่บังคับ)" style="margin-top:10px;"></textarea>
-        <button class="submit-btn navy" id="sbFwdBtn" style="margin-top:10px;" onclick="sbForward()"><span>📤</span><span id="sbFwdLabel">เสนอต่อ ผอ.</span></button>
+        <button class="submit-btn navy" id="sbFwdBtn" style="margin-top:10px;" onclick="sbForward()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-send"/></svg><span id="sbFwdLabel">เสนอต่อ ผอ.</span></button>
       </div>
     </div>
   </div>
   <div class="approve-footer" id="sbFooter" style="display:none;">
-    <button class="submit-btn navy" id="sbBtn" onclick="sbSubmit()"><span>✍️</span><span id="sbBtnLabel">สั่งการ</span></button>
+    <button class="submit-btn gold" id="sbBtn" onclick="sbSubmit()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-edit"/></svg><span id="sbBtnLabel">สั่งการ + ลงลายเซ็น</span></button>
+    <span class="ft-note" id="sbFootNote">ผู้ได้รับมอบจะได้แจ้งเตือนในไลน์</span>
   </div>
 </div>
 
 <!-- เปิดไฟล์หนังสือรับ (?page=saraban_file&doc=) — ตรวจตัวตนจาก LINE แล้วเปิด PDF ด้วยลิงก์อายุ 5 นาที -->
 <div class="page" id="sarabanFilePage">
-  <div class="header navy">
-    <div class="header-badge"><span>📨</span><span>หนังสือรับ</span></div>
+  <div class="header">
+    <div class="header-badge"><span class="hb-ic"><svg class="ic" width="14" height="14" aria-hidden="true" focusable="false"><use href="#i-mail"/></svg></span><span>หนังสือรับ</span></div>
     <h1>เปิดไฟล์หนังสือ</h1>
     <p id="sfName"></p>
   </div>
   <div class="content">
     <div class="section">
-      <div class="empty-box" id="sfMsg">กำลังตรวจสิทธิ์…</div>
-      <button class="submit-btn navy" id="sfAgain" style="display:none;margin-top:12px;" onclick="sfOpen()"><span>📄</span><span>เปิดไฟล์อีกครั้ง</span></button>
-      <a class="submit-btn" id="sfWeb" style="display:none;margin-top:10px;text-decoration:none;background:#e5e7eb;color:#1f2937;" target="_blank" rel="noopener"><span>🌐</span><span>ดูในเว็บ (ฉบับประทับตรา)</span></a>
+      <div class="pg-ic"><svg class="ic" width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-file"/></svg></div>
+      <div class="empty-box" id="sfMsg" role="status" aria-live="polite" style="padding-top:0;">กำลังตรวจสิทธิ์…</div>
+      <button class="submit-btn navy" id="sfAgain" style="display:none;margin-top:12px;" onclick="sfOpen()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-file"/></svg><span>เปิดไฟล์อีกครั้ง</span></button>
+      <a class="submit-btn ghost" id="sfWeb" style="display:none;margin-top:10px;" target="_blank" rel="noopener"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg><span>ดูในเว็บ (ฉบับประทับตรา)</span></a>
     </div>
   </div>
 </div>
@@ -648,6 +915,148 @@
   function thaiDate(s){const d=new Date(s+'T00:00:00');const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];return d.getDate()+' '+m[d.getMonth()]+' '+(d.getFullYear()+543);}
   function show(id){document.getElementById(id).classList.add('show');}
 
+  /* ===== ไอคอนเส้น (แทนอีโมจิ) — sprite เดียว ใช้ <use href="#i-ชื่อ"> ===== */
+  const ICONS={
+    school:'<path d="M3 10.5 12 4l9 6.5"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/>',
+    chart:'<path d="M4 20V11M10 20V5M16 20v-7M22 20H2"/>',
+    book:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/>',
+    family:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9.5" r="2.3"/><path d="M17.5 14.5c2.2 0 3.5 1.7 3.5 4.5"/>',
+    megaphone:'<path d="M3 11v3a1 1 0 0 0 1 1h3l7 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M18 9a4 4 0 0 1 0 6"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>',
+    check:'<path d="M5 12.5 10 17l9-10"/>',
+    x:'<path d="M6 6l12 12M18 6 6 18"/>',
+    mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/>',
+    send:'<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+    link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    save:'<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/>',
+    globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+    file:'<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+    edit:'<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/>',
+    lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    clip:'<path d="M20 11.5 12 19.5a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L9.7 17.2a1.7 1.7 0 0 1-2.4-2.4L15 7"/>',
+    calendar:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/>',
+    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+    sick:'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>',
+    clipboard:'<rect x="6" y="4.5" width="12" height="16.5" rx="2"/><path d="M9 4.5h6V7H9zM9 12h6M9 16h4"/>',
+    bus:'<rect x="4" y="4" width="16" height="13" rx="3"/><path d="M4 11h16M8 20v-3M16 20v-3"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/>',
+    pin:'<path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    alert:'<path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.1"/>',
+    inbox:'<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+    heart:'<path d="M12 20s-7-4.5-9-9a4.8 4.8 0 0 1 9-3 4.8 4.8 0 0 1 9 3c-2 4.5-9 9-9 9z"/>',
+    chev:'<path d="M9 6l6 6-6 6"/>',
+    briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3"/>'
+  };
+  const ic=(n,sz)=>'<svg class="ic" width="'+(sz||18)+'" height="'+(sz||18)+'" aria-hidden="true" focusable="false"><use href="#i-'+n+'"/></svg>';
+  document.body.insertAdjacentHTML('afterbegin','<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">'+Object.keys(ICONS).map(k=>'<symbol id="i-'+k+'" viewBox="0 0 24 24">'+ICONS[k]+'</symbol>').join('')+'</svg>');
+  /* ชื่อโรงเรียนจริง: Worker ส่ง school_name มาทุกคำตอบ */
+  function setSchoolName(n){document.querySelectorAll('[data-school-name]').forEach(el=>{el.textContent=n;});}
+
+  /* ===== sfDate — ตัวเลือกวัน พ.ศ. ใช้ร่วม (แทน <input type="date"> ที่ Android แสดง ค.ศ.) =====
+     ใช้: <input type="hidden" id="X" data-change="fnName" [data-minof="otherId"]> + <button class="sfd-btn" id="XBtn" data-title="…" onclick="sfDatePick('X')">…<span class="sfd-v"></span></button>
+     ค่าใน input เป็น 'YYYY-MM-DD' เสมอ · min/max อ่านจาก el.min / el.max · เลือกแล้วตั้ง value → sfDateSync → เรียก window[data-change]()
+     API: sfDateFmt(iso) · sfDateSync(id) · sfDatePick(id) · sfDateOpen(anchorEl,{value,min,max,title,onPick(iso)}) · sfDateDiff(a,b)
+     วันที่คิดด้วยสตริง/UTC ล้วน ไม่พึ่ง timezone เครื่อง */
+  const SFD_MON=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  const SFD_MS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const SFD_DS=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  const SFD_CHEV=(d)=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(d<0?'M15 6l-6 6 6 6':'M9 6l6 6-6 6')+'"/></svg>';
+  let SFD=null;
+  function sfdP(s){const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(s||'');return m?Date.UTC(+m[1],+m[2]-1,+m[3]):NaN;}
+  function sfdF(ms){const d=new Date(ms);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0');}
+  function sfDateDiff(a,b){return Math.round((sfdP(b)-sfdP(a))/864e5);}
+  function sfDateFmt(iso){const t=sfdP(iso);if(isNaN(t))return '';const d=new Date(t);return SFD_DS[d.getUTCDay()]+' '+d.getUTCDate()+' '+SFD_MS[d.getUTCMonth()]+' '+(d.getUTCFullYear()+543);}
+  function sfDateSync(id){
+    const el=document.getElementById(id),b=document.getElementById(id+'Btn');
+    if(!el||!b)return;
+    const v=el.value,t=b.querySelector('.sfd-v');
+    if(t)t.textContent=v?sfDateFmt(v):(b.dataset.ph||'เลือกวัน');
+    b.classList.toggle('sfd-empty',!v);
+  }
+  function sfDatePick(id){
+    const el=document.getElementById(id),b=document.getElementById(id+'Btn');
+    if(!el)return;
+    let min=el.min||'';
+    if(el.dataset.minof){const mv=document.getElementById(el.dataset.minof).value;if(mv&&mv>min)min=mv;}
+    sfDateOpen(b,{value:el.value,min,max:el.max||'',title:(b&&b.dataset.title)||'เลือกวันที่',onPick(iso){
+      el.value=iso;sfDateSync(id);
+      const fn=el.dataset.change;if(fn&&typeof window[fn]==='function')window[fn]();
+    }});
+  }
+  function sfDateOpen(anchor,o){
+    if(SFD)sfDateClose(true);
+    const min=o.min||'',max=o.max||'',today=localDateStr(new Date());
+    let base=o.value||today;
+    if(min&&base<min)base=min;
+    if(max&&base>max)base=max;
+    const t=new Date(sfdP(base));
+    SFD={anchor,o,min,max,today,cy:t.getUTCFullYear(),cm:t.getUTCMonth(),ov:null};
+    const ov=document.createElement('div');
+    ov.className='sfd-ov';
+    ov.innerHTML='<div class="sfd-sheet" role="dialog" aria-modal="true" aria-label="'+esc(o.title||'เลือกวันที่')+'"></div>';
+    document.body.appendChild(ov);
+    SFD.ov=ov;
+    document.body.style.overflow='hidden';
+    ov.addEventListener('click',sfdClick);
+    document.addEventListener('keydown',sfdKey,true);
+    sfdRender();
+    const first=ov.querySelector('.sfd-day[aria-pressed="true"]')||ov.querySelector('.sfd-day:not(:disabled)')||ov.querySelector('.sfd-close');
+    if(first)first.focus();
+  }
+  function sfDateClose(quiet){
+    if(!SFD)return;
+    const a=SFD.anchor;
+    document.removeEventListener('keydown',sfdKey,true);
+    SFD.ov.remove();SFD=null;
+    document.body.style.overflow='';
+    if(!quiet&&a&&a.focus)a.focus();
+  }
+  function sfdKey(e){
+    if(!SFD)return;
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();sfDateClose();return;}
+    if(e.key==='Tab'){
+      const f=[...SFD.ov.querySelectorAll('button:not(:disabled)')];
+      if(!f.length)return;
+      const i=f.indexOf(document.activeElement);
+      if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus();}
+      else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus();}
+    }
+  }
+  function sfdClick(e){
+    if(!SFD)return;
+    if(e.target===SFD.ov){sfDateClose();return;}
+    const t=e.target.closest&&e.target.closest('[data-sfd]');
+    if(!t)return;
+    const act=t.dataset.sfd;
+    if(act==='close')sfDateClose();
+    else if(act==='mon'){
+      let y=SFD.cy,m=SFD.cm+(+t.dataset.n);
+      if(m<0){m=11;y--;}else if(m>11){m=0;y++;}
+      SFD.cy=y;SFD.cm=m;sfdRender();
+      const nb=SFD.ov.querySelector('[data-sfd="mon"][data-n="'+t.dataset.n+'"]');
+      if(nb&&!nb.disabled)nb.focus();
+    }
+    else if(act==='day'){const iso=t.dataset.d,cb=SFD.o.onPick;sfDateClose();if(cb)cb(iso);}
+  }
+  function sfdRender(){
+    const {cy:y,cm:m,min,max,today,o}=SFD;
+    const mk=(s)=>{const d=new Date(sfdP(s));return d.getUTCFullYear()*12+d.getUTCMonth();};
+    const prevOff=!!min&&y*12+m<=mk(min),nextOff=!!max&&y*12+m>=mk(max);
+    const first=new Date(Date.UTC(y,m,1)).getUTCDay(),n=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+    let g=SFD_DS.map(x=>'<div class="sfd-dw" aria-hidden="true">'+x+'</div>').join('');
+    for(let i=0;i<first;i++)g+='<div></div>';
+    for(let d=1;d<=n;d++){
+      const ds=sfdF(Date.UTC(y,m,d)),w=(first+d-1)%7,off=(min&&ds<min)||(max&&ds>max);
+      g+='<button type="button" class="sfd-day'+(w===0||w===6?' sfd-we':'')+(ds===today?' sfd-today':'')+'" data-sfd="day" data-d="'+ds+'" aria-pressed="'+(ds===o.value)+'" aria-label="'+esc(sfDateFmt(ds))+'"'+(off?' disabled':'')+'>'+d+'</button>';
+    }
+    SFD.ov.firstChild.innerHTML='<div class="sfd-grab" aria-hidden="true"></div><div class="sfd-title">'+esc(o.title||'เลือกวันที่')+'</div>'
+      +'<div class="sfd-head"><button type="button" class="sfd-nav" data-sfd="mon" data-n="-1" aria-label="เดือนก่อน"'+(prevOff?' disabled':'')+'>'+SFD_CHEV(-1)+'</button>'
+      +'<div class="sfd-mon" aria-live="polite">'+SFD_MON[m]+' '+(y+543)+'</div>'
+      +'<button type="button" class="sfd-nav" data-sfd="mon" data-n="1" aria-label="เดือนถัดไป"'+(nextOff?' disabled':'')+'>'+SFD_CHEV(1)+'</button></div>'
+      +'<div class="sfd-grid">'+g+'</div>'
+      +'<button type="button" class="sfd-close" data-sfd="close">ปิด</button>';
+  }
+
   async function api(action, payload){
     const body = Object.assign({action, access_token: TOKEN}, payload||{}, DEBUG?{debug:true}:{});
     const t0 = performance.now();
@@ -661,6 +1070,7 @@
       return { ok:false, error:'เชื่อมต่อไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง' };
     }
     if (DEBUG) debugLog(action+' '+Math.round(performance.now()-t0)+'ms'+(out._ms!=null?' (server '+out._ms+'ms)':''));
+    if (out && out.school_name) setSchoolName(out.school_name);
     return out;
   }
 
@@ -668,7 +1078,7 @@
   function debugLog(msg){
     if(!DEBUG) return;
     let el=document.getElementById('dbg');
-    if(!el){el=document.createElement('div');el.id='dbg';el.style.cssText='position:fixed;left:6px;bottom:6px;z-index:999;background:rgba(0,0,0,.75);color:#0f0;font:11px monospace;padding:6px 8px;border-radius:6px;max-width:92vw;white-space:pre-wrap;';document.body.appendChild(el);}
+    if(!el){el=document.createElement('div');el.id='dbg';el.style.cssText='position:fixed;left:6px;bottom:6px;z-index:999;background:rgba(0,0,0,.75);color:#0f0;font:13px monospace;padding:6px 8px;border-radius:6px;max-width:92vw;white-space:pre-wrap;';document.body.appendChild(el);}
     el.textContent+=(el.textContent?'\n':'')+'+'+Math.round(performance.now()-T_START)+'ms '+msg;
   }
 
@@ -694,7 +1104,7 @@
       else if(page==='saraban_file') initSarabanFile();
       else if(page==='bind') initBind();
       else initParent();
-    }catch(e){document.getElementById('connMsg').textContent='❌ '+e.message;}
+    }catch(e){document.getElementById('connMsg').textContent=e.message;}
   }
 
   /* ===== PARENT ===== */
@@ -703,46 +1113,67 @@
     setDefaultDates();
     await loadChildren();
   }
-  async function loadChildren(){
-    const r = await api('getChildren');
-    children = (r.children||[]);
-    const approved = children.filter(c=>c.status==='approved');
-    document.getElementById('childList').innerHTML = children.length ? children.map(c=>{
+  const PK_AV=['linear-gradient(135deg,#8B5CF6,#5B21B6)','linear-gradient(135deg,#EA580C,#9A3412)','linear-gradient(135deg,#0F7A62,#0B3B30)','linear-gradient(135deg,#0284C7,#075985)'];
+  let regOpen=false;
+  // อักษรย่อ: ตัดคำนำหน้า + สระนำหน้า (เ แ โ ใ ไ) ออก
+  function kidInitial(n){const t=String(n||'').trim().replace(/^(ด\.ช\.|ด\.ญ\.|เด็กชาย|เด็กหญิง|นางสาว|น\.ส\.|นาย|นาง)\s*/,'').replace(/^[เแโใไ]+/,'');return Array.from(t)[0]||'?';}
+  function kidRoom(c){return c.grade?(c.grade+(c.classroom?'/'+c.classroom:'')):'';}
+  function toggleReg(){regOpen=!regOpen;renderChildren();if(regOpen)document.getElementById('regCode').focus();}
+  function renderChildren(){
+    const approved=children.filter(c=>c.status==='approved');
+    document.getElementById('childList').innerHTML = children.length ? children.map((c,i)=>{
       const ok = c.status==='approved';
-      return `<span class="child-chip ${ok?'':'pending'} ${selectedChild===c.student_id?'active':''}" ${ok?`onclick="pickChild('${c.student_id}')"`:''}>
-        ${c.student_name} <span class="status-pill ${ok?'pill-approved':'pill-pending'}">${ok?'ผูกแล้ว':'รอยืนยัน'}</span></span>`;
-    }).join('') : '<p style="color:var(--gray);font-size:13px;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
+      const rm=kidRoom(c);
+      return `<button type="button" class="pk-kid" role="radio" aria-checked="${ok&&selectedChild===c.student_id}" data-id="${esc(c.student_id)}" ${ok?'':'disabled'}>
+        <span class="pk-av" style="background:${PK_AV[i%PK_AV.length]}" aria-hidden="true">${esc(kidInitial(c.student_name))}</span>
+        <span class="pk-tx"><span class="pk-nm">${esc(c.student_name)}</span>${ok?(rm?'<span class="pk-rm">'+esc(rm)+'</span>':''):'<span class="pk-pend">รอยืนยัน</span>'}</span></button>`;
+    }).join('') : '<p style="color:var(--gray);font-size:14px;grid-column:1/-1;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
+    document.querySelectorAll('#childList .pk-kid:not(:disabled)').forEach(b=>{b.onclick=()=>pickChild(b.dataset.id);});
+    const open=regOpen||!children.length;
+    document.getElementById('regWrap').style.display=open?'flex':'none';
+    const tg=document.getElementById('regToggle');
+    tg.style.display=children.length?'inline-flex':'none';
+    tg.setAttribute('aria-expanded',String(open));
+    tg.textContent=open?'− ซ่อนช่องเพิ่มบุตรหลาน':'+ เพิ่มบุตรหลาน (เลขประจำตัวนักเรียน)';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
     const pending=children.filter(c=>c.status==='pending');
     const hint=document.getElementById('childHint');
     if(!approved.length && pending.length){
       hint.style.display='block';
-      hint.innerHTML='⏳ รอ<b>ครูยืนยันว่าคุณเป็นผู้ปกครอง</b>ของเด็กคนนี้ — <b>ยืนยันครั้งเดียว</b><br><span style="opacity:.75">ยืนยันแล้ว คุณแจ้งลาได้เองทุกครั้ง ไม่ต้องรออนุมัติรายครั้ง (เปิดหน้านี้อีกทีจะมีฟอร์มแจ้งลา)</span>';
+      hint.innerHTML='รอ<b>ครูยืนยันว่าคุณเป็นผู้ปกครอง</b>ของเด็กคนนี้ — <b>ยืนยันครั้งเดียว</b><br><span style="opacity:.75">ยืนยันแล้ว คุณแจ้งลาได้เองทุกครั้ง ไม่ต้องรออนุมัติรายครั้ง (เปิดหน้านี้อีกทีจะมีฟอร์มแจ้งลา)</span>';
     }else{
       hint.style.display='none';
     }
-    if(approved.length && !selectedChild){pickChild(approved[0].student_id);}
     updateLeaveBtn();
   }
-  function pickChild(id){selectedChild=id;loadChildren();}
+  async function loadChildren(){
+    const r = await api('getChildren');
+    children = (r.children||[]);
+    const approved = children.filter(c=>c.status==='approved');
+    if(approved.length && !approved.some(c=>c.student_id===selectedChild)) selectedChild=approved[0].student_id;
+    renderChildren();
+  }
+  function pickChild(id){
+    selectedChild=id;renderChildren();
+    const b=document.querySelector('#childList .pk-kid[data-id="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"]');if(b)b.focus();
+  }
   async function registerChild(){
     const code=document.getElementById('regCode').value.trim();
     const st=document.getElementById('regStatus');
     if(!code){st.textContent='กรอกเลขประจำตัว';return;}
     st.textContent='กำลังส่ง...';
     const r=await api('register',{student_code:code});
-    st.innerHTML = r.ok?`<span style="color:var(--green)">✅ ${r.message} (${r.student_name||''})</span>`:`<span style="color:var(--red)">❌ ${r.error}</span>`;
-    if(r.ok){document.getElementById('regCode').value='';await loadChildren();}
+    st.innerHTML = r.ok?`<span style="color:var(--g700)">${ic('check',16)} ${esc(r.message)} (${esc(r.student_name||'')})</span>`:`<span style="color:var(--red)">${esc(r.error)}</span>`;
+    if(r.ok){document.getElementById('regCode').value='';regOpen=false;await loadChildren();}
   }
   function selType(t){
     leaveType=t;
-    document.getElementById('t-sick').classList.toggle('active',t==='sick');
-    document.getElementById('t-personal').classList.toggle('active',t==='personal');
+    [['t-sick','sick'],['t-personal','personal']].forEach(a=>{const b=document.getElementById(a[0]);b.classList.toggle('active',t===a[1]);b.setAttribute('aria-checked',String(t===a[1]));});
     const rl=document.getElementById('reasonLabel');
     if(rl)rl.innerHTML=t==='personal'
-      ? 'เหตุผล <span style="color:var(--red)">* จำเป็น</span>'
-      : 'เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span>';
+      ? 'หมายเหตุถึงครู <span style="color:var(--red)">* จำเป็น</span>'
+      : 'หมายเหตุถึงครู <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span>';
     updateLeaveBtn();
   }
   function setDefaultDates(){
@@ -753,23 +1184,24 @@
     const beforeDeadline=now<deadline;
     const minD=new Date();if(!beforeDeadline)minD.setDate(minD.getDate()+1);
     const maxD=new Date();maxD.setDate(maxD.getDate()+30);
-    ['startDate','endDate'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);});
+    ['startDate','endDate'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);sfDateSync(id);});
     const dt=document.getElementById('deadlineText');
     if(dt)dt.textContent=beforeDeadline?'ลาวันนี้ได้ถึง 08:30 น. — เลือกวันแล้วกดส่งได้เลย':'เลย 08:30 แล้ว — แจ้งลาได้ตั้งแต่พรุ่งนี้';
     calcDays();
   }
   function calcDays(){
-    const s=new Date(document.getElementById('startDate').value+'T00:00:00');
-    if(new Date(document.getElementById('endDate').value+'T00:00:00')<s)document.getElementById('endDate').value=document.getElementById('startDate').value;
-    const diff=Math.round((new Date(document.getElementById('endDate').value+'T00:00:00')-s)/86400000)+1;
-    document.getElementById('daysBadge').innerHTML='📅 '+diff+' วัน';
+    const s=document.getElementById('startDate'),e=document.getElementById('endDate');
+    if(e.value<s.value)e.value=s.value;
+    const diff=sfDateDiff(s.value,e.value)+1;
+    document.getElementById('daysBadge').innerHTML=ic('calendar',16)+' รวม '+diff+' วัน';
+    sfDateSync('startDate');sfDateSync('endDate');
   }
   function updateLeaveBtn(){
     const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
     const reason=document.getElementById('reason').value.trim();
     if(!selectedChild){btn.disabled=true;lb.textContent='เลือกนักเรียน';}
     else if(leaveType==='personal'&&!reason){btn.disabled=true;lb.textContent='กรอกเหตุผลการลากิจ';}
-    else{btn.disabled=false;lb.textContent='ส่งคำขอลา';}
+    else{btn.disabled=false;lb.textContent='ส่งถึงครูประจำชั้น';}
   }
   async function submitLeave(){
     const btn=document.getElementById('submitLeaveBtn'),lb=document.getElementById('submitLeaveLabel');
@@ -786,68 +1218,78 @@
       document.getElementById('parentPage').classList.remove('show');
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3000);
-    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='ส่งคำขอลา';}
+    }else{alert((r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='ส่งถึงครูประจำชั้น';}
   }
 
   /* ===== ผลการเรียน (P1 — Worker getGrades) ===== */
   let gChildren=[], gChild=null, gSel=null;
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  const GR_COL=['#E11D48','#2563EB','#0D9488','#D97706','#EA580C','#16A34A','#DB2777','#65A30D','#7C3AED'];
+  function grClass(g){return g>=4?'g4':g>=3?'g3':g>=2?'g2':'g0';}
+  function grTabs(){
+    const pick=document.getElementById('gradesChildPicker');
+    pick.innerHTML=gChildren.length>1?'<div class="gp-tabs" role="tablist" aria-label="เลือกบุตรหลาน">'+gChildren.map((c,i)=>'<button type="button" class="gp-tab" role="tab" aria-selected="'+(c===gChild)+'" onclick="pickGradeChild('+i+')">'+esc(c.student_name)+(kidRoom(c)?' · '+esc(kidRoom(c)):'')+'</button>').join('')+'</div>':'';
+  }
   async function initGrades(){
     show('gradesPage');
     if(!gChildren.length){const r=await api('getChildren');gChildren=r.children||[];}
     const ok=gChildren.filter(c=>c.status==='approved');
     if(!ok.length){document.getElementById('gradesBody').innerHTML='<div class="empty-box">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>เพิ่มได้ที่เมนู "แจ้งลานักเรียน"</div>';return;}
-    const pick=document.getElementById('gradesChildPicker');
-    pick.innerHTML=ok.length>1?'<div style="display:flex;flex-wrap:wrap;">'+ok.map((c,i)=>`<span class="chip ${i===0?'active':''}" onclick="pickGradeChild(${i})">${esc(c.student_name)}</span>`).join('')+'</div>':'';
     gChildren=ok;pickGradeChild(0);
   }
   function pickGradeChild(i){
     gChild=gChildren[i];gSel=null;
-    document.querySelectorAll('#gradesChildPicker .chip').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+    grTabs();
     loadGrades();
   }
   function pickGradeTerm(y,t){gSel={year:y,term:t};loadGrades();}
   async function loadGrades(){
-    const body=document.getElementById('gradesBody');
+    const body=document.getElementById('gradesBody'),gpa=document.getElementById('gradesGpa'),head=document.getElementById('gradesHead');
     body.innerHTML='<div class="empty-box">กำลังโหลด...</div>';
     const r=await api('getGrades',Object.assign({student_id:gChild.student_id},gSel||{}));
-    if(!r.ok){body.innerHTML='<div class="empty-box">❌ '+esc(r.error)+'</div>';return;}
+    gpa.innerHTML='';head.classList.remove('gp-tall');
+    if(!r.ok){body.innerHTML='<div class="empty-box">'+esc(r.error)+'</div>';return;}
     const st=r.student||{};
     document.getElementById('gradesStudent').textContent=(st.name||gChild.student_name)+(st.grade?(' · '+st.grade+'/'+st.classroom):'');
     const tp=document.getElementById('gradesTermPicker');
-    if(!r.released){tp.innerHTML='';body.innerHTML='<div class="empty-box">📭 โรงเรียนยังไม่เผยแพร่ผลการเรียน<br>เมื่อครูพร้อม จะดูได้ที่นี่</div>';return;}
+    if(!r.released){tp.innerHTML='';body.innerHTML='<div class="empty-box">โรงเรียนยังไม่เผยแพร่ผลการเรียน<br>เมื่อครูพร้อม จะดูได้ที่นี่</div>';return;}
     const sel=r.selected;
-    tp.innerHTML=(r.terms||[]).length>1?'<div style="display:flex;flex-wrap:wrap;">'+r.terms.map(t=>`<span class="chip ${t.year===sel.year&&t.term===sel.term?'active':''}" onclick="pickGradeTerm(${t.year},${t.term})">เทอม ${t.term}/${t.year}</span>`).join('')+'</div>':'';
+    tp.innerHTML=(r.terms||[]).length>1?'<div style="display:flex;flex-wrap:wrap;">'+r.terms.map(t=>`<button type="button" class="chip ${t.year===sel.year&&t.term===sel.term?'active':''}" role="tab" aria-selected="${t.year===sel.year&&t.term===sel.term}" onclick="pickGradeTerm(${t.year},${t.term})">เทอม ${t.term}/${t.year}</button>`).join('')+'</div>':'';
     document.getElementById('gradesSub').textContent='ภาคเรียนที่ '+sel.term+'/'+sel.year+(sel.grades_published?' · ประกาศเกรดแล้ว':' · คะแนนเก็บระหว่างภาค');
-    let html='';
+    const subs=r.subjects||[];
     if(sel.grades_published&&r.gpa!=null){
-      html+=`<div class="gpa-card"><div><div style="font-size:13px;opacity:.85;">เกรดเฉลี่ย (GPA)</div>${r.gpa_partial?'<div style="font-size:11px;opacity:.75;margin-top:2px;">บางวิชายังไม่มีเกรด</div>':''}</div><div class="gpa">${r.gpa.toFixed(2)}</div></div>`;
+      head.classList.add('gp-tall');
+      gpa.innerHTML=`<section class="gp-glass" aria-label="เกรดเฉลี่ย"><div><div class="gp-t">เกรดเฉลี่ย ภาคเรียนที่ ${sel.term}/${sel.year}</div><div class="gp-s">${subs.length} วิชา${r.gpa_partial?' · บางวิชายังไม่มีเกรด':''}</div></div><div class="gp-n">${r.gpa.toFixed(2)}</div></section>`;
     }
-    if(!(r.subjects||[]).length) html+='<div class="empty-box">ยังไม่มีรายวิชาในภาคเรียนนี้</div>';
-    (r.subjects||[]).forEach(s=>{
+    let html='';
+    if(!subs.length) html+='<div class="empty-box">ยังไม่มีรายวิชาในภาคเรียนนี้</div>';
+    subs.forEach((s,i)=>{
       let badge='';
-      if(s.special) badge=`<div class="grade-badge special">${esc(s.special)}<small>ติดต่อครู</small></div>`;
-      else if(s.grade!=null) badge=`<div class="grade-badge">${s.grade}<small>${esc(s.grade_label)}</small></div>`;
+      if(s.special) badge=`<div class="gr-b g0">${esc(s.special)}<small>ติดต่อครู</small></div>`;
+      else if(s.grade!=null) badge=`<div class="gr-b ${grClass(s.grade)}">${esc(s.grade)}<small>${esc(s.grade_label)}</small></div>`;
       let prog='';
       if(s.components){
         const pct=s.max_total?Math.round(((s.total||0)/s.max_total)*100):0;
         prog=`<div class="bar"><span style="width:${Math.min(100,pct)}%"></span></div>
-          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':('คะแนนเก็บ '+s.total+' / '+s.max_total)}</span><span>กรอกแล้ว ${s.filled}/${s.parts} ช่อง</span></div>
-          <details><summary>ดูรายละเอียด</summary>${s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(c.score+' / '+c.max)}</span></div>`).join('')}</details>`;
+          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':('คะแนนเก็บ '+esc(s.total)+' / '+esc(s.max_total))}</span><span>กรอกแล้ว ${esc(s.filled)}/${esc(s.parts)} ช่อง</span></div>
+          <details><summary>ดูรายละเอียด</summary>${s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(esc(c.score)+' / '+esc(c.max))}</span></div>`).join('')}</details>`;
       }
-      const note=s.special_note?`<div class="note-red">⚠️ ${esc(s.special_note)}</div>`:'';
-      html+=`<div class="subj"><div class="subj-top"><div><div class="subj-name">${esc(s.name)}</div><div class="subj-code">${esc(s.code)}${s.credit?(' · '+s.credit+' หน่วยกิต'):''}</div></div>${badge}</div>${prog}${note}</div>`;
+      const note=s.special_note?`<div class="note-red">${ic('alert',16)}<span>${esc(s.special_note)}</span></div>`:'';
+      html+=`<div class="subj gr"><div class="gr-top"><span class="gr-dot" style="background:${GR_COL[i%GR_COL.length]}" aria-hidden="true"></span><div class="gr-t"><span class="gr-n">${esc(s.name)}</span><span class="gr-c">${esc(s.code)}${s.credit?(' · '+esc(s.credit)+' หน่วยกิต'):''}</span></div>${badge}</div>${prog}${note}</div>`;
     });
     body.innerHTML=html;
   }
 
   /* ===== การบ้าน (P2 — Worker getHomework) ===== */
+  /* ป้ายกำหนดส่ง → [ข้อความ, คลาส hw-bd] (เลยกำหนด = เทา · วันนี้/พรุ่งนี้ = ทอง · อื่น ๆ = เขียว) */
   function dueLabel(d){
-    if(d<0) return ['เลยกำหนด '+(-d)+' วัน','#8a8f98','#eef0f3'];
-    if(d===0) return ['ส่งวันนี้','#b45309','#fef3c7'];
-    if(d===1) return ['ส่งพรุ่งนี้','#b45309','#fef3c7'];
-    return ['อีก '+d+' วัน','#6d4fc2','#efeafb'];
+    if(d<0) return ['เลยกำหนด '+(-d)+' วัน','hw-late'];
+    if(d===0) return ['ส่งวันนี้','hw-warn'];
+    if(d===1) return ['ส่งพรุ่งนี้','hw-warn'];
+    return ['อีก '+d+' วัน',''];
   }
+  const HK_PAL=[['#EDE9FE','#6D28D9'],['#FFEDD5','#C2410C'],['#DCFCE7','#15803D'],['#DBEAFE','#1D4ED8'],['#FCE7F3','#BE185D'],['#CCFBF1','#0F766E'],['#FEF9C3','#A16207'],['#E0E7FF','#4338CA']];
+  function hkColor(name){let h=0;const t=String(name||'');for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return HK_PAL[h%HK_PAL.length];}
   /* ===== MY KIDS (hub — ไม่ต้องสลับ Rich Menu) ===== */
   function openKids(p){
     document.getElementById('kidsPage').classList.remove('show');
@@ -1302,7 +1744,7 @@
   async function initNotify(){
     show('notifyPage');
     const r=await api('initNotify');
-    if(!r.ok){alert('❌ '+(r.error||'โหลดไม่สำเร็จ'));return;}
+    if(!r.ok){alert((r.error||'โหลดไม่สำเร็จ'));return;}
     if(!r.bound){document.getElementById('notifyNotBound').style.display='block';return;}
     notifyInit=r;
     const opts=[];
@@ -1327,16 +1769,19 @@
   function renderRecent(list){
     const el=document.getElementById('ntRecent');
     if(!list||!list.length){el.innerHTML='<div class="empty-box">ยังไม่มีประกาศ</div>';return;}
-    el.innerHTML=list.map(n=>'<div style="padding:10px 0;border-top:1px solid var(--border)">'
-      +'<div style="font-weight:600;font-size:14px">'+esc(n.title)+'</div>'
-      +'<div style="font-size:12px;color:var(--gray)">'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+' · '+(n.shared?'✅ แชร์แล้ว':'ยังไม่แชร์')
-      +(n.pushed!=null?' · 📨 ส่งตรง '+n.pushed+' คน':'')+'</div>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">'
-      +'<button class="chip" style="margin:0" onclick="reshareNotice(\''+esc(n.id)+'\')">📢 แชร์อีกครั้ง</button>'
-      +(notifyInit&&notifyInit.push&&n.pushed==null?'<button class="chip" style="margin:0" onclick="pushNotice(\''+esc(n.id)+'\')">📨 ส่งตรง</button>':'')
-      +'<button class="chip" style="margin:0;color:var(--red)" onclick="removeNotice(\''+esc(n.id)+'\')">ลบ</button>'
+    el.innerHTML=list.map(n=>'<div class="nt-row">'
+      +'<div class="nt-rtt">'+esc(n.title)+'</div>'
+      +'<div class="nt-rm"><span>'+esc(n.audience_label)+' · '+fmtNoticeDate(n.created_at)+'</span>'
+      +'<span class="nt-pill'+(n.shared?'':' w')+'">'+(n.shared?'แชร์แล้ว':'ยังไม่แชร์')+'</span>'
+      +(n.pushed!=null?'<span class="nt-pill b">ส่งตรง '+esc(n.pushed)+' คน</span>':'')+'</div>'
+      +'<div class="nt-ra">'
+      +'<button type="button" class="nt-btn" onclick="reshareNotice(\''+esc(n.id)+'\')">'+ic('megaphone',16)+'แชร์อีกครั้ง</button>'
+      +(notifyInit&&notifyInit.push&&n.pushed==null?'<button type="button" class="nt-btn" onclick="pushNotice(\''+esc(n.id)+'\')">'+ic('send',16)+'ส่งตรง</button>':'')
+      +'<button type="button" class="nt-del" aria-label="ลบประกาศ '+esc(n.title)+'" onclick="removeNotice(\''+esc(n.id)+'\')">'+NB_TRASH+'</button>'
       +'</div></div>').join('');
   }
+  /** กลับไปหน้าประกาศทั้งหมด */
+  function ntBack(){document.getElementById('notifyPage').classList.remove('show');initNotices();}
   /** แชร์การ์ดผ่าน LINE — คืน 'sent' | 'cancel' | 'unavailable' | 'error' */
   async function shareFlex(flex){
     try{
@@ -1357,7 +1802,7 @@
     if(!title){alert('กรุณาใส่หัวข้อ');return;}
     btn.disabled=true;lb.textContent='กำลังบันทึก...';
     const r=await api('createNotice',{title,body,audience});
-    if(!r.ok){alert('❌ '+(r.error||'บันทึกไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';return;}
+    if(!r.ok){alert((r.error||'บันทึกไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกและแชร์เข้ากลุ่มไลน์';return;}
     if(notifyInit&&notifyInit.push){   // N2: เปิดส่งตรง → ให้เลือกวิธีส่ง
       chosen={id:r.notice_id,flex:r.flex,badged:r.badged};
       document.getElementById('ntTitle').value='';document.getElementById('ntBody').value='';
@@ -1403,11 +1848,11 @@
   /** ส่งตรง: ดูจำนวนผู้รับ+โควตาก่อน → ยืนยัน → ส่ง (ครั้งเดียวต่อประกาศ) */
   async function pushNotice(id){
     const p=await api('previewPush',{notice_id:id});
-    if(!p.ok){alert('❌ '+(p.error||'ไม่สำเร็จ'));return;}
+    if(!p.ok){alert((p.error||'ไม่สำเร็จ'));return;}
     if(!p.can_send){alert('ส่งตรงไม่ได้: '+p.reason);return;}
     if(!confirm('ส่งตรงถึงผู้ปกครอง '+p.count+' คน\nใช้โควตา '+p.count+' ข้อความ ('+quotaText(p.status)+')\n\nส่งได้ครั้งเดียวต่อประกาศ — ยืนยัน?'))return;
     const r=await api('sendPush',{notice_id:id});
-    if(!r.ok){alert('❌ '+(r.error||'ส่งไม่สำเร็จ'));return;}
+    if(!r.ok){alert((r.error||'ส่งไม่สำเร็จ'));return;}
     alert('ส่งแล้ว '+r.sent+' คน'+(r.failed?' · ไม่สำเร็จ '+r.failed+' คน':''));
     const again=await api('initNotify');if(again.ok){notifyInit=again;renderRecent(again.recent);
       if(chosen&&chosen.id===id)document.getElementById('ntQuota').textContent=quotaText(again.push);}
@@ -1415,7 +1860,7 @@
 
   async function reshareNotice(id){
     const r=await api('getNoticeFlex',{notice_id:id});
-    if(!r.ok){alert('❌ '+(r.error||'ไม่สำเร็จ'));return;}
+    if(!r.ok){alert((r.error||'ไม่สำเร็จ'));return;}
     const st=await shareFlex(r.flex);
     if(st==='sent'){await api('markShared',{notice_id:id});alert('แชร์แล้ว');}
     else if(st!=='cancel')alert(shareMsg(st));
@@ -1424,7 +1869,7 @@
   async function removeNotice(id){
     if(!confirm('ลบประกาศนี้ออกจากสมุดประกาศ? (ข้อความที่แชร์เข้ากลุ่มแล้วจะไม่ถูกลบ)'))return;
     const r=await api('deleteNotice',{notice_id:id});
-    if(!r.ok){alert('❌ '+(r.error||'ลบไม่สำเร็จ'));return;}
+    if(!r.ok){alert((r.error||'ลบไม่สำเร็จ'));return;}
     const again=await api('initNotify');if(again.ok)renderRecent(again.recent);
   }
 
@@ -1437,21 +1882,20 @@
     show('homeworkPage');
     const body=document.getElementById('homeworkBody');
     const r=await api('getHomework');
-    if(!r.ok){body.innerHTML='<div class="empty-box">❌ '+esc(r.error)+'</div>';return;}
+    if(!r.ok){body.innerHTML='<div class="empty-box">'+esc(r.error)+'</div>';return;}
     const kids=r.children||[];
     if(!kids.length){body.innerHTML='<div class="section"><div class="empty-box">ยังไม่มีนักเรียนที่ผูกบัญชีและได้รับอนุมัติ<br>ผูกได้ที่ปุ่ม <b>แจ้งลานักเรียน</b> (ใส่เลขประจำตัวนักเรียน)</div></div>';return;}
     body.innerHTML=kids.map(k=>{
-      const head='<div class="section-title" style="margin:6px 2px 10px;">'+esc(k.name)+(k.grade?(' · '+esc(k.grade)+'/'+esc(k.classroom)):'')+'</div>';
-      if(!k.items.length) return head+'<div class="section"><div class="empty-box">🎉 ไม่มีการบ้านค้าง</div></div>';
-      return head+k.items.map(h=>{
-        const [lb,fg,bg]=dueLabel(h.days_left);
-        return '<div class="subj"'+(h.days_left<0?' style="opacity:.7"':'')+'><div class="subj-top"><div style="min-width:0">'
-          +'<div class="subj-code">'+esc(h.subject_name)+(h.teacher?(' · '+esc(h.teacher)):'')+'</div>'
-          +'<div class="subj-name" style="margin-top:2px">'+esc(h.title)+'</div></div>'
-          +'<div class="grade-badge" style="color:'+fg+';background:'+bg+';font-size:12px">'+lb+'<small>'+thaiDate(h.due_date)+'</small></div></div>'
-          +(h.detail?'<div style="margin-top:8px;font-size:13px;color:var(--gray);line-height:1.6;white-space:pre-wrap">'+esc(h.detail)+'</div>':'')
-          +'</div>';
-      }).join('');
+      const head='<h2 class="hk-h">'+esc(k.name)+(k.grade?(' · '+esc(k.grade)+'/'+esc(k.classroom)):'')+'</h2>';
+      if(!k.items.length) return head+'<div class="section"><div class="empty-box">ไม่มีการบ้านค้าง</div></div>';
+      return head+'<div class="hk-list">'+k.items.map(h=>{
+        const [lb,cls]=dueLabel(h.days_left),c=hkColor(h.subject_name);
+        return '<div class="hw-row'+(h.days_left<0?' hk-late':'')+'"><span class="hw-ico" style="background:'+c[0]+';color:'+c[1]+'" aria-hidden="true">'+ic('book',20)+'</span>'
+          +'<span class="hw-txt"><span class="hw-ttl">'+esc(h.title)+'</span>'
+          +'<span class="hw-meta">'+esc(h.subject_name)+(h.teacher?(' · '+esc(h.teacher)):'')+'</span><span class="hw-meta">ส่ง '+esc(thaiDate(h.due_date))+'</span>'
+          +(h.detail?'<span class="hk-det">'+esc(h.detail)+'</span>':'')+'</span>'
+          +'<span class="hw-bd '+cls+'">'+esc(lb)+'</span></div>';
+      }).join('')+'</div>';
     }).join('');
   }
 
@@ -1485,7 +1929,7 @@
         setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},4000);
       }else initTeacher();
     }
-    else{st.innerHTML=`<span style="color:var(--red)">❌ ${r.error}</span>`;document.getElementById('bindLabel').textContent='ผูกบัญชี';}
+    else{st.innerHTML=`<span style="color:var(--red)">${esc(r.error)}</span>`;document.getElementById('bindLabel').textContent='ผูกบัญชี';}
   }
   function pickClass(i){
     const c=(teacher.homeroom_classes||[])[i];curClass=c;
@@ -1495,49 +1939,60 @@
   async function loadRoster(){
     document.getElementById('studentList').innerHTML='';
     const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
-    btn.disabled=true;lb.textContent='กำลังโหลด...';
+    btn.disabled=true;lb.textContent='กำลังโหลด...';document.getElementById('apAll').disabled=true;
     const r=await api('getRoster',{grade:curClass.grade,classroom:curClass.classroom,date:curDate});
     renderRoster(r);
   }
   function renderRoster(r){
     const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
-    if(!r.ok){document.getElementById('approveInfo').textContent='❌ '+r.error;return;}
+    if(!r.ok){document.getElementById('approveInfo').textContent=r.error;return;}
     students=r.students;
+    apParent=new Set(r.approvedBy?[]:students.filter(s=>s.status==='leave_sick'||s.status==='leave_personal').map(s=>s.student_id));
     document.getElementById('approveInfo').textContent='ห้อง '+r.classLabel+' | '+thaiDate(curDate);
     renderStudents();updateSummary();
-    btn.disabled=false;lb.textContent=r.approvedBy?('💾 แก้ไข (เช็คโดย '+r.approvedBy+')'):('บันทึกเช็คชื่อ ('+students.length+' คน)');
+    document.getElementById('apAll').disabled=false;
+    btn.disabled=false;lb.textContent=r.approvedBy?('แก้ไข (เช็คโดย '+r.approvedBy+')'):('บันทึกเช็คชื่อ ('+students.length+' คน)');
   }
+  // สถานะที่ backend รองรับ: present · leave_sick · leave_personal · absent
+  const AP_OPTS=[['present','มา','มา','p'],['leave_sick','ป่วย','ลาป่วย','s'],['leave_personal','กิจ','ลากิจ','k'],['absent','ขาด','ขาด','a']];
+  // นักเรียนที่เปิดหน้ามาแล้วเป็น "ลา" ทั้งที่ครูยังไม่เคยเช็คชื่อวันนั้น = ผู้ปกครองแจ้งลา (Worker เติมจาก leave_requests)
+  let apParent=new Set();
   function renderStudents(){
     document.getElementById('studentList').innerHTML=students.map((s,i)=>{
-      const leave=s.status==='leave_sick'||s.status==='leave_personal',absent=s.status==='absent';
-      return `<div class="student-card ${absent?'s-absent':leave?'s-leave':''}" id="sc-${i}">
-        <div class="student-top"><div class="student-no">${i+1}</div><div class="student-name">${s.name}</div></div>
-        <div class="btn-group">
-          <button class="btn-status ${s.status==='present'?'on-present':''}" onclick="setSt(${i},'present')">✅ มา</button>
-          <button class="btn-status ${leave?'on-leave':''}" onclick="setSt(${i},'leave_sick')">📝 ลา</button>
-          <button class="btn-status ${absent?'on-absent':''}" onclick="setSt(${i},'absent')">❌ ขาด</button>
-        </div></div>`;
+      const fp=apParent.has(s.student_id);
+      return `<div class="ap-card ap-c-${esc(s.status)}" id="sc-${i}">
+        <div class="ap-top"><span class="ap-no">${i+1}</span><span class="ap-nm" id="sn-${i}">${esc(s.name)}</span>${fp?'<span class="ap-par">ผู้ปกครองแจ้งลา</span>':''}</div>
+        <div class="ap-opts" role="radiogroup" aria-labelledby="sn-${i}">${AP_OPTS.map(o=>
+          `<button type="button" class="ap-st ${o[3]}" role="radio" aria-checked="${s.status===o[0]}" aria-label="${o[2]}" onclick="setSt(${i},'${o[0]}')">${o[1]}</button>`).join('')}</div></div>`;
     }).join('');
   }
   function setSt(i,st){
     students[i].status=st;
     const c=document.getElementById('sc-'+i);
-    c.className='student-card'+(st==='absent'?' s-absent':st!=='present'?' s-leave':'');
-    const b=c.querySelectorAll('.btn-status');b.forEach(x=>x.className='btn-status');
-    if(st==='present')b[0].className='btn-status on-present';else if(st==='absent')b[2].className='btn-status on-absent';else b[1].className='btn-status on-leave';
+    c.className='ap-card ap-c-'+st;
+    c.querySelectorAll('.ap-st').forEach((x,k)=>x.setAttribute('aria-checked',String(AP_OPTS[k][0]===st)));
     updateSummary();
   }
+  // ทุกคนมา: ตั้งทุกคนเป็น "มา" ยกเว้นคนที่ผู้ปกครองแจ้งลาไว้และยังเป็นสถานะลาอยู่
+  function allPresent(){
+    students.forEach((s,i)=>{
+      const keep=apParent.has(s.student_id)&&(s.status==='leave_sick'||s.status==='leave_personal');
+      if(!keep&&s.status!=='present')setSt(i,'present');
+    });
+  }
   function updateSummary(){
-    document.getElementById('cPresent').textContent=students.filter(s=>s.status==='present').length;
-    document.getElementById('cLeave').textContent=students.filter(s=>s.status==='leave_sick'||s.status==='leave_personal').length;
-    document.getElementById('cAbsent').textContent=students.filter(s=>s.status==='absent').length;
+    const n=k=>students.filter(s=>s.status===k).length;
+    document.getElementById('cPresent').textContent=n('present');
+    document.getElementById('cSick').textContent=n('leave_sick');
+    document.getElementById('cPersonal').textContent=n('leave_personal');
+    document.getElementById('cAbsent').textContent=n('absent');
   }
   async function submitApprove(){
     const btn=document.getElementById('approveBtn'),lb=document.getElementById('approveLabel');
     btn.disabled=true;lb.textContent='กำลังบันทึก...';
     const r=await api('saveAttendance',{grade:curClass.grade,classroom:curClass.classroom,date:curDate,students});
-    if(r.ok){alert('✅ '+r.message);if(liff.isInClient())liff.closeWindow();}
-    else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกเช็คชื่อ ('+students.length+' คน)';}
+    if(r.ok){alert(r.message);if(liff.isInClient())liff.closeWindow();}
+    else{alert((r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='บันทึกเช็คชื่อ ('+students.length+' คน)';}
   }
 
   /* ===== STAFF LEAVE (S2) ===== */
@@ -1546,14 +2001,17 @@
   const STAFF_HALVES=[['full','เต็มวัน'],['morning','ครึ่งเช้า'],['afternoon','ครึ่งบ่าย']];
   function renderStaffHalf(){
     document.getElementById('staffHalf').innerHTML=STAFF_HALVES.map(h=>
-      `<button class="chip ${h[0]===staffHalf?'active':''}" onclick="selStaffHalf('${h[0]}')">${h[1]}</button>`).join('');
+      `<button type="button" role="radio" aria-checked="${h[0]===staffHalf}" onclick="selStaffHalf('${h[0]}')">${h[1]}</button>`).join('');
   }
-  function selStaffHalf(h){staffHalf=h;renderStaffHalf();staffCalcDays();}
-  const STAFF_KINDS=[['ลาป่วย','🤒'],['ลากิจ','📋'],['ไปราชการ','🚌'],['อื่นๆ','📌']];
+  function selStaffHalf(h){
+    staffHalf=h;staffCalcDays();
+    const on=document.querySelector('#staffHalf [aria-checked="true"]');if(on)on.focus();
+  }
+  const STAFF_KINDS=[['ลาป่วย','sick','k-sick'],['ลากิจ','clipboard','k-biz'],['ไปราชการ','bus','k-gov'],['อื่นๆ','pin','k-oth']];
   async function initStaffLeave(){
     show('staffLeavePage');
     const r=await api('getStaffLeaveInit');
-    if(r&&r.ok===false){alert('❌ '+(r.error||'โหลดไม่สำเร็จ'));return;}
+    if(r&&r.ok===false){alert((r.error||'โหลดไม่สำเร็จ'));return;}
     if(!r||!r.bound){document.getElementById('staffNotBound').style.display='block';return;}
     document.getElementById('staffName').textContent=r.staff_name||'ครู';
     document.getElementById('staffForm').style.display='block';
@@ -1564,10 +2022,12 @@
   }
   function renderStaffKinds(){
     document.getElementById('staffKinds').innerHTML=STAFF_KINDS.map(k=>
-      `<button class="leave-type-btn ${k[0]===staffKind?'active':''}" onclick="selStaffKind('${k[0]}')"><span class="type-icon">${k[1]}</span><span class="type-label">${k[0]}</span></button>`).join('');
+      `<button type="button" class="sl-kind ${k[2]}" role="radio" aria-checked="${k[0]===staffKind}" onclick="selStaffKind('${k[0]}')">${ic(k[1],24)}${k[0]}</button>`).join('');
   }
   function selStaffKind(k){
     staffKind=k;renderStaffKinds();
+    const on=document.querySelector('#staffKinds [aria-checked="true"]');if(on)on.focus();
+    staffSumNote();
     document.getElementById('staffReasonLabel').innerHTML=k==='ลากิจ'
       ? 'เหตุผล <span style="color:var(--red)">* จำเป็น</span>'
       : 'เหตุผล <span style="color:var(--gray);font-weight:400;">(ไม่บังคับ)</span>';
@@ -1575,18 +2035,23 @@
   }
   function staffSetDefaultDates(){
     const minD=new Date();const maxD=new Date();maxD.setDate(maxD.getDate()+60);
-    ['staffStart','staffEnd'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);});
+    ['staffStart','staffEnd'].forEach(id=>{const el=document.getElementById(id);el.value=localDateStr(minD);el.min=localDateStr(minD);el.max=localDateStr(maxD);sfDateSync(id);});
     staffCalcDays();
   }
   function staffCalcDays(){
-    const s=new Date(document.getElementById('staffStart').value+'T00:00:00');
-    if(new Date(document.getElementById('staffEnd').value+'T00:00:00')<s)document.getElementById('staffEnd').value=document.getElementById('staffStart').value;
-    const diff=Math.round((new Date(document.getElementById('staffEnd').value+'T00:00:00')-s)/86400000)+1;
+    const se=document.getElementById('staffStart'),ee=document.getElementById('staffEnd');
+    if(ee.value<se.value)ee.value=se.value;
+    sfDateSync('staffStart');sfDateSync('staffEnd');
+    const diff=sfDateDiff(se.value,ee.value)+1;
     const one=diff===1;
     if(!one&&staffHalf!=='full'){staffHalf='full';}
     document.getElementById('staffHalfWrap').style.display=one?'block':'none';
     renderStaffHalf();
-    document.getElementById('staffDaysBadge').innerHTML='📅 '+(one&&staffHalf!=='full'?(staffHalf==='morning'?'ครึ่งวัน (เช้า)':'ครึ่งวัน (บ่าย)'):diff+' วัน');
+    document.getElementById('staffDaysBadge').textContent=one&&staffHalf!=='full'?(staffHalf==='morning'?'ครึ่งวัน (เช้า)':'ครึ่งวัน (บ่าย)'):diff+' วัน';
+    staffSumNote();
+  }
+  function staffSumNote(){
+    document.getElementById('staffSumNote').textContent='ประเภท: '+staffKind+' · ผู้อนุมัติ: ผู้อำนวยการ / รองผู้อำนวยการ';
   }
   function staffUpdateBtn(){
     const btn=document.getElementById('staffSubmitBtn'),lb=document.getElementById('staffSubmitLabel');
@@ -1609,7 +2074,7 @@
       document.getElementById('staffLeavePage').classList.remove('show');
       document.getElementById('success').classList.remove('hidden');
       setTimeout(()=>{if(liff.isInClient())liff.closeWindow();},3500);
-    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;staffUpdateBtn();}
+    }else{alert((r.error||'ไม่สำเร็จ'));btn.disabled=false;staffUpdateBtn();}
   }
 
   /* ===== SARABAN: เปิดไฟล์หนังสือ (?page=saraban_file&doc=) ===== */
@@ -1622,11 +2087,11 @@
     const msg=document.getElementById('sfMsg'), again=document.getElementById('sfAgain'), web=document.getElementById('sfWeb');
     const doc=params.get('doc')||'';
     again.style.display='none';
-    if(!doc){msg.textContent='❌ ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)';return;}
+    if(!doc){msg.textContent='ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)';return;}
     msg.textContent='กำลังตรวจสิทธิ์…';
     const r=await api('sarabanFileLink',{doc_id:doc});
     if(r.web){web.href=r.web;web.style.display='flex';}
-    if(!r.ok){msg.textContent=(r.secret?'🔒 ':'❌ ')+(r.error||'เปิดไฟล์ไม่สำเร็จ');return;}
+    if(!r.ok){msg.textContent=(r.secret?'หนังสือลับ — ':'')+(r.error||'เปิดไฟล์ไม่สำเร็จ');return;}
     document.getElementById('sfName').textContent=r.name||'';
     const url=API_URL+'f/'+encodeURIComponent(r.token);
     msg.textContent='กำลังเปิดไฟล์… ถ้าไม่ขึ้น กดปุ่มด้านล่าง';
@@ -1638,34 +2103,38 @@
 
   /* ===== SARABAN: สั่งการ/เกษียณหนังสือรับ (?page=saraban&doc=) ===== */
   const SB_DEPTS=[['school_management','ฝ่ายผู้บริหาร'],['academic_management','ฝ่ายบริหารวิชาการ'],['budget_management','ฝ่ายบริหารงบประมาณ'],['personnel_management','ฝ่ายบริหารงานบุคคล'],['general_administration','ฝ่ายบริหารทั่วไป'],['student_affairs','ฝ่ายกิจการนักเรียน']];
-  const SB_URG={urgent:['ด่วน','#b45309','#fef3c7'],very_urgent:['ด่วนมาก','#c2410c','#ffedd5'],most_urgent:['ด่วนที่สุด','#b91c1c','#fee2e2']};
+  const SB_URG={urgent:['ด่วน','#92400E','#fef3c7'],very_urgent:['ด่วนมาก','#9A3412','#ffedd5'],most_urgent:['ด่วนที่สุด','#9F1239','#FFE4E6']};
   const SB_TPLS=[['ack','ทราบ'],['assign','มอบ … ดำเนินการ'],['all','แจ้งเวียนครูทุกคน'],['report','มอบ … รายงานภายใน …']];
   let sb=null, sbDocId='', sbTpl='assign', sbSel=[], sbDue='', sbManual=false, sbQ='', sbOpen={};
   async function initSaraban(){
     show('sarabanPage');
     sbDocId=params.get('doc')||'';
     const err=document.getElementById('sbErr');
-    if(!sbDocId){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">❌ ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)</div></div>';return;}
+    if(!sbDocId){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">ลิงก์ไม่สมบูรณ์ (ไม่มีรหัสหนังสือ)</div></div>';return;}
     const r=await api('sarabanEndorseInit',{doc_id:sbDocId});
-    if(!r.ok){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">❌ '+esc(r.error||'โหลดไม่สำเร็จ')+'</div></div>';return;}
+    if(!r.ok){document.getElementById('sbName').textContent='';err.innerHTML='<div class="section"><div class="empty-box">'+esc(r.error||'โหลดไม่สำเร็จ')+'</div></div>';return;}
     sb=r;
     document.getElementById('sbName').textContent=(r.me&&r.me.name)||'';
     const d=r.doc||{};
     const u=SB_URG[d.urgency];
     document.getElementById('sbDoc').innerHTML=
-      (r.mode==='reendorse'?'<div class="sb-note">ฉบับนี้คุณเกษียณ "ทราบ" ไว้แล้ว — เลือกมอบงานด้านล่างเพื่อเปลี่ยนคำเกษียณ</div>':'')
-      +(d.secret?'<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px;">🔒 หนังสือลับ</div>':'')
-      +'<div style="margin-bottom:6px;">'+(u?'<span class="sb-pill" style="color:'+u[1]+';background:'+u[2]+'">'+u[0]+'</span>':'')
-      +(d.reg_no!=null?'<span style="font-size:13px;color:var(--gray);">เลขรับ '+esc(d.reg_no)+'</span>':'')+'</div>'
-      +'<div style="font-size:17px;font-weight:700;line-height:1.5;">'+esc(d.subject)+'</div>'
-      +'<div style="font-size:12px;color:var(--gray);margin-top:4px;">'+esc(d.from)+(d.doc_no?' · '+esc(d.doc_no):'')+'</div>'
+      (r.mode==='reendorse'?'<div class="sb-note" style="margin-bottom:0;">ฉบับนี้คุณเกษียณ "ทราบ" ไว้แล้ว — เลือกมอบงานด้านล่างเพื่อเปลี่ยนคำเกษียณ</div>':'')
+      +(d.secret?'<div class="sbd-lock">'+ic('lock',16)+' หนังสือลับ</div>':'')
+      +'<div class="sbd-top">'+(u?'<span class="sb-pill" style="margin:0;color:'+u[1]+';background:'+u[2]+'">'+u[0]+'</span>':'')
+      +(d.reg_no!=null?'<span class="sbd-no">เลขรับ '+esc(d.reg_no)+'</span>':'')
+      +(d.secret?'':'<a class="sbd-open" href="'+esc(sbFileHref())+'">'+ic('file',16)+'เปิด PDF</a>')+'</div>'
+      +'<div class="sbd-t clamp" id="sbdT">'+esc(d.subject)+'</div>'
+      +'<button type="button" class="sbd-more" id="sbdMore" aria-expanded="false" style="display:none;" onclick="sbdToggle()">ดูทั้งหมด</button>'
+      +'<div class="sbd-m">'+esc(d.from)+(d.doc_no?' · '+esc(d.doc_no):'')+'</div>'
       +(d.summary?'<div class="sb-box"><b>สรุปย่อ</b>\n'+esc(d.summary)+'</div>':'')
-      +(d.todo?'<div style="margin-top:8px;font-size:13px;line-height:1.6;">ต้องทำ: '+esc(d.todo)+'</div>':'')
-      +(d.event_date?'<div style="margin-top:4px;font-size:13px;line-height:1.6;">กำหนด: '+thaiDate(d.event_date)+(d.event_note?' '+esc(d.event_note):'')+'</div>':'')
-      +((d.attachments||[]).length?'<div style="margin-top:6px;font-size:12px;line-height:1.6;color:var(--gray);">📎 สิ่งที่ส่งมาด้วย '+d.attachments.length+' ไฟล์: '+d.attachments.map(esc).join(', ')+' <span style="opacity:.8">(ดาวน์โหลดในเว็บ)</span></div>':'')
+      +(d.todo?'<div class="sbd-x">ต้องทำ: '+esc(d.todo)+'</div>':'')
+      +(d.event_date?'<div class="sbd-x">กำหนด: '+thaiDate(d.event_date)+(d.event_note?' '+esc(d.event_note):'')+'</div>':'')
+      +((d.attachments||[]).length?'<div class="sbd-m" style="line-height:1.6;">'+ic('clip',14)+' สิ่งที่ส่งมาด้วย '+d.attachments.length+' ไฟล์: '+d.attachments.map(esc).join(', ')+' <span style="opacity:.8">(ดาวน์โหลดในเว็บ)</span></div>':'')
       +(d.propose_text?'<div class="sb-box">- '+esc(String(d.propose_text).replace(/^\s*-\s*/,''))+'</div>':'')
       +(d.forwarded_from?'<div class="sb-box">รองฯ '+esc(d.forwarded_from)+': '+esc(d.forward_note||'')+'</div>':'');
-    document.getElementById('sbDue').min=localDateStr(new Date());
+    const tEl=document.getElementById('sbdT');
+    if(tEl&&tEl.scrollHeight>tEl.clientHeight+2)document.getElementById('sbdMore').style.display='inline-block';
+    document.getElementById('sbDue').min=localDateStr(new Date());sfDateSync('sbDue');
     if(r.me&&r.me.can_forward){
       document.getElementById('sbFwdWrap').style.display='block';
       document.getElementById('sbDir').innerHTML=(r.directors||[]).map(x=>'<option value="'+esc(x.uid)+'">'+esc(x.name)+'</option>').join('');
@@ -1673,6 +2142,19 @@
     document.getElementById('sbForm').style.display='block';
     document.getElementById('sbFooter').style.display='block';
     sbRender();
+  }
+  // ลิงก์เปิดไฟล์ PDF = หน้า saraban_file ของ LIFF เดียวกัน (ตรวจสิทธิ์ + token 5 นาทีที่นั่น)
+  function sbFileHref(){
+    const u=new URL(location.href);
+    ['liff.state','code','id'].forEach(k=>u.searchParams.delete(k));
+    if(SCHOOL)u.searchParams.set('school',SCHOOL);
+    if(LIFF_ID)u.searchParams.set('liff',LIFF_ID);
+    u.searchParams.set('page','saraban_file');u.searchParams.set('doc',sbDocId);
+    return u.toString();
+  }
+  function sbdToggle(){
+    const t=document.getElementById('sbdT'),b=document.getElementById('sbdMore'),open=t.classList.toggle('clamp')===false;
+    b.textContent=open?'ย่อ':'ดูทั้งหมด';b.setAttribute('aria-expanded',String(open));
   }
   // ชื่อผู้รับมอบ: 1 คน=ชื่อ · 2+ = "ก ข และ ค" · ไม่มี = …
   function sbNames(){
@@ -1690,13 +2172,14 @@
   function sbRender(){
     const re=sb.mode==='reendorse';
     document.getElementById('sbTpl').innerHTML=SB_TPLS.filter(t=>!(re&&t[0]==='ack'))
-      .map(t=>`<button class="chip ${t[0]===sbTpl?'active':''}" onclick="sbPickTpl('${t[0]}')">${t[1]}</button>`).join('');
+      .map(t=>`<button type="button" class="sb-tpl" role="radio" aria-checked="${t[0]===sbTpl}" onclick="sbPickTpl('${t[0]}')">${t[1]}</button>`).join('');
     document.getElementById('sbWhoWrap').style.display=(sbTpl==='assign'||sbTpl==='report')?'block':'none';
     document.getElementById('sbDueWrap').style.display=sbTpl==='report'?'block':'none';
     sbRenderWho();
     if(!sbManual)document.getElementById('sbText').value=sbAutoText();   // แก้เองแล้ว → หยุดเติมอัตโนมัติ
     document.getElementById('sbReset').style.display=sbManual?'inline':'none';
-    document.getElementById('sbBtnLabel').textContent=sbTpl==='ack'?'เกษียณ "ทราบ"':'สั่งการ';
+    document.getElementById('sbBtnLabel').textContent=sbTpl==='ack'?'เกษียณ "ทราบ" + ลงลายเซ็น':'สั่งการ + ลงลายเซ็น';
+    document.getElementById('sbFootNote').textContent=sbTpl==='ack'||sbTpl==='all'?'ลายเซ็นของคุณจะประทับบนหนังสือ':'ผู้ได้รับมอบจะได้แจ้งเตือนในไลน์';
   }
   function sbPickTpl(t){sbTpl=t;sbRender();}
   // กลุ่มตามฝ่าย (+ "ยังไม่ระบุฝ่าย") · เก็บ index ใน sb.staff · กรองตามคำค้น · ซ่อนกลุ่มว่าง
@@ -1718,9 +2201,9 @@
     let h=gs.map(g=>{
       const open=q?true:!!sbOpen[g.key];
       const n=g.idx.filter(i=>sbSel.includes(st[i].uid)).length;
-      const rows=open?g.idx.map(i=>`<label class="sb-row"><input type="checkbox" ${sbSel.includes(st[i].uid)?'checked':''} onchange="sbToggle(${i})"><span>${esc(st[i].name)}</span></label>`).join(''):'';
-      return `<div class="sb-gh"><button type="button" class="sb-gl" onclick="sbToggleGroup('${g.key}')"><b>${open?'▾':'▸'}</b><span>${esc(g.label)} (${q?g.idx.length+'/'+g.total:g.total})${n?' · เลือก '+n:''}</span></button>`
-        +`<label class="sb-all"><input type="checkbox" data-g="${g.key}" ${n&&n===g.idx.length?'checked':''} onchange="sbPickDept('${g.key}')">ทั้งฝ่าย</label></div>`+rows;
+      const rows=open?g.idx.map(i=>{const on=sbSel.includes(st[i].uid);return `<label class="sb-row${on?' on':''}"><input type="checkbox" ${on?'checked':''} onchange="sbToggle(${i})"><span class="sb-ck">${ic('check',14)}</span><span>${esc(st[i].name)}</span></label>`;}).join(''):'';
+      return `<div class="sb-gh"><button type="button" class="sb-gl" aria-expanded="${open}" onclick="sbToggleGroup('${g.key}')"><span class="sb-chev${open?' open':''}" aria-hidden="true">${ic('chev',16)}</span><span>${esc(g.label)} (${q?g.idx.length+'/'+g.total:g.total})${n?' · เลือก '+n:''}</span></button>`
+        +`<label class="sb-all"><input type="checkbox" data-g="${g.key}" ${n&&n===g.idx.length?'checked':''} onchange="sbPickDept('${g.key}')"><span class="sb-ck">${ic('check',14)}</span>ทั้งฝ่าย</label></div>`+rows;
     }).join('');
     if(!gs.length)h='<div class="sb-none">'+(st.length?'ไม่พบชื่อที่ค้นหา':'ไม่มีรายชื่อครู')+'</div>';
     const list=document.getElementById('sbList');
@@ -1732,7 +2215,8 @@
     const bar=document.getElementById('sbSelBar');
     const sel=st.map((s,i)=>[s,i]).filter(x=>sbSel.includes(x[0].uid));
     bar.style.display=sel.length?'block':'none';
-    bar.innerHTML=sel.length?'เลือกแล้ว '+sel.length+' คน<div>'+sel.map(x=>`<span class="sb-sel">${esc(x[0].name)}<button type="button" aria-label="ลบ" onclick="sbToggle(${x[1]})">✕</button></span>`).join('')+'</div>':'';
+    bar.innerHTML=sel.length?'เลือกแล้ว '+sel.length+' คน<div>'+sel.map(x=>`<span class="sb-sel">${esc(x[0].name)}<button type="button" aria-label="เอา ${esc(x[0].name)} ออก" onclick="sbToggle(${x[1]})">${ic('x',16)}</button></span>`).join('')+'</div>':'';
+    document.getElementById('sbCnt').textContent=sel.length?'เลือก '+sel.length+' คน':'';
   }
   function sbSearch(v){sbQ=v||'';sbRenderWho();}
   function sbToggleGroup(key){sbOpen[key]=!sbOpen[key];sbRenderWho();}
@@ -1749,7 +2233,7 @@
     else m.forEach(u=>{if(!sbSel.includes(u))sbSel.push(u);});
     sbRender();
   }
-  function sbSetDue(){sbDue=document.getElementById('sbDue').value;sbRender();}
+  function sbSetDue(){sbDue=document.getElementById('sbDue').value;sfDateSync('sbDue');sbRender();}
   function sbEditText(){sbManual=true;document.getElementById('sbReset').style.display='inline';}
   function sbResetText(){sbManual=false;sbRender();}
   function sbDone(title,msg){
@@ -1771,7 +2255,7 @@
     const r=await api('sarabanEndorse',{doc_id:sbDocId,tpl:sbTpl,assignees:who?sbSel:[],report_due:sbTpl==='report'?sbDue:'',text});
     if(r.ok){
       sbDone(sbTpl==='ack'?'เกษียณแล้ว':'สั่งการแล้ว',esc(r.message||'')+(r.nolink>0?'<br>'+esc(r.nolink)+' คนยังไม่ผูก LINE — เห็นในเว็บ':''));
-    }else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent=label;}
+    }else{alert((r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent=label;}
   }
   async function sbForward(){
     const btn=document.getElementById('sbFwdBtn'),lb=document.getElementById('sbFwdLabel');
@@ -1780,7 +2264,7 @@
     btn.disabled=true;lb.textContent='กำลังส่ง...';
     const r=await api('sarabanForward',{doc_id:sbDocId,to_uid:to,note:document.getElementById('sbFwdNote').value.trim()});
     if(r.ok)sbDone('เสนอต่อแล้ว',esc(r.message||''));
-    else{alert('❌ '+(r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='เสนอต่อ ผอ.';}
+    else{alert((r.error||'ไม่สำเร็จ'));btn.disabled=false;lb.textContent='เสนอต่อ ผอ.';}
   }
 
   init();

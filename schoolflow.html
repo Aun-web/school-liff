@@ -127,6 +127,11 @@
     .subj summary{cursor:pointer;color:var(--g700);font-weight:600;min-height:44px;display:flex;align-items:center;}
     .comp-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);}
     .comp-row:last-child{border-bottom:none;}
+    .comp-row{gap:12px;align-items:flex-start;}
+    .comp-row>span:last-child{flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums;}
+    .comp-row small{font-size:13px;color:var(--muted);}
+    .comp-h{margin-top:8px;font-size:14px;font-weight:700;color:var(--ink2);}
+    .comp-sum{font-weight:700;color:var(--g700);}
     .note-red{margin-top:8px;padding:8px 10px;background:var(--danger-bg);border-radius:10px;font-size:13px;color:var(--danger);line-height:1.5;display:flex;gap:6px;align-items:flex-start;}
     .empty-box{text-align:center;padding:28px 16px;color:var(--muted);font-size:15px;line-height:1.7;}
     /* ── หนังสือรับ: สั่งการ (SB) ── */
@@ -1270,9 +1275,20 @@
       let prog='';
       if(s.components){
         const pct=s.max_total?Math.round(((s.total||0)/s.max_total)*100):0;
+        const val=c=>c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(esc(c.score)+' / '+esc(c.max));
+        let detail;
+        if(s.scheme==='indicator'){
+          // IND: ตัวชี้วัด (ดิบ/เต็ม) → คะแนนเก็บย่อตามสัดส่วน · สอบกลางภาค/ปลายภาค · รวมเต็ม 100
+          const inds=s.components.filter(c=>c.kind==='indicator'),exams=s.components.filter(c=>c.kind!=='indicator'),ip=s.indicator_pass;
+          detail=(inds.length?`<div class="comp-h">ตัวชี้วัด${ip&&ip.assessed?` · ผ่าน ${esc(ip.passed)}/${esc(ip.assessed)} ตัวที่ประเมินแล้ว`:''}</div>`
+              +inds.map(c=>`<div class="comp-row"><span><b>${esc(c.name)}</b>${c.desc?`<br><small>${esc(c.desc)}</small>`:''}</span><span>${val(c)}</span></div>`).join('')
+              +`<div class="comp-row comp-sum"><span>คะแนนเก็บ (คิดเป็น ${esc(s.collect_max)} คะแนน)</span><span>${s.collect==null?'—':esc(s.collect)+' / '+esc(s.collect_max)}</span></div>`:'')
+            +exams.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${val(c)}</span></div>`).join('');
+        }else detail=s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${val(c)}</span></div>`).join('');
+        const lbl=s.scheme==='indicator'?'คะแนนรวม ':'คะแนนเก็บ ';
         prog=`<div class="bar"><span style="width:${Math.min(100,pct)}%"></span></div>
-          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':('คะแนนเก็บ '+esc(s.total)+' / '+esc(s.max_total))}</span><span>กรอกแล้ว ${esc(s.filled)}/${esc(s.parts)} ช่อง</span></div>
-          <details><summary>ดูรายละเอียด</summary>${s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(esc(c.score)+' / '+esc(c.max))}</span></div>`).join('')}</details>`;
+          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':(lbl+esc(s.total)+' / '+esc(s.max_total))}</span><span>กรอกแล้ว ${esc(s.filled)}/${esc(s.parts)} ช่อง</span></div>
+          <details><summary>ดูรายละเอียด</summary>${detail}</details>`;
       }
       const note=s.special_note?`<div class="note-red">${ic('alert',16)}<span>${esc(s.special_note)}</span></div>`:'';
       html+=`<div class="subj gr"><div class="gr-top"><span class="gr-dot" style="background:${GR_COL[i%GR_COL.length]}" aria-hidden="true"></span><div class="gr-t"><span class="gr-n">${esc(s.name)}</span><span class="gr-c">${esc(s.code)}${s.credit?(' · '+esc(s.credit)+' หน่วยกิต'):''}</span></div>${badge}</div>${prog}${note}</div>`;

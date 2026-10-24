@@ -122,17 +122,33 @@
     .grade-badge.special{background:var(--danger-bg);color:var(--danger);}
     .bar{height:8px;background:#E3E9E4;border-radius:6px;overflow:hidden;margin-top:10px;}
     .bar > span{display:block;height:100%;background:linear-gradient(90deg,#0F7A62,#14967A);border-radius:6px;}
-    .subj-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px;}
-    .subj details{margin-top:8px;font-size:14px;}
-    .subj summary{cursor:pointer;color:var(--g700);font-weight:600;min-height:44px;display:flex;align-items:center;}
-    .comp-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line);}
-    .comp-row:last-child{border-bottom:none;}
-    .comp-row{gap:12px;align-items:flex-start;}
-    .comp-row>span:last-child{flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums;}
-    .comp-row small{font-size:13px;color:var(--muted);}
-    .comp-h{margin-top:8px;font-size:14px;font-weight:700;color:var(--ink2);}
-    .comp-sum{font-weight:700;color:var(--g700);}
     .note-red{margin-top:8px;padding:8px 10px;background:var(--danger-bg);border-radius:10px;font-size:13px;color:var(--danger);line-height:1.5;display:flex;gap:6px;align-items:flex-start;}
+    .gs-sum{display:flex;flex-direction:column;gap:6px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0;}
+    .gs-sum-l{display:flex;align-items:center;gap:8px;font-size:15px;line-height:1.4;color:var(--ink);}
+    .gs-sum-l b{font-variant-numeric:tabular-nums;}
+    .gs-sum-l .ic{flex:none;}
+    .gs-ok{color:var(--g700);}
+    .gs-warn{color:var(--amber-ink);}
+    #gradesPage .subj .bar{margin-top:8px;}
+    .gs-score{flex:none;text-align:right;font-variant-numeric:tabular-nums;min-width:56px;}
+    .gs-score b{display:block;font-size:24px;font-weight:700;line-height:1.1;color:var(--g700);}
+    .gs-score small{font-size:13px;color:var(--muted);line-height:1.2;}
+    .gs-score.none b{color:var(--muted);}
+    .gs-parts{font-size:13px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums;line-height:1.5;}
+    .gs-chip{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:600;line-height:1.4;font-variant-numeric:tabular-nums;}
+    .gs-chip.ok{background:#ECFDF5;color:var(--g700);}
+    .gs-chip.warn{background:#FEF3C7;color:var(--amber-ink);}
+    .gs-more{margin-top:4px;}
+    .gs-more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--amber-ink);}
+    .gs-more summary::-webkit-details-marker{display:none;}
+    .gs-more summary::after{content:"";width:8px;height:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);margin-left:2px;}
+    .gs-more[open] summary::after{transform:rotate(-135deg) translateY(-2px);}
+    .gs-more ul{list-style:none;margin:0;padding:0;}
+    .gs-more li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px dashed var(--line);font-size:14px;line-height:1.45;}
+    .gs-more li>span:first-child{min-width:0;}
+    .gs-more li b{display:block;color:var(--ink);}
+    .gs-more .gs-d{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--ink2);font-size:13px;}
+    .gs-more li>span:last-child{flex:none;white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums;color:var(--amber-ink);}
     .empty-box{text-align:center;padding:28px 16px;color:var(--muted);font-size:15px;line-height:1.7;}
     /* ── หนังสือรับ: สั่งการ (SB) ── */
     .sb-pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700;margin-right:6px;}
@@ -1267,31 +1283,31 @@
       gpa.innerHTML=`<section class="gp-glass" aria-label="เกรดเฉลี่ย"><div><div class="gp-t">เกรดเฉลี่ย ภาคเรียนที่ ${sel.term}/${sel.year}</div><div class="gp-s">${subs.length} วิชา${r.gpa_partial?' · บางวิชายังไม่มีเกรด':''}</div></div><div class="gp-n">${r.gpa.toFixed(2)}</div></section>`;
     }
     let html='';
+    const ms=subs.filter(x=>x.summary&&!x.special);
+    if(ms.length){
+      let P=0,A=0,Z=0;ms.forEach(x=>{const i=x.summary.indicators||{};P+=i.passed||0;A+=i.assessed||0;if((x.summary.weak||[]).length)Z++;});
+      html+='<section class="gs-sum" aria-label="สรุปตัวชี้วัด"><div class="gs-sum-l">'+ic('chart',18)+'<span>ผ่านตัวชี้วัด <b>'+P+'</b> จาก <b>'+A+'</b> ที่ประเมินแล้ว</span></div>'
+        +(Z?'<div class="gs-sum-l gs-warn">'+ic('alert',18)+'<span><b>'+Z+'</b> วิชามีตัวชี้วัดที่ควรเสริม</span></div>':'<div class="gs-sum-l gs-ok">'+ic('check',18)+'<span>ผ่านทุกตัวชี้วัดที่ประเมินแล้ว</span></div>')+'</section>';
+    }
     if(!subs.length) html+='<div class="empty-box">ยังไม่มีรายวิชาในภาคเรียนนี้</div>';
     subs.forEach((s,i)=>{
       let badge='';
       if(s.special) badge=`<div class="gr-b g0">${esc(s.special)}<small>ติดต่อครู</small></div>`;
       else if(s.grade!=null) badge=`<div class="gr-b ${grClass(s.grade)}">${esc(s.grade)}<small>${esc(s.grade_label)}</small></div>`;
-      let prog='';
-      if(s.components){
-        const pct=s.max_total?Math.round(((s.total||0)/s.max_total)*100):0;
-        const val=c=>c.score==null?'<span style="color:var(--gray)">ยังไม่มีคะแนน</span>':(esc(c.score)+' / '+esc(c.max));
-        let detail;
-        if(s.scheme==='indicator'){
-          // IND: ตัวชี้วัด (ดิบ/เต็ม) → คะแนนเก็บย่อตามสัดส่วน · สอบกลางภาค/ปลายภาค · รวมเต็ม 100
-          const inds=s.components.filter(c=>c.kind==='indicator'),exams=s.components.filter(c=>c.kind!=='indicator'),ip=s.indicator_pass;
-          detail=(inds.length?`<div class="comp-h">ตัวชี้วัด${ip&&ip.assessed?` · ผ่าน ${esc(ip.passed)}/${esc(ip.assessed)} ตัวที่ประเมินแล้ว`:''}</div>`
-              +inds.map(c=>`<div class="comp-row"><span><b>${esc(c.name)}</b>${c.desc?`<br><small>${esc(c.desc)}</small>`:''}</span><span>${val(c)}</span></div>`).join('')
-              +`<div class="comp-row comp-sum"><span>คะแนนเก็บ (คิดเป็น ${esc(s.collect_max)} คะแนน)</span><span>${s.collect==null?'—':esc(s.collect)+' / '+esc(s.collect_max)}</span></div>`:'')
-            +exams.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${val(c)}</span></div>`).join('');
-        }else detail=s.components.map(c=>`<div class="comp-row"><span>${esc(c.name)}</span><span>${val(c)}</span></div>`).join('');
-        const lbl=s.scheme==='indicator'?'คะแนนรวม ':'คะแนนเก็บ ';
-        prog=`<div class="bar"><span style="width:${Math.min(100,pct)}%"></span></div>
-          <div class="subj-meta"><span>${s.total==null?'ยังไม่มีคะแนน':(lbl+esc(s.total)+' / '+esc(s.max_total))}</span><span>กรอกแล้ว ${esc(s.filled)}/${esc(s.parts)} ช่อง</span></div>
-          <details><summary>ดูรายละเอียด</summary>${detail}</details>`;
+      let prog='',right=badge;
+      const m=s.summary;
+      if(m&&!s.special){
+        const pct=Math.max(0,Math.min(100,Math.round(m.total==null?0:m.total)));
+        if(!badge) right=m.total==null?'<div class="gs-score none"><b>—</b><small>ยังไม่มีคะแนน</small></div>':'<div class="gs-score"><b>'+esc(m.total)+'</b><small>/100</small></div>';
+        const f=(l,p)=>l+' '+(p&&p.score!=null?esc(p.score):'—')+'/'+esc(p?p.max:'');
+        const parts=[f('เก็บ',m.collect)];if(m.mid)parts.push(f('กลางภาค',m.mid));parts.push(f('ปลายภาค',m.final));
+        const ind=m.indicators||{passed:0,assessed:0,total:0},weak=m.weak||[],un=Math.max(0,(ind.total||0)-(ind.assessed||0));
+        const chip=ind.total?'<div class="gs-chip '+(weak.length?'warn':'ok')+'">'+ic(weak.length?'alert':'check',14)+'<span>'+(ind.assessed?'ตัวชี้วัด ผ่าน '+esc(ind.passed)+'/'+esc(ind.assessed)+(un?' · ยังไม่ประเมิน '+esc(un):''):'ตัวชี้วัด ยังไม่ประเมิน '+esc(un))+'</span></div>':'';
+        const more=weak.length?'<details class="gs-more"><summary>ตัวชี้วัดที่ควรเสริม ('+weak.length+')</summary><ul>'+weak.map(w=>'<li><span><b>'+esc(w.code)+'</b><span class="gs-d">'+esc(w.desc)+'</span></span><span>ได้ '+esc(w.score)+'/'+esc(w.max)+'</span></li>').join('')+'</ul></details>':'';
+        prog='<div class="bar" aria-hidden="true"><span style="width:'+pct+'%"></span></div><div class="gs-parts">'+parts.join(' · ')+'</div>'+chip+more;
       }
       const note=s.special_note?`<div class="note-red">${ic('alert',16)}<span>${esc(s.special_note)}</span></div>`:'';
-      html+=`<div class="subj gr"><div class="gr-top"><span class="gr-dot" style="background:${GR_COL[i%GR_COL.length]}" aria-hidden="true"></span><div class="gr-t"><span class="gr-n">${esc(s.name)}</span><span class="gr-c">${esc(s.code)}${s.credit?(' · '+esc(s.credit)+' หน่วยกิต'):''}</span></div>${badge}</div>${prog}${note}</div>`;
+      html+=`<div class="subj gr"><div class="gr-top"><span class="gr-dot" style="background:${GR_COL[i%GR_COL.length]}" aria-hidden="true"></span><div class="gr-t"><span class="gr-n">${esc(s.name)}</span><span class="gr-c">${esc(s.code)}${s.credit?(' · '+esc(s.credit)+' หน่วยกิต'):''}</span></div>${right}</div>${prog}${note}</div>`;
     });
     body.innerHTML=html;
   }

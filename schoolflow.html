@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Schoolflow</title>
+  <title>EDVYN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- ฟอนต์โหลดแบบไม่บล็อกหน้า (media=print → all เมื่อโหลดเสร็จ) -->
@@ -733,7 +733,7 @@
   </div>
   <div class="content">
     <div id="notifyNotBound" class="section" style="display:none;">
-      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR</div></div></div>
+      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ EDVYN › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR</div></div></div>
     </div>
     <div id="notifyForm" style="display:none;">
       <div class="section">
@@ -766,7 +766,7 @@
         <span class="ft-note">ไม่เสียโควตาข้อความของโรงเรียน · ผู้ปกครองที่ผูกบัญชีจะเห็นป้าย <b style="color:#BE123C">ใหม่</b> ที่เมนูประกาศ</span>
       </div>
     </div>
-    <button class="submit-btn ghost" onclick="openWeb()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg><span>เปิดเว็บ Schoolflow</span></button>
+    <button class="submit-btn ghost" onclick="openWeb()"><svg class="ic" width="20" height="20" aria-hidden="true" focusable="false"><use href="#i-globe"/></svg><span>เปิดเว็บ EDVYN</span></button>
   </div>
 </div>
 
@@ -780,7 +780,7 @@
   <div class="content">
     <div class="section">
       <ol class="bd-steps">
-        <li><span>เปิดเว็บ Schoolflow กดชื่อมุมขวาบน แล้วเลือก <b>ผูกบัญชี LINE</b></span></li>
+        <li><span>เปิดเว็บ EDVYN กดชื่อมุมขวาบน แล้วเลือก <b>ผูกบัญชี LINE</b></span></li>
         <li><span>สร้างรหัส แล้ว<b>สแกน QR</b> (รหัสจะกรอกให้เอง) หรือพิมพ์รหัสที่นี่ภายใน 10 นาที</span></li>
       </ol>
       <label class="section-title" for="bindCode" style="display:block;margin-bottom:8px;">รหัสผูกบัญชี (8 ตัว)</label>
@@ -821,7 +821,7 @@
   </div>
   <div class="content">
     <div id="staffNotBound" class="section" style="display:none;">
-      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR ก่อน แล้วกลับมาแจ้งลาได้</div></div></div>
+      <div class="ub"><span class="ub-ic"><svg class="ic" width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-lock"/></svg></span><div><div class="ub-t">ยังไม่ได้ผูกบัญชี LINE</div><div class="ub-d">เปิดเว็บ EDVYN › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR ก่อน แล้วกลับมาแจ้งลาได้</div></div></div>
     </div>
     <div id="staffForm" style="display:none;">
       <div class="section">
@@ -1469,7 +1469,7 @@
     const r=await api('listMyHomeworkTargets');
     if(!r||!r.ok||r.bound===false){
       const unbound=r&&(r.bound===false||/ผูกบัญชี/.test(r.error||''));
-      hwEl('hwMsg').innerHTML=unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ');
+      hwEl('hwMsg').innerHTML=unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ EDVYN › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ');
       return;
     }
     hw.data=r;hw.ci=0;hw.mode='next';hw.pick='';hw.calOpen=false;hw.detOpen=false;hw.busy=false;
@@ -1659,7 +1659,7 @@
     const r=await api('myTimetable');
     if(!r||!r.ok){
       const unbound=r&&/ผูกบัญชี/.test(r.error||'');
-      tdEl('tdBody').innerHTML='<div class="td-msg">'+(unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ Schoolflow › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ'))+'</div>';
+      tdEl('tdBody').innerHTML='<div class="td-msg">'+(unbound?'ยังไม่ได้ผูกบัญชี LINE กับระบบ<br>เปิดเว็บ EDVYN › กดชื่อมุมขวาบน › <b>ผูกบัญชี LINE</b> แล้วสแกน QR':esc(r&&r.error||'โหลดไม่สำเร็จ'))+'</div>';
       return;
     }
     td.data=r;td.scrolled=false;
@@ -1949,7 +1949,7 @@
   async function bindTeacher(){
     const code=document.getElementById('bindCode').value.toUpperCase().replace(/[\s-]/g,'');
     const st=document.getElementById('bindStatus');
-    if(code.length!==8){st.textContent='กรอกรหัส 8 ตัวจากเว็บ Schoolflow';return;}
+    if(code.length!==8){st.textContent='กรอกรหัส 8 ตัวจากเว็บ EDVYN';return;}
     document.getElementById('bindLabel').textContent='กำลังผูก...';
     const r=await api('bindTeacher',{code});
     if(r.ok){

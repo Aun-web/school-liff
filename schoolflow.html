@@ -586,6 +586,7 @@
         <input class="form-input" id="regCode" placeholder="เลขประจำตัวนักเรียน" aria-label="เลขประจำตัวนักเรียน" style="flex:1;" autocomplete="off">
         <button type="button" class="submit-btn" onclick="registerChild()">เพิ่ม</button>
       </div>
+      <p id="regTip" style="color:var(--gray);font-size:13px;margin:6px 0 0;">ตรวจเลขประจำตัวให้ถูกก่อนกด — ชื่อนักเรียนจะขึ้นหลังครูประจำชั้นยืนยัน</p>
       <div class="page-status" id="regStatus" role="status" aria-live="polite"></div>
       <div id="childHint" class="note-box" style="display:none;margin-top:12px;"></div>
     </div>
@@ -1146,12 +1147,13 @@
       const ok = c.status==='approved';
       const rm=kidRoom(c);
       return `<button type="button" class="pk-kid" role="radio" aria-checked="${ok&&selectedChild===c.student_id}" data-id="${esc(c.student_id)}" ${ok?'':'disabled'}>
-        <span class="pk-av" style="background:${PK_AV[i%PK_AV.length]}" aria-hidden="true">${esc(kidInitial(c.student_name))}</span>
-        <span class="pk-tx"><span class="pk-nm">${esc(c.student_name)}</span>${ok?(rm?'<span class="pk-rm">'+esc(rm)+'</span>':''):'<span class="pk-pend">รอยืนยัน</span>'}</span></button>`;
+        <span class="pk-av" style="background:${PK_AV[i%PK_AV.length]}" aria-hidden="true">${esc(ok?kidInitial(c.student_name):'?')}</span>
+        <span class="pk-tx"><span class="pk-nm">${esc(ok?c.student_name:('เลขประจำตัว '+c.student_id))}</span>${ok?(rm?'<span class="pk-rm">'+esc(rm)+'</span>':''):'<span class="pk-pend">รอครูยืนยัน</span>'}</span></button>`;
     }).join('') : '<p style="color:var(--gray);font-size:14px;grid-column:1/-1;">ยังไม่มี — เพิ่มด้วยเลขประจำตัวนักเรียน</p>';
     document.querySelectorAll('#childList .pk-kid:not(:disabled)').forEach(b=>{b.onclick=()=>pickChild(b.dataset.id);});
     const open=regOpen||!children.length;
     document.getElementById('regWrap').style.display=open?'flex':'none';
+    document.getElementById('regTip').style.display=open?'block':'none';
     const tg=document.getElementById('regToggle');
     tg.style.display=children.length?'inline-flex':'none';
     tg.setAttribute('aria-expanded',String(open));
@@ -1185,7 +1187,8 @@
     if(!code){st.textContent='กรอกเลขประจำตัว';return;}
     st.textContent='กำลังส่ง...';
     const r=await api('register',{student_code:code});
-    st.innerHTML = r.ok?`<span style="color:var(--g700)">${ic('check',16)} ${esc(r.message)} (${esc(r.student_name||'')})</span>`:`<span style="color:var(--red)">${esc(r.error)}</span>`;
+    // SEC6: ชื่อนักเรียนขึ้นหลังครูยืนยันเท่านั้น (Worker ไม่ส่งชื่อมาก่อนยืนยัน)
+    st.innerHTML = r.ok?`<span style="color:var(--g700)">${ic('check',16)} ${esc(r.message)}${r.student_name?' ('+esc(r.student_name)+')':''}</span>`:`<span style="color:var(--red)">${esc(r.error)}</span>`;
     if(r.ok){document.getElementById('regCode').value='';regOpen=false;await loadChildren();}
   }
   function selType(t){

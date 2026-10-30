@@ -582,6 +582,8 @@
       <div class="section-title" id="kidH">ลาให้ใคร</div>
       <div id="childList" class="pk-grid" role="radiogroup" aria-labelledby="kidH"><p style="color:var(--gray);font-size:14px;">กำลังโหลด...</p></div>
       <button type="button" class="pk-add" id="regToggle" aria-expanded="false" aria-controls="regWrap" onclick="toggleReg()" style="display:none;">+ เพิ่มบุตรหลาน (เลขประจำตัวนักเรียน)</button>
+      <!-- PU2 ผู้ปกครองยกเลิกการผูกเอง (คนที่เลือกอยู่) -->
+      <button type="button" class="pk-add" id="unlinkBtn" onclick="unlinkSelected()" style="display:none;color:var(--red);"></button>
       <div class="pk-reg" id="regWrap" style="display:none;">
         <input class="form-input" id="regCode" placeholder="เลขประจำตัวนักเรียน" aria-label="เลขประจำตัวนักเรียน" style="flex:1;" autocomplete="off">
         <button type="button" class="submit-btn" onclick="registerChild()">เพิ่ม</button>
@@ -1158,6 +1160,10 @@
     tg.style.display=children.length?'inline-flex':'none';
     tg.setAttribute('aria-expanded',String(open));
     tg.textContent=open?'− ซ่อนช่องเพิ่มบุตรหลาน':'+ เพิ่มบุตรหลาน (เลขประจำตัวนักเรียน)';
+    const sel=approved.find(c=>c.student_id===selectedChild);
+    const ub=document.getElementById('unlinkBtn');
+    ub.style.display=sel?'inline-flex':'none';
+    ub.textContent=sel?('ยกเลิกการผูกกับ '+sel.student_name):'';
     document.getElementById('leaveForm').style.display = approved.length?'block':'none';
     document.getElementById('leaveSubmitWrap').style.display = approved.length?'block':'none';
     const pending=children.filter(c=>c.status==='pending');
@@ -1190,6 +1196,16 @@
     // SEC6: ชื่อนักเรียนขึ้นหลังครูยืนยันเท่านั้น (Worker ไม่ส่งชื่อมาก่อนยืนยัน)
     st.innerHTML = r.ok?`<span style="color:var(--g700)">${ic('check',16)} ${esc(r.message)}${r.student_name?' ('+esc(r.student_name)+')':''}</span>`:`<span style="color:var(--red)">${esc(r.error)}</span>`;
     if(r.ok){document.getElementById('regCode').value='';regOpen=false;await loadChildren();}
+  }
+  async function unlinkSelected(){
+    const c=children.find(x=>x.student_id===selectedChild&&x.status==='approved');
+    if(!c)return;
+    if(!confirm('ยกเลิกการผูกบัญชี LINE นี้กับ '+c.student_name+'?\n\nจะไม่เห็นผลการเรียน การบ้าน ประกาศ และแจ้งลาให้คนนี้ไม่ได้ · ผูกใหม่ได้ด้วยเลขประจำตัวนักเรียน (ครูต้องยืนยันอีกครั้ง)'))return;
+    const st=document.getElementById('regStatus');
+    st.textContent='กำลังยกเลิก...';
+    const r=await api('unlinkChild',{student_id:c.student_id});
+    st.innerHTML=r.ok?`<span style="color:var(--g700)">${ic('check',16)} ${esc(r.message)}</span>`:`<span style="color:var(--red)">${esc(r.error)}</span>`;
+    if(r.ok){selectedChild=null;gChildren=[];await loadChildren();}
   }
   function selType(t){
     leaveType=t;
